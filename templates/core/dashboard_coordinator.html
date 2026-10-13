@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Coordinator Dashboard — NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <p>Welcome back, {{ user.get_full_name|default:user.username }}. Here's your overview.</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card success">
+    <div class="stat-value">{{ total_batches }}</div>
+    <div class="stat-label">Available Batches</div>
+  </div>
+  <div class="stat-card warning">
+    <div class="stat-value">{{ expiring_soon }}</div>
+    <div class="stat-label">Expiring Soon (≤ 7 days)</div>
+  </div>
+  <div class="stat-card info">
+    <div class="stat-value">{{ pending_requests }}</div>
+    <div class="stat-label">Pending Requests</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ draft_plans }}</div>
+    <div class="stat-label">Draft Allocation Plans</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Quick Actions</h3>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <a href="#" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Batch
+    </a>
+    <a href="#" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Review Requests
+    </a>
+    <a href="#" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 12l-4-4-4 4m4-4v8"/></svg>
+      Create Allocation Plan
+    </a>
+  </div>
+</div>
+{% endblock %}

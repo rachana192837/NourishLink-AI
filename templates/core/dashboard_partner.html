@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Partner Dashboard — NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  {% if organization %}
+    <p>{{ organization.name }} — recent activity</p>
+  {% else %}
+    <p>Welcome, {{ user.get_full_name|default:user.username }}</p>
+  {% endif %}
+</div>
+
+{% if organization %}
+<div class="card" style="margin-bottom:24px;">
+  <h3 style="margin-bottom:4px;font-size:1.05rem;">{{ organization.name }}</h3>
+  <p style="color:var(--text-muted);font-size:.85rem;">{{ organization.get_org_type_display }} &middot; {{ organization.address|default:"No address on file" }}</p>
+</div>
+{% endif %}
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <h3 style="font-size:1rem;">Recent Requests</h3>
+    <a href="#" class="btn btn-primary" style="font-size:.85rem;padding:6px 14px;">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Request
+    </a>
+  </div>
+
+  {% if my_requests %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Date</th>
+          <th>Required By</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for req in my_requests %}
+        <tr>
+          <td>#{{ req.id }}</td>
+          <td>{{ req.created_at|date:"M d, Y" }}</td>
+          <td>{{ req.required_by_date|date:"M d, Y" }}</td>
+          <td>
+            {% if req.status == 'PENDING' %}
+              <span class="badge badge-pending">Pending</span>
+            {% elif req.status == 'APPROVED' %}
+              <span class="badge badge-approved">Approved</span>
+            {% elif req.status == 'PARTIALLY_FULFILLED' %}
+              <span class="badge badge-partial">Partial</span>
+            {% elif req.status == 'FULFILLED' %}
+              <span class="badge badge-fulfilled">Fulfilled</span>
+            {% elif req.status == 'CANCELLED' %}
+              <span class="badge badge-cancelled">Cancelled</span>
+            {% else %}
+              <span class="badge">{{ req.status }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+    </svg>
+    <p>No requests yet. Create one to get started.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

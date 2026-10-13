@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Profile Missing — NourishLink{% endblock %}
+
+{% block content %}
+<div class="center-wrap">
+  <div class="center-card" style="text-align:center;">
+    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--warning)" stroke-width="1.5" style="margin-bottom:16px;">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <h2 style="color:var(--text);">No Profile Found</h2>
+    <p class="subtitle">Your account does not have a profile assigned yet.</p>
+    <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:24px;">
+      Please contact a system administrator to set up your role and organization.
+    </p>
+    <a href="{% url 'logout' %}" class="btn btn-primary">Log out</a>
+  </div>
+</div>
+{% endblock %}
