@@ -1,0 +1,7001 @@
+request_id,product,quantity_requested
+1,Beans,4
+1,Biscuits,1
+1,Canned Tomatoes,3
+1,Lentils,4
+1,Oats,1
+1,Pasta,4
+1,Powdered Milk,2
+1,Rice,6
+1,Sugar,2
+1,Tea,4
+2,Beans,17
+2,Biscuits,1
+2,Canned Beans,2
+2,Canned Tomatoes,13
+2,Cooking Oil,16
+2,Lentils,9
+2,Oats,6
+2,Pasta,8
+2,Powdered Milk,12
+2,Rice,13
+2,Sugar,8
+2,Tea,5
+3,Beans,6
+3,Biscuits,5
+3,Canned Beans,2
+3,Canned Tomatoes,6
+3,Cooking Oil,12
+3,Lentils,7
+3,Oats,2
+3,Pasta,5
+3,Powdered Milk,5
+3,Rice,8
+3,Sugar,4
+3,Tea,5
+4,Beans,5
+4,Biscuits,10
+4,Canned Beans,1
+4,Canned Tomatoes,11
+4,Cooking Oil,18
+4,Lentils,10
+4,Oats,2
+4,Pasta,9
+4,Powdered Milk,8
+4,Rice,12
+4,Sugar,8
+4,Tea,5
+5,Beans,5
+5,Biscuits,1
+5,Canned Beans,1
+5,Canned Tomatoes,8
+5,Cooking Oil,1
+5,Lentils,4
+5,Oats,2
+5,Pasta,4
+5,Powdered Milk,6
+5,Rice,7
+5,Sugar,9
+5,Tea,2
+6,Beans,8
+6,Biscuits,9
+6,Canned Beans,2
+6,Canned Tomatoes,11
+6,Cooking Oil,9
+6,Lentils,8
+6,Oats,4
+6,Pasta,16
+6,Powdered Milk,6
+6,Rice,7
+6,Sugar,10
+6,Tea,7
+7,Beans,8
+7,Biscuits,4
+7,Canned Tomatoes,6
+7,Cooking Oil,5
+7,Lentils,6
+7,Oats,3
+7,Pasta,4
+7,Powdered Milk,5
+7,Rice,5
+7,Sugar,7
+8,Beans,5
+8,Biscuits,5
+8,Canned Beans,1
+8,Canned Tomatoes,19
+8,Cooking Oil,7
+8,Lentils,13
+8,Oats,4
+8,Pasta,11
+8,Powdered Milk,5
+8,Rice,10
+8,Sugar,9
+8,Tea,4
+9,Beans,5
+9,Biscuits,2
+9,Canned Beans,2
+9,Canned Tomatoes,10
+9,Cooking Oil,4
+9,Lentils,4
+9,Oats,7
+9,Pasta,4
+9,Powdered Milk,4
+9,Rice,10
+9,Sugar,4
+9,Tea,3
+10,Beans,10
+10,Biscuits,1
+10,Canned Tomatoes,17
+10,Cooking Oil,8
+10,Lentils,8
+10,Oats,4
+10,Pasta,12
+10,Powdered Milk,2
+10,Rice,8
+10,Sugar,13
+10,Tea,1
+11,Beans,8
+11,Biscuits,4
+11,Canned Tomatoes,7
+11,Cooking Oil,4
+11,Lentils,9
+11,Oats,2
+11,Pasta,7
+11,Powdered Milk,1
+11,Rice,10
+11,Sugar,4
+11,Tea,3
+12,Beans,9
+12,Biscuits,3
+12,Canned Beans,1
+12,Canned Tomatoes,16
+12,Cooking Oil,4
+12,Lentils,11
+12,Oats,6
+12,Pasta,6
+12,Powdered Milk,7
+12,Rice,16
+12,Sugar,8
+12,Tea,6
+13,Beans,8
+13,Biscuits,3
+13,Canned Tomatoes,7
+13,Cooking Oil,10
+13,Lentils,6
+13,Oats,7
+13,Pasta,6
+13,Powdered Milk,5
+13,Rice,5
+13,Sugar,2
+13,Tea,7
+14,Beans,8
+14,Biscuits,6
+14,Canned Beans,5
+14,Canned Tomatoes,17
+14,Cooking Oil,9
+14,Lentils,10
+14,Oats,11
+14,Pasta,8
+14,Powdered Milk,5
+14,Rice,13
+14,Sugar,6
+14,Tea,4
+15,Beans,10
+15,Biscuits,3
+15,Canned Beans,1
+15,Canned Tomatoes,16
+15,Cooking Oil,11
+15,Lentils,9
+15,Oats,6
+15,Pasta,7
+15,Powdered Milk,3
+15,Rice,9
+15,Sugar,5
+15,Tea,1
+16,Beans,7
+16,Biscuits,3
+16,Canned Beans,2
+16,Canned Tomatoes,42
+16,Cooking Oil,12
+16,Lentils,7
+16,Oats,5
+16,Pasta,6
+16,Powdered Milk,6
+16,Rice,12
+16,Sugar,5
+16,Tea,4
+17,Beans,4
+17,Biscuits,5
+17,Canned Beans,1
+17,Canned Tomatoes,11
+17,Cooking Oil,2
+17,Lentils,5
+17,Oats,4
+17,Pasta,4
+17,Rice,9
+17,Sugar,7
+17,Tea,3
+18,Beans,7
+18,Biscuits,5
+18,Canned Tomatoes,13
+18,Cooking Oil,9
+18,Lentils,11
+18,Oats,5
+18,Pasta,14
+18,Powdered Milk,5
+18,Rice,17
+18,Sugar,10
+18,Tea,2
+19,Beans,4
+19,Biscuits,4
+19,Canned Beans,1
+19,Canned Tomatoes,8
+19,Cooking Oil,8
+19,Lentils,9
+19,Oats,4
+19,Pasta,4
+19,Powdered Milk,2
+19,Rice,8
+19,Sugar,6
+19,Tea,4
+20,Beans,6
+20,Biscuits,4
+20,Canned Tomatoes,14
+20,Cooking Oil,6
+20,Lentils,7
+20,Oats,6
+20,Pasta,11
+20,Powdered Milk,6
+20,Rice,16
+20,Sugar,11
+20,Tea,4
+21,Beans,9
+21,Biscuits,2
+21,Canned Beans,1
+21,Canned Tomatoes,10
+21,Cooking Oil,4
+21,Lentils,5
+21,Oats,2
+21,Pasta,4
+21,Powdered Milk,4
+21,Rice,6
+21,Sugar,6
+21,Tea,4
+22,Beans,18
+22,Biscuits,8
+22,Canned Beans,1
+22,Canned Tomatoes,17
+22,Cooking Oil,12
+22,Lentils,9
+22,Oats,2
+22,Pasta,19
+22,Powdered Milk,8
+22,Rice,17
+22,Sugar,12
+22,Tea,6
+23,Beans,7
+23,Biscuits,4
+23,Canned Beans,1
+23,Canned Tomatoes,7
+23,Cooking Oil,2
+23,Lentils,8
+23,Pasta,6
+23,Powdered Milk,3
+23,Rice,10
+23,Sugar,8
+23,Tea,3
+24,Beans,5
+24,Biscuits,5
+24,Canned Beans,1
+24,Canned Tomatoes,13
+24,Cooking Oil,5
+24,Lentils,8
+24,Oats,1
+24,Pasta,11
+24,Powdered Milk,5
+24,Rice,14
+24,Sugar,6
+24,Tea,11
+25,Beans,9
+25,Biscuits,3
+25,Canned Beans,1
+25,Canned Tomatoes,9
+25,Cooking Oil,2
+25,Lentils,9
+25,Oats,1
+25,Pasta,6
+25,Powdered Milk,2
+25,Rice,8
+25,Sugar,6
+25,Tea,7
+26,Beans,10
+26,Biscuits,2
+26,Canned Beans,3
+26,Canned Tomatoes,23
+26,Cooking Oil,10
+26,Lentils,10
+26,Oats,6
+26,Pasta,11
+26,Powdered Milk,4
+26,Rice,12
+26,Sugar,9
+26,Tea,5
+27,Beans,6
+27,Canned Beans,2
+27,Canned Tomatoes,9
+27,Cooking Oil,4
+27,Lentils,5
+27,Oats,2
+27,Pasta,9
+27,Powdered Milk,3
+27,Rice,5
+27,Sugar,5
+28,Beans,7
+28,Biscuits,13
+28,Canned Beans,1
+28,Canned Tomatoes,12
+28,Cooking Oil,11
+28,Lentils,7
+28,Oats,6
+28,Pasta,10
+28,Powdered Milk,3
+28,Rice,15
+28,Sugar,10
+28,Tea,3
+29,Beans,5
+29,Canned Tomatoes,8
+29,Cooking Oil,8
+29,Lentils,8
+29,Oats,1
+29,Pasta,9
+29,Powdered Milk,5
+29,Rice,7
+29,Sugar,3
+29,Tea,7
+30,Beans,7
+30,Biscuits,3
+30,Canned Tomatoes,15
+30,Cooking Oil,8
+30,Lentils,13
+30,Oats,7
+30,Pasta,12
+30,Powdered Milk,4
+30,Rice,9
+30,Sugar,6
+30,Tea,2
+31,Beans,7
+31,Biscuits,4
+31,Canned Beans,1
+31,Canned Tomatoes,10
+31,Cooking Oil,4
+31,Lentils,5
+31,Oats,1
+31,Pasta,6
+31,Powdered Milk,4
+31,Rice,6
+31,Sugar,5
+31,Tea,1
+32,Beans,26
+32,Biscuits,4
+32,Canned Tomatoes,27
+32,Cooking Oil,7
+32,Lentils,13
+32,Oats,20
+32,Pasta,15
+32,Powdered Milk,17
+32,Rice,9
+32,Sugar,12
+32,Tea,2
+33,Beans,6
+33,Biscuits,5
+33,Canned Tomatoes,15
+33,Cooking Oil,3
+33,Lentils,2
+33,Oats,2
+33,Pasta,9
+33,Powdered Milk,3
+33,Rice,8
+33,Sugar,8
+33,Tea,4
+34,Beans,7
+34,Biscuits,3
+34,Canned Beans,2
+34,Canned Tomatoes,18
+34,Cooking Oil,10
+34,Lentils,11
+34,Oats,4
+34,Pasta,3
+34,Powdered Milk,2
+34,Rice,11
+34,Sugar,2
+34,Tea,4
+35,Beans,3
+35,Biscuits,2
+35,Canned Beans,1
+35,Canned Tomatoes,10
+35,Cooking Oil,4
+35,Lentils,6
+35,Oats,3
+35,Pasta,4
+35,Powdered Milk,1
+35,Rice,10
+35,Sugar,4
+35,Tea,2
+36,Beans,7
+36,Biscuits,6
+36,Canned Beans,3
+36,Canned Tomatoes,17
+36,Cooking Oil,7
+36,Lentils,11
+36,Oats,6
+36,Pasta,19
+36,Powdered Milk,6
+36,Rice,10
+36,Sugar,9
+36,Tea,6
+37,Beans,3
+37,Biscuits,2
+37,Canned Beans,1
+37,Canned Tomatoes,14
+37,Cooking Oil,6
+37,Lentils,7
+37,Oats,2
+37,Pasta,8
+37,Powdered Milk,2
+37,Rice,4
+37,Sugar,4
+37,Tea,2
+38,Beans,10
+38,Biscuits,5
+38,Canned Beans,2
+38,Canned Tomatoes,21
+38,Cooking Oil,11
+38,Lentils,9
+38,Oats,3
+38,Pasta,7
+38,Powdered Milk,6
+38,Rice,6
+38,Sugar,3
+38,Tea,4
+39,Beans,9
+39,Biscuits,1
+39,Canned Tomatoes,11
+39,Cooking Oil,11
+39,Lentils,3
+39,Oats,3
+39,Pasta,12
+39,Powdered Milk,3
+39,Rice,5
+39,Sugar,8
+39,Tea,1
+40,Beans,8
+40,Biscuits,4
+40,Canned Tomatoes,10
+40,Cooking Oil,8
+40,Lentils,12
+40,Oats,4
+40,Pasta,17
+40,Rice,7
+40,Sugar,10
+40,Tea,1
+41,Beans,5
+41,Biscuits,2
+41,Canned Beans,1
+41,Canned Tomatoes,10
+41,Cooking Oil,5
+41,Lentils,8
+41,Oats,4
+41,Pasta,9
+41,Powdered Milk,4
+41,Rice,5
+41,Sugar,8
+41,Tea,5
+42,Beans,14
+42,Biscuits,4
+42,Canned Beans,1
+42,Canned Tomatoes,19
+42,Cooking Oil,8
+42,Lentils,8
+42,Oats,5
+42,Pasta,5
+42,Powdered Milk,4
+42,Rice,15
+42,Sugar,6
+42,Tea,4
+43,Beans,4
+43,Biscuits,6
+43,Canned Beans,2
+43,Canned Tomatoes,9
+43,Cooking Oil,8
+43,Lentils,13
+43,Oats,4
+43,Pasta,5
+43,Powdered Milk,1
+43,Rice,7
+43,Sugar,3
+43,Tea,4
+44,Beans,7
+44,Biscuits,4
+44,Canned Beans,1
+44,Canned Tomatoes,12
+44,Cooking Oil,5
+44,Lentils,8
+44,Oats,3
+44,Pasta,7
+44,Powdered Milk,7
+44,Rice,12
+44,Sugar,7
+44,Tea,4
+45,Biscuits,2
+45,Canned Beans,2
+45,Canned Tomatoes,7
+45,Cooking Oil,6
+45,Lentils,11
+45,Oats,1
+45,Pasta,4
+45,Powdered Milk,2
+45,Rice,8
+45,Sugar,7
+46,Beans,6
+46,Biscuits,4
+46,Canned Beans,2
+46,Canned Tomatoes,18
+46,Cooking Oil,9
+46,Lentils,13
+46,Oats,4
+46,Pasta,17
+46,Powdered Milk,5
+46,Rice,15
+46,Sugar,8
+46,Tea,3
+47,Beans,2
+47,Biscuits,3
+47,Canned Tomatoes,18
+47,Cooking Oil,6
+47,Lentils,5
+47,Oats,3
+47,Pasta,12
+47,Powdered Milk,4
+47,Rice,8
+47,Sugar,2
+48,Beans,9
+48,Biscuits,1
+48,Canned Beans,1
+48,Canned Tomatoes,15
+48,Cooking Oil,8
+48,Lentils,6
+48,Oats,5
+48,Pasta,7
+48,Powdered Milk,5
+48,Rice,14
+48,Sugar,9
+48,Tea,2
+49,Beans,7
+49,Biscuits,4
+49,Canned Beans,3
+49,Canned Tomatoes,10
+49,Cooking Oil,4
+49,Lentils,8
+49,Oats,2
+49,Pasta,7
+49,Powdered Milk,4
+49,Rice,9
+49,Sugar,3
+49,Tea,5
+50,Beans,9
+50,Biscuits,8
+50,Canned Beans,1
+50,Canned Tomatoes,15
+50,Cooking Oil,8
+50,Lentils,8
+50,Oats,6
+50,Pasta,7
+50,Powdered Milk,5
+50,Rice,12
+50,Sugar,8
+50,Tea,1
+51,Beans,6
+51,Biscuits,1
+51,Canned Beans,1
+51,Canned Tomatoes,12
+51,Cooking Oil,2
+51,Lentils,6
+51,Oats,2
+51,Pasta,6
+51,Powdered Milk,5
+51,Rice,6
+51,Sugar,5
+51,Tea,2
+52,Beans,5
+52,Biscuits,6
+52,Canned Beans,1
+52,Canned Tomatoes,16
+52,Cooking Oil,12
+52,Lentils,9
+52,Oats,10
+52,Pasta,14
+52,Powdered Milk,6
+52,Rice,10
+52,Sugar,4
+52,Tea,7
+53,Beans,7
+53,Biscuits,4
+53,Canned Beans,2
+53,Canned Tomatoes,7
+53,Cooking Oil,2
+53,Lentils,6
+53,Oats,5
+53,Pasta,4
+53,Powdered Milk,3
+53,Rice,4
+53,Sugar,6
+53,Tea,1
+54,Beans,5
+54,Biscuits,4
+54,Canned Tomatoes,14
+54,Cooking Oil,3
+54,Lentils,9
+54,Oats,5
+54,Pasta,11
+54,Powdered Milk,5
+54,Rice,16
+54,Sugar,8
+54,Tea,3
+55,Beans,6
+55,Biscuits,7
+55,Canned Tomatoes,15
+55,Cooking Oil,8
+55,Lentils,6
+55,Oats,3
+55,Pasta,8
+55,Powdered Milk,4
+55,Rice,9
+55,Sugar,3
+55,Tea,1
+56,Beans,11
+56,Biscuits,6
+56,Canned Tomatoes,14
+56,Cooking Oil,9
+56,Lentils,6
+56,Oats,6
+56,Pasta,7
+56,Powdered Milk,7
+56,Rice,13
+56,Sugar,8
+56,Tea,4
+57,Beans,6
+57,Biscuits,1
+57,Canned Tomatoes,15
+57,Cooking Oil,4
+57,Lentils,6
+57,Oats,2
+57,Pasta,12
+57,Powdered Milk,4
+57,Rice,6
+57,Sugar,4
+57,Tea,2
+58,Beans,11
+58,Biscuits,7
+58,Canned Beans,2
+58,Canned Tomatoes,19
+58,Cooking Oil,10
+58,Lentils,6
+58,Oats,2
+58,Pasta,11
+58,Powdered Milk,11
+58,Rice,14
+58,Sugar,7
+58,Tea,6
+59,Beans,12
+59,Biscuits,5
+59,Canned Beans,2
+59,Canned Tomatoes,11
+59,Cooking Oil,2
+59,Lentils,7
+59,Oats,3
+59,Pasta,6
+59,Powdered Milk,1
+59,Rice,7
+59,Sugar,3
+59,Tea,4
+60,Beans,7
+60,Biscuits,4
+60,Canned Beans,2
+60,Canned Tomatoes,14
+60,Cooking Oil,11
+60,Lentils,6
+60,Oats,7
+60,Pasta,11
+60,Powdered Milk,7
+60,Rice,11
+60,Sugar,7
+60,Tea,2
+61,Biscuits,4
+61,Canned Beans,1
+61,Canned Tomatoes,9
+61,Cooking Oil,2
+61,Lentils,5
+61,Oats,7
+61,Pasta,10
+61,Powdered Milk,4
+61,Rice,4
+61,Sugar,8
+61,Tea,2
+62,Beans,6
+62,Biscuits,6
+62,Canned Beans,1
+62,Canned Tomatoes,19
+62,Cooking Oil,10
+62,Lentils,7
+62,Oats,10
+62,Pasta,10
+62,Powdered Milk,10
+62,Rice,15
+62,Sugar,4
+62,Tea,7
+63,Beans,6
+63,Biscuits,1
+63,Canned Tomatoes,6
+63,Cooking Oil,5
+63,Lentils,5
+63,Oats,4
+63,Pasta,13
+63,Powdered Milk,2
+63,Rice,6
+63,Sugar,7
+63,Tea,2
+64,Beans,4
+64,Biscuits,5
+64,Canned Beans,1
+64,Canned Tomatoes,13
+64,Cooking Oil,10
+64,Lentils,8
+64,Oats,8
+64,Pasta,11
+64,Powdered Milk,5
+64,Rice,13
+64,Sugar,7
+64,Tea,2
+65,Beans,8
+65,Biscuits,4
+65,Canned Beans,2
+65,Canned Tomatoes,8
+65,Cooking Oil,2
+65,Lentils,5
+65,Oats,7
+65,Pasta,15
+65,Powdered Milk,5
+65,Rice,8
+65,Sugar,5
+65,Tea,4
+66,Beans,7
+66,Biscuits,5
+66,Canned Beans,2
+66,Canned Tomatoes,25
+66,Cooking Oil,13
+66,Lentils,12
+66,Oats,11
+66,Pasta,14
+66,Powdered Milk,4
+66,Rice,15
+66,Sugar,3
+66,Tea,7
+67,Beans,4
+67,Biscuits,7
+67,Canned Beans,1
+67,Canned Tomatoes,12
+67,Cooking Oil,3
+67,Lentils,8
+67,Oats,4
+67,Pasta,5
+67,Powdered Milk,4
+67,Rice,9
+67,Sugar,1
+68,Beans,7
+68,Biscuits,8
+68,Canned Beans,3
+68,Canned Tomatoes,20
+68,Cooking Oil,7
+68,Lentils,6
+68,Oats,7
+68,Pasta,9
+68,Powdered Milk,6
+68,Rice,14
+68,Sugar,7
+69,Beans,4
+69,Biscuits,3
+69,Canned Beans,2
+69,Canned Tomatoes,12
+69,Cooking Oil,2
+69,Lentils,4
+69,Oats,3
+69,Pasta,7
+69,Powdered Milk,1
+69,Rice,9
+69,Sugar,9
+69,Tea,1
+70,Beans,9
+70,Biscuits,10
+70,Canned Beans,1
+70,Canned Tomatoes,18
+70,Cooking Oil,9
+70,Lentils,8
+70,Oats,8
+70,Pasta,9
+70,Powdered Milk,7
+70,Rice,11
+70,Sugar,11
+70,Tea,4
+71,Beans,1
+71,Biscuits,5
+71,Canned Beans,2
+71,Canned Tomatoes,10
+71,Cooking Oil,12
+71,Lentils,6
+71,Oats,3
+71,Pasta,4
+71,Powdered Milk,2
+71,Rice,5
+71,Sugar,5
+71,Tea,2
+72,Beans,7
+72,Biscuits,3
+72,Canned Beans,1
+72,Canned Tomatoes,14
+72,Cooking Oil,5
+72,Lentils,14
+72,Oats,3
+72,Pasta,14
+72,Powdered Milk,5
+72,Rice,12
+72,Sugar,15
+72,Tea,4
+73,Beans,5
+73,Biscuits,5
+73,Canned Tomatoes,16
+73,Cooking Oil,5
+73,Lentils,2
+73,Oats,4
+73,Pasta,8
+73,Powdered Milk,3
+73,Rice,5
+73,Sugar,2
+74,Beans,3
+74,Biscuits,3
+74,Canned Beans,2
+74,Canned Tomatoes,13
+74,Cooking Oil,6
+74,Lentils,7
+74,Oats,5
+74,Pasta,17
+74,Powdered Milk,10
+74,Rice,12
+74,Sugar,7
+74,Tea,1
+75,Beans,4
+75,Biscuits,3
+75,Canned Beans,1
+75,Canned Tomatoes,4
+75,Cooking Oil,10
+75,Lentils,10
+75,Oats,1
+75,Pasta,6
+75,Powdered Milk,5
+75,Rice,9
+75,Sugar,5
+75,Tea,2
+76,Beans,7
+76,Biscuits,10
+76,Canned Tomatoes,26
+76,Cooking Oil,9
+76,Lentils,6
+76,Oats,1
+76,Pasta,33
+76,Powdered Milk,1
+76,Rice,21
+76,Sugar,3
+76,Tea,4
+77,Beans,5
+77,Biscuits,3
+77,Canned Beans,2
+77,Canned Tomatoes,12
+77,Cooking Oil,6
+77,Lentils,8
+77,Oats,1
+77,Pasta,12
+77,Powdered Milk,2
+77,Rice,16
+77,Sugar,6
+77,Tea,4
+78,Beans,6
+78,Biscuits,4
+78,Canned Tomatoes,19
+78,Cooking Oil,4
+78,Lentils,10
+78,Oats,10
+78,Pasta,8
+78,Powdered Milk,6
+78,Rice,13
+78,Sugar,4
+79,Beans,3
+79,Biscuits,2
+79,Canned Tomatoes,12
+79,Cooking Oil,5
+79,Lentils,5
+79,Oats,2
+79,Pasta,12
+79,Powdered Milk,3
+79,Rice,11
+79,Sugar,6
+80,Beans,6
+80,Biscuits,6
+80,Canned Beans,1
+80,Canned Tomatoes,15
+80,Cooking Oil,10
+80,Lentils,6
+80,Oats,7
+80,Pasta,8
+80,Powdered Milk,5
+80,Rice,16
+80,Sugar,9
+80,Tea,5
+81,Beans,7
+81,Biscuits,3
+81,Canned Tomatoes,7
+81,Cooking Oil,2
+81,Lentils,3
+81,Oats,5
+81,Pasta,7
+81,Powdered Milk,3
+81,Rice,6
+81,Sugar,2
+81,Tea,4
+82,Beans,6
+82,Biscuits,3
+82,Canned Beans,1
+82,Canned Tomatoes,8
+82,Cooking Oil,8
+82,Lentils,9
+82,Oats,3
+82,Pasta,10
+82,Powdered Milk,8
+82,Rice,7
+82,Sugar,11
+82,Tea,4
+83,Beans,3
+83,Biscuits,4
+83,Canned Beans,2
+83,Canned Tomatoes,10
+83,Cooking Oil,6
+83,Lentils,10
+83,Oats,3
+83,Pasta,9
+83,Powdered Milk,4
+83,Rice,11
+83,Sugar,5
+83,Tea,3
+84,Beans,5
+84,Biscuits,6
+84,Canned Beans,1
+84,Canned Tomatoes,22
+84,Cooking Oil,8
+84,Lentils,11
+84,Oats,4
+84,Pasta,7
+84,Powdered Milk,1
+84,Rice,10
+84,Sugar,8
+84,Tea,1
+85,Beans,2
+85,Biscuits,2
+85,Canned Tomatoes,16
+85,Cooking Oil,4
+85,Lentils,7
+85,Oats,5
+85,Pasta,2
+85,Powdered Milk,3
+85,Rice,7
+85,Sugar,3
+85,Tea,3
+86,Beans,8
+86,Biscuits,7
+86,Canned Tomatoes,17
+86,Cooking Oil,2
+86,Lentils,9
+86,Oats,4
+86,Pasta,10
+86,Powdered Milk,6
+86,Rice,15
+86,Sugar,8
+86,Tea,3
+87,Beans,9
+87,Biscuits,3
+87,Canned Tomatoes,8
+87,Cooking Oil,7
+87,Lentils,6
+87,Oats,2
+87,Pasta,4
+87,Powdered Milk,2
+87,Rice,9
+87,Sugar,3
+87,Tea,4
+88,Beans,10
+88,Biscuits,6
+88,Canned Beans,1
+88,Canned Tomatoes,11
+88,Cooking Oil,6
+88,Lentils,11
+88,Oats,2
+88,Pasta,10
+88,Powdered Milk,6
+88,Rice,5
+88,Sugar,8
+88,Tea,4
+89,Beans,6
+89,Biscuits,2
+89,Canned Tomatoes,5
+89,Cooking Oil,1
+89,Lentils,3
+89,Oats,4
+89,Pasta,7
+89,Powdered Milk,3
+89,Rice,7
+89,Sugar,2
+89,Tea,4
+90,Beans,4
+90,Biscuits,4
+90,Canned Beans,2
+90,Canned Tomatoes,18
+90,Cooking Oil,7
+90,Lentils,11
+90,Oats,4
+90,Pasta,13
+90,Powdered Milk,2
+90,Rice,15
+90,Sugar,5
+90,Tea,3
+91,Beans,7
+91,Biscuits,2
+91,Canned Beans,1
+91,Canned Tomatoes,9
+91,Cooking Oil,3
+91,Lentils,9
+91,Oats,3
+91,Pasta,2
+91,Powdered Milk,5
+91,Rice,7
+91,Sugar,2
+91,Tea,3
+92,Beans,9
+92,Biscuits,6
+92,Canned Beans,2
+92,Canned Tomatoes,12
+92,Cooking Oil,10
+92,Lentils,12
+92,Oats,7
+92,Pasta,12
+92,Powdered Milk,4
+92,Rice,10
+92,Sugar,6
+92,Tea,3
+93,Beans,3
+93,Biscuits,4
+93,Canned Beans,3
+93,Canned Tomatoes,12
+93,Cooking Oil,6
+93,Lentils,10
+93,Oats,2
+93,Pasta,3
+93,Powdered Milk,3
+93,Rice,5
+93,Sugar,4
+93,Tea,1
+94,Beans,9
+94,Biscuits,9
+94,Canned Beans,1
+94,Canned Tomatoes,13
+94,Cooking Oil,6
+94,Lentils,11
+94,Oats,3
+94,Pasta,14
+94,Powdered Milk,6
+94,Rice,9
+94,Sugar,3
+94,Tea,4
+95,Beans,4
+95,Biscuits,5
+95,Canned Beans,1
+95,Canned Tomatoes,12
+95,Cooking Oil,6
+95,Lentils,6
+95,Oats,3
+95,Pasta,6
+95,Powdered Milk,1
+95,Rice,13
+95,Sugar,8
+96,Beans,3
+96,Biscuits,6
+96,Canned Beans,2
+96,Canned Tomatoes,12
+96,Cooking Oil,9
+96,Lentils,9
+96,Oats,7
+96,Pasta,15
+96,Powdered Milk,7
+96,Rice,10
+96,Sugar,8
+96,Tea,1
+97,Beans,3
+97,Biscuits,1
+97,Canned Tomatoes,8
+97,Cooking Oil,6
+97,Lentils,7
+97,Oats,2
+97,Pasta,5
+97,Powdered Milk,8
+97,Rice,12
+97,Sugar,6
+97,Tea,3
+98,Beans,7
+98,Biscuits,4
+98,Canned Beans,2
+98,Canned Tomatoes,21
+98,Cooking Oil,5
+98,Lentils,8
+98,Oats,2
+98,Pasta,10
+98,Powdered Milk,6
+98,Rice,13
+98,Sugar,10
+98,Tea,1
+99,Beans,8
+99,Biscuits,3
+99,Canned Beans,3
+99,Canned Tomatoes,13
+99,Cooking Oil,4
+99,Lentils,5
+99,Oats,5
+99,Pasta,11
+99,Powdered Milk,6
+99,Rice,12
+99,Sugar,4
+99,Tea,2
+100,Beans,11
+100,Biscuits,4
+100,Canned Beans,5
+100,Canned Tomatoes,17
+100,Cooking Oil,5
+100,Lentils,12
+100,Oats,12
+100,Pasta,11
+100,Powdered Milk,4
+100,Rice,13
+100,Sugar,5
+100,Tea,1
+101,Beans,2
+101,Biscuits,6
+101,Canned Beans,1
+101,Canned Tomatoes,16
+101,Cooking Oil,5
+101,Lentils,8
+101,Oats,4
+101,Pasta,14
+101,Powdered Milk,5
+101,Rice,11
+101,Sugar,2
+101,Tea,1
+102,Beans,7
+102,Biscuits,4
+102,Canned Beans,5
+102,Canned Tomatoes,15
+102,Cooking Oil,3
+102,Lentils,8
+102,Oats,4
+102,Pasta,13
+102,Powdered Milk,5
+102,Rice,13
+102,Sugar,5
+102,Tea,1
+103,Beans,5
+103,Biscuits,4
+103,Canned Beans,2
+103,Canned Tomatoes,13
+103,Cooking Oil,6
+103,Lentils,7
+103,Oats,1
+103,Pasta,8
+103,Powdered Milk,2
+103,Rice,6
+103,Sugar,6
+103,Tea,3
+104,Beans,7
+104,Biscuits,4
+104,Canned Beans,2
+104,Canned Tomatoes,11
+104,Cooking Oil,5
+104,Lentils,6
+104,Oats,8
+104,Pasta,9
+104,Powdered Milk,2
+104,Rice,14
+104,Sugar,6
+104,Tea,5
+105,Biscuits,3
+105,Canned Tomatoes,6
+105,Cooking Oil,3
+105,Lentils,3
+105,Oats,3
+105,Pasta,6
+105,Powdered Milk,2
+105,Rice,4
+105,Sugar,1
+106,Biscuits,3
+106,Canned Beans,3
+106,Canned Tomatoes,2
+106,Lentils,1
+106,Oats,2
+106,Pasta,8
+106,Powdered Milk,1
+106,Rice,7
+106,Sugar,3
+106,Tea,2
+107,Beans,6
+107,Biscuits,4
+107,Canned Beans,6
+107,Canned Tomatoes,1
+107,Lentils,1
+107,Oats,5
+107,Pasta,8
+107,Powdered Milk,1
+107,Rice,10
+107,Sugar,9
+107,Tea,2
+108,Beans,4
+108,Biscuits,7
+108,Canned Beans,5
+108,Cooking Oil,2
+108,Lentils,2
+108,Oats,5
+108,Pasta,13
+108,Rice,20
+108,Sugar,5
+108,Tea,1
+109,Beans,5
+109,Biscuits,12
+109,Canned Beans,5
+109,Canned Tomatoes,1
+109,Cooking Oil,6
+109,Lentils,2
+109,Oats,4
+109,Pasta,4
+109,Powdered Milk,6
+109,Rice,7
+109,Sugar,12
+110,Beans,4
+110,Biscuits,13
+110,Canned Beans,6
+110,Canned Tomatoes,3
+110,Cooking Oil,2
+110,Lentils,4
+110,Oats,2
+110,Pasta,3
+110,Powdered Milk,5
+110,Rice,15
+110,Sugar,6
+110,Tea,3
+111,Beans,4
+111,Biscuits,10
+111,Canned Beans,4
+111,Canned Tomatoes,2
+111,Cooking Oil,1
+111,Lentils,4
+111,Oats,5
+111,Pasta,6
+111,Powdered Milk,3
+111,Rice,13
+111,Sugar,4
+111,Tea,4
+112,Beans,2
+112,Biscuits,8
+112,Canned Beans,4
+112,Canned Tomatoes,3
+112,Cooking Oil,1
+112,Lentils,2
+112,Oats,9
+112,Pasta,6
+112,Powdered Milk,1
+112,Rice,8
+112,Sugar,11
+112,Tea,1
+113,Beans,3
+113,Biscuits,8
+113,Canned Beans,5
+113,Canned Tomatoes,2
+113,Lentils,2
+113,Oats,2
+113,Pasta,4
+113,Rice,10
+113,Sugar,7
+114,Beans,4
+114,Biscuits,6
+114,Canned Beans,7
+114,Canned Tomatoes,2
+114,Cooking Oil,1
+114,Lentils,3
+114,Oats,3
+114,Pasta,6
+114,Powdered Milk,2
+114,Rice,9
+114,Sugar,5
+114,Tea,1
+115,Beans,6
+115,Biscuits,5
+115,Canned Beans,7
+115,Canned Tomatoes,2
+115,Cooking Oil,1
+115,Lentils,4
+115,Oats,7
+115,Pasta,11
+115,Powdered Milk,2
+115,Rice,9
+115,Sugar,10
+115,Tea,2
+116,Beans,3
+116,Biscuits,8
+116,Canned Beans,5
+116,Lentils,11
+116,Oats,4
+116,Pasta,4
+116,Powdered Milk,1
+116,Rice,11
+116,Sugar,6
+116,Tea,2
+117,Beans,8
+117,Biscuits,10
+117,Canned Beans,6
+117,Canned Tomatoes,3
+117,Cooking Oil,3
+117,Lentils,3
+117,Oats,5
+117,Pasta,7
+117,Powdered Milk,2
+117,Rice,11
+117,Sugar,8
+117,Tea,1
+118,Beans,5
+118,Biscuits,9
+118,Canned Beans,3
+118,Canned Tomatoes,3
+118,Cooking Oil,4
+118,Lentils,4
+118,Oats,3
+118,Pasta,7
+118,Powdered Milk,2
+118,Rice,14
+118,Sugar,9
+118,Tea,4
+119,Beans,5
+119,Biscuits,8
+119,Canned Beans,5
+119,Cooking Oil,2
+119,Lentils,8
+119,Oats,7
+119,Pasta,1
+119,Powdered Milk,2
+119,Rice,8
+119,Sugar,5
+120,Beans,8
+120,Biscuits,7
+120,Canned Beans,7
+120,Canned Tomatoes,5
+120,Cooking Oil,1
+120,Lentils,4
+120,Oats,10
+120,Pasta,5
+120,Powdered Milk,5
+120,Rice,10
+120,Sugar,7
+120,Tea,2
+121,Beans,8
+121,Biscuits,11
+121,Canned Beans,5
+121,Canned Tomatoes,7
+121,Cooking Oil,2
+121,Lentils,4
+121,Oats,7
+121,Pasta,10
+121,Powdered Milk,2
+121,Rice,15
+121,Sugar,9
+121,Tea,3
+122,Beans,6
+122,Biscuits,15
+122,Canned Beans,6
+122,Cooking Oil,1
+122,Lentils,4
+122,Oats,7
+122,Pasta,7
+122,Powdered Milk,1
+122,Rice,9
+122,Sugar,13
+122,Tea,1
+123,Beans,5
+123,Biscuits,6
+123,Canned Beans,1
+123,Canned Tomatoes,3
+123,Cooking Oil,2
+123,Lentils,8
+123,Oats,3
+123,Pasta,8
+123,Powdered Milk,3
+123,Rice,10
+123,Sugar,14
+124,Beans,4
+124,Canned Beans,5
+124,Canned Tomatoes,2
+124,Cooking Oil,4
+124,Lentils,6
+124,Oats,5
+124,Pasta,3
+124,Rice,22
+124,Sugar,4
+124,Tea,1
+125,Beans,5
+125,Biscuits,14
+125,Canned Beans,5
+125,Canned Tomatoes,2
+125,Cooking Oil,3
+125,Lentils,6
+125,Oats,6
+125,Pasta,5
+125,Powdered Milk,2
+125,Rice,14
+125,Sugar,5
+126,Beans,4
+126,Biscuits,15
+126,Canned Beans,3
+126,Canned Tomatoes,6
+126,Lentils,4
+126,Oats,3
+126,Pasta,7
+126,Powdered Milk,1
+126,Rice,7
+126,Sugar,7
+126,Tea,3
+127,Beans,4
+127,Biscuits,8
+127,Canned Beans,6
+127,Canned Tomatoes,2
+127,Cooking Oil,1
+127,Lentils,1
+127,Oats,5
+127,Pasta,9
+127,Powdered Milk,1
+127,Rice,14
+127,Sugar,10
+127,Tea,2
+128,Beans,5
+128,Biscuits,3
+128,Canned Beans,6
+128,Canned Tomatoes,1
+128,Cooking Oil,1
+128,Lentils,5
+128,Oats,3
+128,Pasta,7
+128,Rice,15
+128,Sugar,12
+128,Tea,2
+129,Beans,6
+129,Biscuits,12
+129,Canned Beans,3
+129,Canned Tomatoes,3
+129,Cooking Oil,3
+129,Lentils,4
+129,Oats,4
+129,Pasta,9
+129,Powdered Milk,4
+129,Rice,19
+129,Sugar,12
+129,Tea,1
+130,Beans,4
+130,Biscuits,7
+130,Canned Beans,5
+130,Canned Tomatoes,3
+130,Cooking Oil,4
+130,Lentils,3
+130,Oats,6
+130,Pasta,8
+130,Powdered Milk,3
+130,Rice,11
+130,Sugar,7
+130,Tea,4
+131,Beans,7
+131,Biscuits,9
+131,Canned Beans,9
+131,Canned Tomatoes,2
+131,Cooking Oil,2
+131,Lentils,1
+131,Oats,8
+131,Pasta,9
+131,Powdered Milk,2
+131,Rice,10
+131,Sugar,8
+131,Tea,3
+132,Beans,2
+132,Biscuits,8
+132,Canned Beans,10
+132,Canned Tomatoes,4
+132,Cooking Oil,2
+132,Lentils,4
+132,Oats,7
+132,Pasta,3
+132,Powdered Milk,3
+132,Rice,10
+132,Sugar,5
+133,Beans,5
+133,Biscuits,10
+133,Canned Beans,2
+133,Canned Tomatoes,3
+133,Cooking Oil,3
+133,Lentils,4
+133,Oats,6
+133,Pasta,6
+133,Powdered Milk,3
+133,Rice,12
+133,Sugar,12
+133,Tea,4
+134,Beans,5
+134,Biscuits,8
+134,Canned Beans,3
+134,Canned Tomatoes,3
+134,Cooking Oil,1
+134,Lentils,5
+134,Oats,1
+134,Pasta,8
+134,Powdered Milk,1
+134,Rice,16
+134,Sugar,8
+134,Tea,2
+135,Beans,8
+135,Biscuits,9
+135,Canned Beans,4
+135,Canned Tomatoes,1
+135,Lentils,3
+135,Oats,4
+135,Pasta,6
+135,Powdered Milk,2
+135,Rice,9
+135,Sugar,8
+135,Tea,1
+136,Beans,8
+136,Biscuits,8
+136,Canned Beans,4
+136,Canned Tomatoes,5
+136,Lentils,6
+136,Oats,7
+136,Pasta,3
+136,Rice,8
+136,Sugar,7
+136,Tea,4
+137,Beans,11
+137,Biscuits,12
+137,Canned Beans,6
+137,Canned Tomatoes,6
+137,Lentils,4
+137,Oats,11
+137,Pasta,13
+137,Powdered Milk,7
+137,Rice,9
+137,Sugar,8
+137,Tea,2
+138,Beans,4
+138,Biscuits,8
+138,Canned Beans,1
+138,Canned Tomatoes,2
+138,Cooking Oil,1
+138,Lentils,5
+138,Oats,3
+138,Pasta,6
+138,Powdered Milk,2
+138,Rice,12
+138,Sugar,6
+138,Tea,4
+139,Beans,3
+139,Biscuits,8
+139,Canned Beans,6
+139,Canned Tomatoes,2
+139,Cooking Oil,2
+139,Lentils,3
+139,Oats,9
+139,Pasta,10
+139,Powdered Milk,3
+139,Rice,9
+139,Sugar,7
+139,Tea,1
+140,Beans,4
+140,Biscuits,6
+140,Canned Beans,11
+140,Canned Tomatoes,1
+140,Cooking Oil,2
+140,Lentils,4
+140,Oats,7
+140,Pasta,9
+140,Powdered Milk,2
+140,Rice,9
+140,Sugar,8
+140,Tea,3
+141,Beans,4
+141,Biscuits,7
+141,Canned Beans,5
+141,Canned Tomatoes,1
+141,Cooking Oil,1
+141,Lentils,1
+141,Oats,5
+141,Pasta,8
+141,Powdered Milk,4
+141,Rice,7
+141,Sugar,7
+141,Tea,3
+142,Beans,6
+142,Biscuits,8
+142,Canned Beans,4
+142,Canned Tomatoes,3
+142,Lentils,3
+142,Oats,5
+142,Pasta,10
+142,Powdered Milk,1
+142,Rice,10
+142,Sugar,5
+143,Beans,5
+143,Biscuits,15
+143,Canned Beans,4
+143,Canned Tomatoes,3
+143,Cooking Oil,2
+143,Lentils,5
+143,Oats,3
+143,Pasta,11
+143,Rice,7
+143,Sugar,8
+143,Tea,1
+144,Beans,2
+144,Biscuits,16
+144,Canned Beans,6
+144,Canned Tomatoes,1
+144,Lentils,2
+144,Oats,2
+144,Pasta,13
+144,Powdered Milk,1
+144,Rice,14
+144,Sugar,8
+144,Tea,1
+145,Beans,2
+145,Biscuits,9
+145,Canned Beans,7
+145,Lentils,5
+145,Oats,3
+145,Pasta,7
+145,Powdered Milk,5
+145,Rice,16
+145,Sugar,5
+145,Tea,2
+146,Beans,9
+146,Biscuits,16
+146,Canned Beans,10
+146,Canned Tomatoes,4
+146,Cooking Oil,2
+146,Lentils,6
+146,Oats,5
+146,Pasta,7
+146,Rice,13
+146,Sugar,6
+147,Beans,5
+147,Biscuits,11
+147,Canned Beans,8
+147,Canned Tomatoes,2
+147,Lentils,4
+147,Oats,1
+147,Pasta,13
+147,Powdered Milk,1
+147,Rice,9
+147,Sugar,7
+147,Tea,2
+148,Beans,5
+148,Biscuits,8
+148,Canned Beans,4
+148,Canned Tomatoes,2
+148,Lentils,3
+148,Oats,5
+148,Pasta,7
+148,Powdered Milk,4
+148,Rice,17
+148,Sugar,9
+148,Tea,2
+149,Beans,3
+149,Biscuits,4
+149,Canned Beans,5
+149,Canned Tomatoes,4
+149,Cooking Oil,1
+149,Lentils,5
+149,Oats,5
+149,Pasta,8
+149,Rice,10
+149,Sugar,8
+149,Tea,1
+150,Beans,3
+150,Biscuits,7
+150,Canned Beans,1
+150,Canned Tomatoes,6
+150,Cooking Oil,3
+150,Lentils,3
+150,Oats,5
+150,Pasta,3
+150,Powdered Milk,1
+150,Rice,10
+150,Sugar,9
+150,Tea,3
+151,Beans,5
+151,Biscuits,10
+151,Canned Beans,9
+151,Canned Tomatoes,1
+151,Lentils,3
+151,Oats,3
+151,Pasta,5
+151,Powdered Milk,2
+151,Rice,15
+151,Sugar,7
+151,Tea,2
+152,Beans,4
+152,Biscuits,9
+152,Canned Beans,7
+152,Canned Tomatoes,3
+152,Cooking Oil,3
+152,Lentils,3
+152,Oats,5
+152,Pasta,13
+152,Powdered Milk,2
+152,Rice,8
+152,Sugar,6
+152,Tea,2
+153,Beans,4
+153,Biscuits,13
+153,Canned Beans,9
+153,Canned Tomatoes,1
+153,Oats,9
+153,Pasta,9
+153,Powdered Milk,2
+153,Rice,5
+153,Sugar,8
+153,Tea,4
+154,Beans,2
+154,Biscuits,10
+154,Canned Beans,5
+154,Canned Tomatoes,1
+154,Cooking Oil,1
+154,Lentils,1
+154,Oats,2
+154,Pasta,5
+154,Powdered Milk,1
+154,Rice,7
+154,Sugar,9
+154,Tea,4
+155,Beans,7
+155,Biscuits,11
+155,Canned Beans,9
+155,Canned Tomatoes,3
+155,Lentils,4
+155,Oats,5
+155,Pasta,9
+155,Powdered Milk,2
+155,Rice,7
+155,Sugar,7
+155,Tea,3
+156,Beans,9
+156,Biscuits,9
+156,Canned Beans,6
+156,Canned Tomatoes,2
+156,Cooking Oil,1
+156,Lentils,7
+156,Oats,6
+156,Pasta,3
+156,Rice,12
+156,Sugar,10
+156,Tea,3
+157,Beans,8
+157,Biscuits,6
+157,Canned Beans,9
+157,Canned Tomatoes,3
+157,Lentils,2
+157,Oats,7
+157,Pasta,3
+157,Powdered Milk,1
+157,Rice,12
+157,Sugar,4
+158,Beans,2
+158,Biscuits,8
+158,Canned Beans,8
+158,Canned Tomatoes,1
+158,Cooking Oil,1
+158,Lentils,3
+158,Oats,7
+158,Pasta,6
+158,Rice,12
+158,Sugar,11
+158,Tea,1
+159,Beans,1
+159,Biscuits,10
+159,Canned Beans,6
+159,Cooking Oil,1
+159,Lentils,2
+159,Oats,3
+159,Pasta,7
+159,Powdered Milk,4
+159,Rice,12
+159,Sugar,5
+159,Tea,1
+160,Beans,6
+160,Biscuits,9
+160,Canned Beans,9
+160,Canned Tomatoes,3
+160,Cooking Oil,2
+160,Lentils,3
+160,Oats,7
+160,Pasta,4
+160,Powdered Milk,4
+160,Rice,14
+160,Sugar,7
+160,Tea,5
+161,Beans,4
+161,Biscuits,8
+161,Canned Beans,4
+161,Canned Tomatoes,2
+161,Cooking Oil,2
+161,Lentils,2
+161,Oats,7
+161,Pasta,5
+161,Powdered Milk,2
+161,Rice,10
+161,Sugar,7
+161,Tea,2
+162,Beans,8
+162,Biscuits,10
+162,Canned Beans,3
+162,Lentils,7
+162,Oats,5
+162,Pasta,8
+162,Powdered Milk,4
+162,Rice,8
+162,Sugar,4
+162,Tea,2
+163,Beans,7
+163,Biscuits,6
+163,Canned Beans,6
+163,Cooking Oil,1
+163,Lentils,2
+163,Oats,8
+163,Pasta,8
+163,Powdered Milk,2
+163,Rice,14
+163,Sugar,6
+163,Tea,3
+164,Beans,5
+164,Biscuits,9
+164,Canned Beans,7
+164,Canned Tomatoes,3
+164,Cooking Oil,1
+164,Lentils,2
+164,Oats,3
+164,Pasta,11
+164,Powdered Milk,2
+164,Rice,12
+164,Sugar,10
+164,Tea,3
+165,Beans,5
+165,Biscuits,4
+165,Canned Beans,4
+165,Canned Tomatoes,4
+165,Cooking Oil,1
+165,Lentils,3
+165,Oats,6
+165,Pasta,7
+165,Powdered Milk,2
+165,Rice,19
+165,Sugar,9
+165,Tea,1
+166,Beans,7
+166,Biscuits,8
+166,Canned Beans,9
+166,Canned Tomatoes,3
+166,Cooking Oil,1
+166,Lentils,3
+166,Oats,10
+166,Pasta,10
+166,Powdered Milk,2
+166,Rice,9
+166,Sugar,5
+166,Tea,1
+167,Beans,3
+167,Biscuits,11
+167,Canned Beans,9
+167,Canned Tomatoes,1
+167,Cooking Oil,1
+167,Lentils,6
+167,Oats,6
+167,Pasta,7
+167,Powdered Milk,6
+167,Rice,11
+167,Sugar,8
+167,Tea,3
+168,Beans,11
+168,Biscuits,7
+168,Canned Beans,9
+168,Canned Tomatoes,2
+168,Cooking Oil,1
+168,Lentils,2
+168,Oats,3
+168,Pasta,11
+168,Powdered Milk,2
+168,Rice,12
+168,Sugar,2
+168,Tea,3
+169,Beans,4
+169,Biscuits,12
+169,Canned Beans,6
+169,Canned Tomatoes,3
+169,Lentils,5
+169,Oats,5
+169,Pasta,15
+169,Powdered Milk,2
+169,Rice,8
+169,Sugar,6
+169,Tea,3
+170,Beans,6
+170,Biscuits,7
+170,Canned Beans,9
+170,Canned Tomatoes,1
+170,Lentils,3
+170,Oats,15
+170,Pasta,18
+170,Powdered Milk,4
+170,Rice,11
+170,Sugar,6
+171,Beans,4
+171,Biscuits,4
+171,Canned Beans,5
+171,Canned Tomatoes,2
+171,Cooking Oil,1
+171,Lentils,3
+171,Oats,11
+171,Pasta,11
+171,Rice,11
+171,Sugar,7
+171,Tea,1
+172,Beans,5
+172,Biscuits,7
+172,Canned Beans,3
+172,Canned Tomatoes,5
+172,Lentils,8
+172,Oats,7
+172,Pasta,5
+172,Rice,11
+172,Sugar,11
+172,Tea,1
+173,Beans,2
+173,Biscuits,8
+173,Canned Beans,6
+173,Canned Tomatoes,2
+173,Lentils,4
+173,Oats,3
+173,Pasta,1
+173,Powdered Milk,2
+173,Rice,11
+173,Sugar,10
+173,Tea,2
+174,Beans,6
+174,Biscuits,13
+174,Canned Beans,4
+174,Canned Tomatoes,3
+174,Lentils,3
+174,Oats,5
+174,Pasta,15
+174,Powdered Milk,2
+174,Rice,8
+174,Sugar,15
+175,Beans,7
+175,Biscuits,8
+175,Canned Beans,4
+175,Canned Tomatoes,3
+175,Cooking Oil,1
+175,Lentils,1
+175,Oats,4
+175,Pasta,15
+175,Rice,14
+175,Sugar,7
+175,Tea,2
+176,Beans,7
+176,Biscuits,7
+176,Canned Beans,5
+176,Canned Tomatoes,2
+176,Cooking Oil,3
+176,Lentils,6
+176,Oats,7
+176,Pasta,4
+176,Powdered Milk,4
+176,Rice,13
+176,Sugar,8
+176,Tea,1
+177,Beans,2
+177,Biscuits,11
+177,Canned Beans,9
+177,Canned Tomatoes,1
+177,Cooking Oil,1
+177,Lentils,2
+177,Oats,5
+177,Pasta,13
+177,Powdered Milk,1
+177,Rice,9
+177,Sugar,12
+177,Tea,2
+178,Beans,5
+178,Biscuits,8
+178,Canned Beans,3
+178,Canned Tomatoes,2
+178,Lentils,4
+178,Oats,4
+178,Pasta,12
+178,Rice,11
+178,Sugar,7
+178,Tea,2
+179,Beans,5
+179,Biscuits,4
+179,Canned Beans,7
+179,Canned Tomatoes,1
+179,Lentils,5
+179,Oats,4
+179,Pasta,11
+179,Powdered Milk,5
+179,Rice,11
+179,Sugar,6
+179,Tea,2
+180,Beans,7
+180,Biscuits,13
+180,Canned Beans,8
+180,Canned Tomatoes,2
+180,Lentils,3
+180,Oats,2
+180,Pasta,6
+180,Powdered Milk,2
+180,Rice,14
+180,Sugar,12
+181,Beans,7
+181,Biscuits,11
+181,Canned Beans,4
+181,Canned Tomatoes,1
+181,Cooking Oil,1
+181,Lentils,3
+181,Oats,2
+181,Pasta,10
+181,Powdered Milk,1
+181,Rice,24
+181,Sugar,8
+181,Tea,1
+182,Beans,6
+182,Biscuits,10
+182,Canned Beans,6
+182,Canned Tomatoes,4
+182,Cooking Oil,1
+182,Lentils,7
+182,Oats,7
+182,Pasta,18
+182,Powdered Milk,2
+182,Rice,27
+182,Sugar,6
+182,Tea,6
+183,Beans,3
+183,Biscuits,10
+183,Canned Beans,6
+183,Canned Tomatoes,3
+183,Lentils,7
+183,Oats,8
+183,Pasta,8
+183,Powdered Milk,5
+183,Rice,10
+183,Sugar,3
+183,Tea,4
+184,Beans,8
+184,Biscuits,9
+184,Canned Beans,10
+184,Canned Tomatoes,1
+184,Lentils,1
+184,Oats,3
+184,Pasta,6
+184,Powdered Milk,3
+184,Rice,9
+184,Sugar,14
+184,Tea,2
+185,Beans,8
+185,Biscuits,10
+185,Canned Beans,4
+185,Lentils,6
+185,Oats,8
+185,Pasta,7
+185,Powdered Milk,2
+185,Rice,12
+185,Sugar,9
+185,Tea,4
+186,Beans,5
+186,Biscuits,6
+186,Canned Beans,1
+186,Canned Tomatoes,1
+186,Cooking Oil,4
+186,Lentils,5
+186,Oats,5
+186,Pasta,7
+186,Powdered Milk,3
+186,Rice,12
+186,Sugar,10
+186,Tea,1
+187,Beans,4
+187,Biscuits,6
+187,Canned Beans,4
+187,Canned Tomatoes,3
+187,Cooking Oil,3
+187,Lentils,4
+187,Oats,2
+187,Pasta,10
+187,Rice,12
+187,Sugar,4
+187,Tea,3
+188,Beans,5
+188,Biscuits,10
+188,Canned Beans,7
+188,Cooking Oil,1
+188,Lentils,2
+188,Oats,5
+188,Pasta,9
+188,Powdered Milk,1
+188,Rice,15
+188,Sugar,7
+188,Tea,2
+189,Beans,4
+189,Biscuits,7
+189,Canned Beans,2
+189,Canned Tomatoes,1
+189,Cooking Oil,3
+189,Lentils,2
+189,Oats,5
+189,Pasta,4
+189,Powdered Milk,1
+189,Rice,16
+189,Sugar,6
+189,Tea,1
+190,Beans,5
+190,Biscuits,7
+190,Canned Beans,5
+190,Canned Tomatoes,2
+190,Cooking Oil,2
+190,Lentils,3
+190,Oats,5
+190,Pasta,8
+190,Rice,13
+190,Sugar,8
+190,Tea,2
+191,Beans,5
+191,Biscuits,12
+191,Canned Beans,5
+191,Canned Tomatoes,3
+191,Cooking Oil,1
+191,Lentils,1
+191,Oats,4
+191,Pasta,13
+191,Powdered Milk,1
+191,Rice,6
+191,Sugar,10
+191,Tea,3
+192,Beans,2
+192,Biscuits,10
+192,Canned Beans,8
+192,Canned Tomatoes,1
+192,Cooking Oil,1
+192,Lentils,1
+192,Oats,3
+192,Pasta,7
+192,Powdered Milk,4
+192,Rice,14
+192,Sugar,11
+192,Tea,1
+193,Beans,4
+193,Biscuits,5
+193,Canned Beans,5
+193,Canned Tomatoes,3
+193,Cooking Oil,1
+193,Lentils,3
+193,Oats,5
+193,Pasta,7
+193,Powdered Milk,2
+193,Rice,10
+193,Sugar,8
+194,Beans,4
+194,Biscuits,6
+194,Canned Beans,3
+194,Canned Tomatoes,2
+194,Cooking Oil,3
+194,Lentils,2
+194,Oats,5
+194,Pasta,7
+194,Powdered Milk,1
+194,Rice,13
+194,Sugar,11
+194,Tea,6
+195,Beans,4
+195,Biscuits,7
+195,Canned Beans,7
+195,Canned Tomatoes,3
+195,Cooking Oil,1
+195,Lentils,5
+195,Oats,11
+195,Pasta,8
+195,Powdered Milk,3
+195,Rice,11
+195,Sugar,10
+195,Tea,1
+196,Beans,5
+196,Biscuits,15
+196,Canned Beans,6
+196,Canned Tomatoes,3
+196,Lentils,1
+196,Oats,7
+196,Pasta,4
+196,Powdered Milk,2
+196,Rice,14
+196,Sugar,12
+196,Tea,2
+197,Beans,4
+197,Biscuits,4
+197,Canned Beans,2
+197,Canned Tomatoes,1
+197,Cooking Oil,2
+197,Lentils,4
+197,Oats,9
+197,Pasta,8
+197,Powdered Milk,1
+197,Rice,11
+197,Sugar,5
+197,Tea,2
+198,Beans,3
+198,Biscuits,7
+198,Canned Beans,8
+198,Canned Tomatoes,4
+198,Cooking Oil,5
+198,Lentils,3
+198,Oats,6
+198,Pasta,9
+198,Rice,14
+198,Sugar,7
+199,Beans,4
+199,Biscuits,6
+199,Canned Beans,9
+199,Canned Tomatoes,3
+199,Cooking Oil,1
+199,Lentils,2
+199,Oats,9
+199,Pasta,5
+199,Powdered Milk,3
+199,Rice,16
+199,Sugar,7
+199,Tea,1
+200,Beans,2
+200,Biscuits,6
+200,Canned Beans,6
+200,Canned Tomatoes,2
+200,Cooking Oil,1
+200,Lentils,2
+200,Oats,1
+200,Pasta,5
+200,Powdered Milk,2
+200,Rice,5
+200,Sugar,6
+200,Tea,3
+201,Beans,5
+201,Biscuits,8
+201,Canned Beans,7
+201,Canned Tomatoes,1
+201,Cooking Oil,2
+201,Lentils,7
+201,Oats,8
+201,Pasta,9
+201,Powdered Milk,4
+201,Rice,10
+201,Sugar,7
+201,Tea,2
+202,Beans,3
+202,Biscuits,5
+202,Canned Beans,5
+202,Canned Tomatoes,1
+202,Lentils,2
+202,Oats,8
+202,Pasta,9
+202,Powdered Milk,4
+202,Rice,14
+202,Sugar,7
+202,Tea,1
+203,Beans,4
+203,Biscuits,2
+203,Canned Beans,6
+203,Canned Tomatoes,2
+203,Cooking Oil,2
+203,Lentils,3
+203,Oats,7
+203,Pasta,11
+203,Powdered Milk,4
+203,Rice,15
+203,Sugar,9
+204,Beans,7
+204,Biscuits,10
+204,Canned Beans,6
+204,Canned Tomatoes,1
+204,Cooking Oil,1
+204,Lentils,4
+204,Oats,6
+204,Pasta,6
+204,Powdered Milk,1
+204,Rice,6
+204,Sugar,7
+204,Tea,2
+205,Beans,6
+205,Biscuits,10
+205,Canned Beans,14
+205,Canned Tomatoes,4
+205,Cooking Oil,1
+205,Lentils,3
+205,Oats,7
+205,Pasta,12
+205,Powdered Milk,1
+205,Rice,17
+205,Sugar,8
+205,Tea,4
+206,Beans,3
+206,Biscuits,13
+206,Canned Beans,4
+206,Canned Tomatoes,2
+206,Cooking Oil,2
+206,Lentils,5
+206,Oats,4
+206,Pasta,4
+206,Powdered Milk,1
+206,Rice,14
+206,Sugar,7
+206,Tea,1
+207,Beans,1
+207,Biscuits,2
+207,Canned Beans,6
+207,Canned Tomatoes,1
+207,Lentils,1
+207,Oats,9
+207,Pasta,8
+207,Powdered Milk,4
+207,Rice,9
+207,Sugar,11
+207,Tea,4
+208,Beans,2
+208,Biscuits,9
+208,Canned Beans,5
+208,Canned Tomatoes,1
+208,Lentils,8
+208,Oats,6
+208,Pasta,10
+208,Powdered Milk,3
+208,Rice,9
+208,Sugar,6
+209,Beans,3
+209,Biscuits,7
+209,Canned Beans,2
+209,Canned Tomatoes,3
+209,Cooking Oil,1
+209,Lentils,2
+209,Oats,7
+209,Pasta,8
+209,Powdered Milk,3
+209,Rice,7
+209,Sugar,9
+209,Tea,2
+210,Beans,1
+210,Biscuits,2
+210,Canned Beans,1
+210,Canned Tomatoes,2
+210,Lentils,1
+210,Oats,4
+210,Pasta,4
+210,Rice,5
+210,Sugar,6
+210,Tea,2
+211,Beans,6
+211,Biscuits,5
+211,Canned Beans,15
+211,Canned Tomatoes,2
+211,Cooking Oil,1
+211,Lentils,5
+211,Oats,5
+211,Pasta,1
+211,Powdered Milk,1
+211,Rice,7
+211,Sugar,2
+211,Tea,6
+212,Beans,13
+212,Biscuits,11
+212,Canned Beans,16
+212,Canned Tomatoes,4
+212,Cooking Oil,4
+212,Lentils,7
+212,Oats,9
+212,Pasta,9
+212,Powdered Milk,1
+212,Rice,10
+212,Sugar,1
+212,Tea,7
+213,Beans,12
+213,Biscuits,10
+213,Canned Beans,15
+213,Cooking Oil,8
+213,Lentils,9
+213,Oats,4
+213,Pasta,2
+213,Powdered Milk,2
+213,Rice,9
+213,Sugar,5
+213,Tea,7
+214,Beans,10
+214,Biscuits,21
+214,Canned Beans,17
+214,Canned Tomatoes,3
+214,Cooking Oil,7
+214,Lentils,4
+214,Oats,14
+214,Pasta,3
+214,Powdered Milk,10
+214,Rice,5
+214,Sugar,4
+214,Tea,5
+215,Beans,4
+215,Biscuits,6
+215,Canned Beans,9
+215,Canned Tomatoes,5
+215,Cooking Oil,6
+215,Lentils,3
+215,Oats,4
+215,Pasta,3
+215,Powdered Milk,5
+215,Rice,15
+215,Sugar,3
+215,Tea,2
+216,Beans,10
+216,Biscuits,10
+216,Canned Beans,19
+216,Canned Tomatoes,4
+216,Cooking Oil,8
+216,Lentils,7
+216,Oats,9
+216,Pasta,2
+216,Powdered Milk,2
+216,Rice,9
+216,Tea,8
+217,Beans,4
+217,Biscuits,14
+217,Canned Beans,12
+217,Canned Tomatoes,3
+217,Cooking Oil,2
+217,Lentils,1
+217,Oats,5
+217,Pasta,5
+217,Powdered Milk,5
+217,Rice,11
+217,Sugar,2
+217,Tea,2
+218,Beans,8
+218,Biscuits,10
+218,Canned Beans,19
+218,Canned Tomatoes,7
+218,Cooking Oil,5
+218,Lentils,3
+218,Oats,8
+218,Pasta,3
+218,Powdered Milk,1
+218,Rice,10
+218,Sugar,3
+218,Tea,5
+219,Beans,9
+219,Biscuits,7
+219,Canned Beans,12
+219,Canned Tomatoes,3
+219,Cooking Oil,3
+219,Lentils,1
+219,Oats,10
+219,Pasta,3
+219,Powdered Milk,2
+219,Rice,5
+219,Sugar,3
+219,Tea,1
+220,Beans,6
+220,Biscuits,10
+220,Canned Beans,11
+220,Canned Tomatoes,3
+220,Cooking Oil,5
+220,Lentils,2
+220,Oats,8
+220,Pasta,5
+220,Powdered Milk,2
+220,Rice,11
+220,Sugar,3
+220,Tea,4
+221,Beans,9
+221,Biscuits,12
+221,Canned Beans,13
+221,Canned Tomatoes,1
+221,Cooking Oil,1
+221,Lentils,3
+221,Oats,7
+221,Pasta,3
+221,Powdered Milk,1
+221,Rice,5
+221,Sugar,5
+221,Tea,2
+222,Beans,4
+222,Biscuits,11
+222,Canned Beans,14
+222,Canned Tomatoes,2
+222,Cooking Oil,4
+222,Lentils,5
+222,Oats,3
+222,Pasta,2
+222,Powdered Milk,5
+222,Rice,11
+222,Sugar,3
+222,Tea,6
+223,Beans,9
+223,Biscuits,11
+223,Canned Beans,10
+223,Canned Tomatoes,2
+223,Cooking Oil,1
+223,Lentils,5
+223,Oats,6
+223,Pasta,4
+223,Powdered Milk,3
+223,Rice,9
+223,Sugar,2
+224,Beans,5
+224,Biscuits,10
+224,Canned Beans,18
+224,Canned Tomatoes,6
+224,Cooking Oil,4
+224,Lentils,6
+224,Oats,10
+224,Pasta,4
+224,Powdered Milk,1
+224,Rice,8
+224,Sugar,7
+224,Tea,7
+225,Beans,7
+225,Biscuits,9
+225,Canned Beans,17
+225,Canned Tomatoes,5
+225,Cooking Oil,5
+225,Lentils,4
+225,Oats,8
+225,Pasta,2
+225,Powdered Milk,5
+225,Rice,4
+225,Sugar,4
+225,Tea,2
+226,Beans,14
+226,Biscuits,8
+226,Canned Beans,20
+226,Canned Tomatoes,15
+226,Cooking Oil,14
+226,Lentils,4
+226,Oats,6
+226,Pasta,4
+226,Powdered Milk,4
+226,Rice,3
+226,Sugar,4
+226,Tea,2
+227,Beans,11
+227,Biscuits,12
+227,Canned Beans,14
+227,Canned Tomatoes,7
+227,Cooking Oil,3
+227,Lentils,6
+227,Oats,5
+227,Pasta,3
+227,Powdered Milk,1
+227,Rice,9
+227,Sugar,6
+227,Tea,6
+228,Beans,12
+228,Biscuits,11
+228,Canned Beans,17
+228,Canned Tomatoes,1
+228,Cooking Oil,1
+228,Lentils,1
+228,Oats,7
+228,Pasta,4
+228,Powdered Milk,2
+228,Rice,5
+228,Tea,6
+229,Beans,8
+229,Biscuits,10
+229,Canned Beans,12
+229,Canned Tomatoes,2
+229,Cooking Oil,2
+229,Lentils,7
+229,Oats,5
+229,Pasta,1
+229,Powdered Milk,3
+229,Rice,14
+229,Sugar,2
+229,Tea,3
+230,Beans,8
+230,Biscuits,11
+230,Canned Beans,19
+230,Canned Tomatoes,5
+230,Lentils,8
+230,Oats,8
+230,Pasta,5
+230,Powdered Milk,7
+230,Rice,6
+230,Sugar,7
+230,Tea,2
+231,Beans,6
+231,Biscuits,7
+231,Canned Beans,9
+231,Canned Tomatoes,3
+231,Cooking Oil,2
+231,Lentils,2
+231,Oats,6
+231,Pasta,2
+231,Powdered Milk,1
+231,Rice,4
+231,Sugar,2
+231,Tea,2
+232,Beans,8
+232,Biscuits,12
+232,Canned Beans,11
+232,Canned Tomatoes,1
+232,Cooking Oil,3
+232,Lentils,3
+232,Oats,9
+232,Pasta,5
+232,Powdered Milk,2
+232,Rice,11
+232,Sugar,2
+232,Tea,2
+233,Beans,7
+233,Biscuits,15
+233,Canned Beans,21
+233,Canned Tomatoes,4
+233,Cooking Oil,4
+233,Lentils,1
+233,Oats,5
+233,Pasta,3
+233,Powdered Milk,2
+233,Rice,10
+233,Sugar,4
+233,Tea,2
+234,Beans,9
+234,Biscuits,11
+234,Canned Beans,20
+234,Cooking Oil,3
+234,Lentils,9
+234,Oats,12
+234,Pasta,2
+234,Powdered Milk,3
+234,Rice,8
+234,Sugar,5
+234,Tea,10
+235,Beans,11
+235,Biscuits,10
+235,Canned Beans,20
+235,Canned Tomatoes,4
+235,Cooking Oil,6
+235,Lentils,5
+235,Oats,5
+235,Pasta,3
+235,Powdered Milk,3
+235,Rice,8
+235,Sugar,3
+235,Tea,8
+236,Beans,8
+236,Biscuits,10
+236,Canned Beans,23
+236,Canned Tomatoes,2
+236,Cooking Oil,7
+236,Lentils,4
+236,Oats,5
+236,Pasta,6
+236,Powdered Milk,4
+236,Rice,6
+236,Sugar,3
+236,Tea,3
+237,Beans,6
+237,Biscuits,6
+237,Canned Beans,13
+237,Canned Tomatoes,6
+237,Cooking Oil,4
+237,Lentils,4
+237,Oats,6
+237,Pasta,1
+237,Powdered Milk,3
+237,Rice,9
+237,Sugar,1
+237,Tea,5
+238,Beans,13
+238,Biscuits,14
+238,Canned Beans,9
+238,Canned Tomatoes,2
+238,Cooking Oil,3
+238,Lentils,7
+238,Oats,8
+238,Pasta,3
+238,Powdered Milk,3
+238,Rice,11
+238,Sugar,1
+238,Tea,5
+239,Beans,8
+239,Biscuits,6
+239,Canned Beans,9
+239,Canned Tomatoes,1
+239,Cooking Oil,2
+239,Lentils,6
+239,Oats,3
+239,Pasta,2
+239,Powdered Milk,1
+239,Rice,7
+239,Sugar,5
+239,Tea,2
+240,Beans,12
+240,Biscuits,6
+240,Canned Beans,19
+240,Canned Tomatoes,2
+240,Cooking Oil,4
+240,Lentils,3
+240,Oats,8
+240,Pasta,5
+240,Powdered Milk,3
+240,Rice,11
+240,Sugar,5
+240,Tea,5
+241,Beans,19
+241,Biscuits,9
+241,Canned Beans,8
+241,Canned Tomatoes,5
+241,Cooking Oil,4
+241,Lentils,1
+241,Oats,9
+241,Pasta,2
+241,Powdered Milk,9
+241,Rice,5
+241,Sugar,4
+241,Tea,2
+242,Beans,36
+242,Biscuits,13
+242,Canned Beans,23
+242,Canned Tomatoes,4
+242,Cooking Oil,4
+242,Lentils,4
+242,Oats,19
+242,Pasta,5
+242,Powdered Milk,17
+242,Rice,3
+242,Sugar,4
+242,Tea,3
+243,Beans,8
+243,Biscuits,4
+243,Canned Beans,16
+243,Canned Tomatoes,2
+243,Cooking Oil,2
+243,Lentils,5
+243,Oats,1
+243,Pasta,5
+243,Powdered Milk,2
+243,Rice,9
+243,Sugar,3
+243,Tea,2
+244,Beans,11
+244,Biscuits,15
+244,Canned Beans,31
+244,Canned Tomatoes,3
+244,Cooking Oil,4
+244,Lentils,4
+244,Oats,8
+244,Pasta,7
+244,Powdered Milk,5
+244,Rice,10
+244,Sugar,5
+244,Tea,11
+245,Beans,14
+245,Biscuits,11
+245,Canned Beans,21
+245,Canned Tomatoes,7
+245,Cooking Oil,3
+245,Lentils,4
+245,Oats,4
+245,Pasta,2
+245,Powdered Milk,4
+245,Rice,7
+245,Sugar,4
+245,Tea,7
+246,Beans,8
+246,Biscuits,12
+246,Canned Beans,15
+246,Canned Tomatoes,3
+246,Cooking Oil,6
+246,Lentils,4
+246,Oats,7
+246,Pasta,2
+246,Powdered Milk,1
+246,Rice,10
+246,Sugar,4
+246,Tea,5
+247,Beans,11
+247,Biscuits,4
+247,Canned Beans,11
+247,Canned Tomatoes,7
+247,Cooking Oil,4
+247,Lentils,2
+247,Oats,9
+247,Pasta,3
+247,Powdered Milk,2
+247,Rice,7
+247,Sugar,1
+247,Tea,4
+248,Beans,7
+248,Biscuits,14
+248,Canned Beans,9
+248,Canned Tomatoes,4
+248,Cooking Oil,2
+248,Lentils,6
+248,Oats,7
+248,Pasta,5
+248,Powdered Milk,3
+248,Rice,5
+248,Sugar,9
+248,Tea,6
+249,Beans,4
+249,Biscuits,8
+249,Canned Beans,10
+249,Canned Tomatoes,3
+249,Cooking Oil,1
+249,Lentils,2
+249,Oats,2
+249,Pasta,5
+249,Powdered Milk,4
+249,Rice,4
+249,Sugar,2
+249,Tea,4
+250,Beans,13
+250,Biscuits,7
+250,Canned Beans,25
+250,Canned Tomatoes,1
+250,Cooking Oil,3
+250,Lentils,7
+250,Oats,14
+250,Pasta,7
+250,Powdered Milk,5
+250,Rice,11
+250,Sugar,3
+250,Tea,4
+251,Beans,15
+251,Biscuits,6
+251,Canned Beans,11
+251,Canned Tomatoes,3
+251,Cooking Oil,2
+251,Lentils,7
+251,Oats,10
+251,Pasta,1
+251,Powdered Milk,1
+251,Rice,8
+251,Sugar,5
+251,Tea,2
+252,Beans,12
+252,Biscuits,11
+252,Canned Beans,17
+252,Canned Tomatoes,5
+252,Cooking Oil,3
+252,Lentils,2
+252,Oats,9
+252,Pasta,9
+252,Powdered Milk,3
+252,Rice,10
+252,Sugar,2
+252,Tea,7
+253,Beans,8
+253,Biscuits,9
+253,Canned Beans,10
+253,Canned Tomatoes,3
+253,Cooking Oil,4
+253,Lentils,3
+253,Oats,7
+253,Pasta,2
+253,Powdered Milk,2
+253,Rice,9
+253,Sugar,1
+253,Tea,3
+254,Beans,10
+254,Biscuits,8
+254,Canned Beans,30
+254,Canned Tomatoes,4
+254,Cooking Oil,2
+254,Lentils,9
+254,Oats,14
+254,Pasta,2
+254,Powdered Milk,6
+254,Rice,14
+254,Sugar,6
+254,Tea,6
+255,Beans,5
+255,Biscuits,8
+255,Canned Beans,15
+255,Canned Tomatoes,5
+255,Cooking Oil,3
+255,Lentils,4
+255,Oats,5
+255,Pasta,3
+255,Powdered Milk,3
+255,Rice,5
+255,Sugar,3
+255,Tea,2
+256,Beans,10
+256,Biscuits,8
+256,Canned Beans,19
+256,Canned Tomatoes,4
+256,Cooking Oil,5
+256,Lentils,6
+256,Oats,10
+256,Pasta,4
+256,Powdered Milk,6
+256,Rice,8
+256,Sugar,3
+256,Tea,4
+257,Beans,5
+257,Biscuits,16
+257,Canned Beans,13
+257,Canned Tomatoes,5
+257,Cooking Oil,5
+257,Lentils,3
+257,Oats,12
+257,Pasta,2
+257,Powdered Milk,1
+257,Rice,5
+257,Sugar,1
+257,Tea,5
+258,Beans,9
+258,Biscuits,11
+258,Canned Beans,15
+258,Canned Tomatoes,7
+258,Cooking Oil,2
+258,Lentils,3
+258,Oats,12
+258,Pasta,5
+258,Powdered Milk,2
+258,Rice,9
+258,Sugar,5
+258,Tea,5
+259,Beans,7
+259,Biscuits,13
+259,Canned Beans,11
+259,Canned Tomatoes,2
+259,Cooking Oil,2
+259,Lentils,6
+259,Oats,4
+259,Pasta,2
+259,Powdered Milk,1
+259,Rice,7
+259,Sugar,8
+259,Tea,1
+260,Beans,7
+260,Biscuits,9
+260,Canned Beans,20
+260,Canned Tomatoes,4
+260,Cooking Oil,2
+260,Lentils,9
+260,Oats,11
+260,Pasta,4
+260,Rice,8
+260,Sugar,6
+261,Beans,8
+261,Biscuits,11
+261,Canned Beans,6
+261,Canned Tomatoes,2
+261,Cooking Oil,7
+261,Lentils,4
+261,Oats,5
+261,Pasta,3
+261,Powdered Milk,3
+261,Rice,6
+261,Sugar,3
+261,Tea,9
+262,Beans,15
+262,Biscuits,7
+262,Canned Beans,14
+262,Canned Tomatoes,2
+262,Cooking Oil,4
+262,Lentils,4
+262,Oats,7
+262,Pasta,7
+262,Powdered Milk,2
+262,Rice,10
+262,Sugar,5
+262,Tea,5
+263,Beans,14
+263,Biscuits,8
+263,Canned Beans,14
+263,Canned Tomatoes,1
+263,Cooking Oil,3
+263,Lentils,4
+263,Oats,2
+263,Pasta,6
+263,Powdered Milk,2
+263,Rice,7
+263,Sugar,3
+263,Tea,6
+264,Beans,10
+264,Biscuits,8
+264,Canned Beans,17
+264,Canned Tomatoes,2
+264,Cooking Oil,5
+264,Lentils,6
+264,Oats,6
+264,Pasta,3
+264,Powdered Milk,2
+264,Rice,9
+264,Sugar,8
+264,Tea,9
+265,Beans,7
+265,Biscuits,6
+265,Canned Beans,12
+265,Canned Tomatoes,2
+265,Cooking Oil,2
+265,Lentils,1
+265,Oats,6
+265,Pasta,2
+265,Powdered Milk,6
+265,Rice,5
+265,Sugar,2
+265,Tea,7
+266,Beans,8
+266,Biscuits,14
+266,Canned Beans,19
+266,Canned Tomatoes,3
+266,Cooking Oil,5
+266,Lentils,4
+266,Oats,17
+266,Pasta,6
+266,Powdered Milk,3
+266,Rice,9
+266,Sugar,4
+266,Tea,5
+267,Beans,3
+267,Biscuits,7
+267,Canned Beans,17
+267,Canned Tomatoes,2
+267,Cooking Oil,4
+267,Lentils,5
+267,Oats,5
+267,Pasta,4
+267,Powdered Milk,3
+267,Rice,8
+267,Sugar,6
+267,Tea,5
+268,Beans,5
+268,Biscuits,15
+268,Canned Beans,16
+268,Canned Tomatoes,2
+268,Cooking Oil,3
+268,Lentils,4
+268,Oats,15
+268,Pasta,7
+268,Powdered Milk,5
+268,Rice,13
+268,Sugar,1
+268,Tea,5
+269,Beans,8
+269,Biscuits,8
+269,Canned Beans,20
+269,Canned Tomatoes,5
+269,Cooking Oil,2
+269,Lentils,10
+269,Oats,11
+269,Pasta,5
+269,Powdered Milk,3
+269,Rice,7
+269,Sugar,2
+269,Tea,3
+270,Beans,6
+270,Biscuits,15
+270,Canned Beans,18
+270,Lentils,1
+270,Oats,11
+270,Pasta,3
+270,Powdered Milk,9
+270,Rice,11
+270,Sugar,1
+270,Tea,4
+271,Beans,7
+271,Biscuits,4
+271,Canned Beans,11
+271,Canned Tomatoes,1
+271,Cooking Oil,1
+271,Lentils,1
+271,Oats,7
+271,Pasta,3
+271,Powdered Milk,4
+271,Rice,5
+271,Sugar,5
+271,Tea,6
+272,Beans,10
+272,Biscuits,11
+272,Canned Beans,17
+272,Canned Tomatoes,3
+272,Cooking Oil,1
+272,Lentils,3
+272,Oats,4
+272,Pasta,1
+272,Powdered Milk,3
+272,Rice,10
+272,Sugar,5
+272,Tea,10
+273,Beans,4
+273,Biscuits,10
+273,Canned Beans,18
+273,Canned Tomatoes,3
+273,Cooking Oil,1
+273,Lentils,3
+273,Oats,4
+273,Pasta,1
+273,Powdered Milk,5
+273,Rice,4
+273,Sugar,9
+273,Tea,5
+274,Beans,7
+274,Biscuits,7
+274,Canned Beans,13
+274,Canned Tomatoes,6
+274,Cooking Oil,6
+274,Lentils,3
+274,Oats,13
+274,Pasta,6
+274,Powdered Milk,2
+274,Rice,9
+274,Sugar,4
+274,Tea,7
+275,Beans,5
+275,Biscuits,12
+275,Canned Beans,32
+275,Canned Tomatoes,3
+275,Cooking Oil,2
+275,Lentils,1
+275,Oats,9
+275,Pasta,8
+275,Powdered Milk,5
+275,Rice,8
+275,Sugar,2
+275,Tea,6
+276,Beans,9
+276,Biscuits,9
+276,Canned Beans,27
+276,Canned Tomatoes,3
+276,Cooking Oil,6
+276,Lentils,2
+276,Oats,11
+276,Pasta,7
+276,Powdered Milk,3
+276,Rice,11
+276,Sugar,6
+276,Tea,3
+277,Beans,3
+277,Biscuits,6
+277,Canned Beans,18
+277,Canned Tomatoes,1
+277,Cooking Oil,1
+277,Lentils,2
+277,Oats,5
+277,Pasta,5
+277,Powdered Milk,2
+277,Rice,4
+277,Sugar,2
+277,Tea,4
+278,Beans,12
+278,Biscuits,8
+278,Canned Beans,13
+278,Canned Tomatoes,7
+278,Cooking Oil,4
+278,Lentils,5
+278,Oats,10
+278,Pasta,4
+278,Powdered Milk,7
+278,Rice,7
+278,Sugar,4
+278,Tea,4
+279,Beans,4
+279,Biscuits,8
+279,Canned Beans,16
+279,Canned Tomatoes,1
+279,Cooking Oil,6
+279,Lentils,6
+279,Oats,10
+279,Pasta,3
+279,Powdered Milk,5
+279,Rice,9
+279,Sugar,2
+279,Tea,2
+280,Beans,7
+280,Biscuits,13
+280,Canned Beans,16
+280,Canned Tomatoes,4
+280,Cooking Oil,6
+280,Lentils,3
+280,Oats,7
+280,Pasta,1
+280,Powdered Milk,3
+280,Rice,8
+280,Sugar,4
+280,Tea,6
+281,Beans,6
+281,Biscuits,8
+281,Canned Beans,15
+281,Cooking Oil,1
+281,Lentils,3
+281,Oats,8
+281,Pasta,7
+281,Powdered Milk,3
+281,Rice,6
+281,Sugar,2
+281,Tea,4
+282,Beans,11
+282,Biscuits,13
+282,Canned Beans,21
+282,Canned Tomatoes,4
+282,Cooking Oil,5
+282,Lentils,2
+282,Oats,9
+282,Powdered Milk,3
+282,Rice,11
+282,Sugar,5
+282,Tea,6
+283,Beans,2
+283,Biscuits,3
+283,Canned Beans,16
+283,Canned Tomatoes,4
+283,Cooking Oil,2
+283,Lentils,4
+283,Oats,10
+283,Pasta,3
+283,Powdered Milk,3
+283,Rice,9
+283,Sugar,2
+283,Tea,7
+284,Beans,8
+284,Biscuits,12
+284,Canned Beans,19
+284,Canned Tomatoes,4
+284,Cooking Oil,4
+284,Lentils,4
+284,Oats,11
+284,Pasta,3
+284,Powdered Milk,8
+284,Rice,12
+284,Sugar,7
+284,Tea,5
+285,Beans,5
+285,Biscuits,10
+285,Canned Beans,16
+285,Canned Tomatoes,4
+285,Lentils,3
+285,Oats,7
+285,Pasta,6
+285,Powdered Milk,5
+285,Rice,10
+285,Sugar,6
+285,Tea,4
+286,Beans,6
+286,Biscuits,12
+286,Canned Beans,21
+286,Canned Tomatoes,2
+286,Cooking Oil,1
+286,Lentils,3
+286,Oats,10
+286,Pasta,9
+286,Powdered Milk,4
+286,Rice,11
+286,Sugar,1
+286,Tea,7
+287,Beans,6
+287,Biscuits,5
+287,Canned Beans,12
+287,Canned Tomatoes,5
+287,Cooking Oil,1
+287,Lentils,4
+287,Oats,4
+287,Pasta,4
+287,Powdered Milk,2
+287,Rice,14
+287,Sugar,6
+287,Tea,3
+288,Beans,3
+288,Biscuits,13
+288,Canned Beans,15
+288,Canned Tomatoes,7
+288,Cooking Oil,3
+288,Lentils,3
+288,Oats,8
+288,Pasta,6
+288,Powdered Milk,2
+288,Rice,9
+288,Sugar,8
+288,Tea,12
+289,Beans,2
+289,Biscuits,12
+289,Canned Beans,15
+289,Canned Tomatoes,1
+289,Cooking Oil,4
+289,Lentils,5
+289,Oats,9
+289,Pasta,2
+289,Powdered Milk,2
+289,Rice,8
+289,Sugar,4
+289,Tea,3
+290,Beans,5
+290,Biscuits,12
+290,Canned Beans,12
+290,Canned Tomatoes,2
+290,Cooking Oil,3
+290,Lentils,7
+290,Oats,10
+290,Pasta,2
+290,Powdered Milk,3
+290,Rice,9
+290,Sugar,4
+290,Tea,4
+291,Beans,9
+291,Biscuits,8
+291,Canned Beans,10
+291,Canned Tomatoes,2
+291,Cooking Oil,2
+291,Lentils,4
+291,Oats,6
+291,Pasta,2
+291,Powdered Milk,5
+291,Rice,6
+291,Sugar,3
+291,Tea,3
+292,Beans,7
+292,Biscuits,7
+292,Canned Beans,22
+292,Canned Tomatoes,3
+292,Cooking Oil,3
+292,Lentils,4
+292,Oats,7
+292,Pasta,2
+292,Powdered Milk,5
+292,Rice,11
+292,Sugar,2
+292,Tea,8
+293,Beans,5
+293,Biscuits,12
+293,Canned Beans,7
+293,Canned Tomatoes,5
+293,Cooking Oil,3
+293,Lentils,5
+293,Oats,12
+293,Pasta,1
+293,Powdered Milk,7
+293,Rice,4
+293,Sugar,5
+293,Tea,4
+294,Beans,8
+294,Biscuits,13
+294,Canned Beans,21
+294,Canned Tomatoes,5
+294,Cooking Oil,4
+294,Lentils,5
+294,Oats,12
+294,Pasta,9
+294,Powdered Milk,3
+294,Rice,7
+294,Sugar,4
+294,Tea,3
+295,Beans,3
+295,Biscuits,8
+295,Canned Beans,16
+295,Canned Tomatoes,2
+295,Cooking Oil,4
+295,Lentils,4
+295,Oats,7
+295,Pasta,4
+295,Powdered Milk,2
+295,Rice,7
+295,Sugar,3
+295,Tea,3
+296,Beans,6
+296,Biscuits,8
+296,Canned Beans,17
+296,Canned Tomatoes,4
+296,Cooking Oil,2
+296,Lentils,4
+296,Oats,18
+296,Pasta,7
+296,Powdered Milk,3
+296,Rice,15
+296,Sugar,6
+296,Tea,6
+297,Beans,7
+297,Biscuits,6
+297,Canned Beans,14
+297,Canned Tomatoes,5
+297,Lentils,2
+297,Oats,10
+297,Pasta,2
+297,Powdered Milk,1
+297,Rice,10
+297,Sugar,3
+297,Tea,7
+298,Beans,10
+298,Biscuits,10
+298,Canned Beans,26
+298,Canned Tomatoes,5
+298,Cooking Oil,2
+298,Lentils,7
+298,Oats,4
+298,Pasta,13
+298,Powdered Milk,7
+298,Rice,5
+298,Sugar,3
+298,Tea,4
+299,Beans,4
+299,Biscuits,7
+299,Canned Beans,21
+299,Canned Tomatoes,4
+299,Cooking Oil,4
+299,Lentils,4
+299,Oats,4
+299,Pasta,5
+299,Powdered Milk,4
+299,Rice,3
+299,Sugar,1
+299,Tea,2
+300,Beans,4
+300,Biscuits,12
+300,Canned Beans,11
+300,Canned Tomatoes,5
+300,Lentils,4
+300,Oats,14
+300,Pasta,3
+300,Powdered Milk,5
+300,Rice,15
+300,Sugar,9
+300,Tea,7
+301,Beans,4
+301,Biscuits,11
+301,Canned Beans,15
+301,Canned Tomatoes,4
+301,Lentils,2
+301,Oats,5
+301,Pasta,2
+301,Powdered Milk,4
+301,Rice,7
+301,Sugar,1
+301,Tea,4
+302,Beans,8
+302,Biscuits,9
+302,Canned Beans,19
+302,Canned Tomatoes,8
+302,Cooking Oil,5
+302,Lentils,5
+302,Oats,15
+302,Pasta,6
+302,Powdered Milk,6
+302,Rice,4
+302,Sugar,4
+302,Tea,6
+303,Beans,1
+303,Biscuits,6
+303,Canned Beans,14
+303,Canned Tomatoes,2
+303,Cooking Oil,3
+303,Lentils,8
+303,Oats,8
+303,Pasta,2
+303,Powdered Milk,1
+303,Rice,6
+303,Sugar,1
+303,Tea,5
+304,Beans,8
+304,Biscuits,12
+304,Canned Beans,26
+304,Canned Tomatoes,5
+304,Cooking Oil,7
+304,Lentils,4
+304,Oats,11
+304,Pasta,2
+304,Powdered Milk,5
+304,Rice,10
+304,Sugar,7
+304,Tea,6
+305,Beans,7
+305,Biscuits,10
+305,Canned Beans,16
+305,Canned Tomatoes,1
+305,Cooking Oil,4
+305,Lentils,3
+305,Oats,9
+305,Pasta,3
+305,Powdered Milk,2
+305,Rice,11
+305,Sugar,8
+305,Tea,3
+306,Beans,7
+306,Biscuits,9
+306,Canned Beans,29
+306,Canned Tomatoes,5
+306,Cooking Oil,4
+306,Lentils,8
+306,Oats,10
+306,Pasta,4
+306,Powdered Milk,7
+306,Rice,8
+306,Sugar,4
+306,Tea,4
+307,Beans,9
+307,Biscuits,9
+307,Canned Beans,19
+307,Canned Tomatoes,6
+307,Cooking Oil,4
+307,Lentils,1
+307,Oats,5
+307,Pasta,4
+307,Powdered Milk,2
+307,Rice,10
+307,Sugar,3
+307,Tea,2
+308,Beans,7
+308,Biscuits,12
+308,Canned Beans,17
+308,Canned Tomatoes,7
+308,Cooking Oil,2
+308,Lentils,6
+308,Oats,4
+308,Pasta,5
+308,Powdered Milk,5
+308,Rice,8
+308,Sugar,1
+308,Tea,2
+309,Beans,6
+309,Biscuits,8
+309,Canned Beans,26
+309,Canned Tomatoes,2
+309,Cooking Oil,4
+309,Lentils,3
+309,Oats,10
+309,Pasta,5
+309,Powdered Milk,1
+309,Rice,6
+309,Sugar,8
+309,Tea,1
+310,Beans,2
+310,Biscuits,14
+310,Canned Beans,36
+310,Canned Tomatoes,6
+310,Cooking Oil,1
+310,Lentils,8
+310,Oats,8
+310,Pasta,5
+310,Powdered Milk,5
+310,Rice,9
+310,Sugar,5
+310,Tea,5
+311,Beans,5
+311,Biscuits,11
+311,Canned Beans,19
+311,Canned Tomatoes,5
+311,Cooking Oil,2
+311,Lentils,1
+311,Oats,10
+311,Pasta,9
+311,Powdered Milk,5
+311,Rice,12
+311,Sugar,5
+311,Tea,1
+312,Beans,6
+312,Biscuits,9
+312,Canned Beans,23
+312,Canned Tomatoes,4
+312,Cooking Oil,4
+312,Lentils,8
+312,Oats,12
+312,Pasta,6
+312,Powdered Milk,8
+312,Rice,11
+312,Sugar,4
+312,Tea,3
+313,Beans,4
+313,Biscuits,4
+313,Canned Beans,19
+313,Canned Tomatoes,4
+313,Cooking Oil,2
+313,Lentils,3
+313,Oats,6
+313,Pasta,4
+313,Powdered Milk,1
+313,Rice,8
+313,Sugar,5
+313,Tea,4
+314,Beans,5
+314,Biscuits,18
+314,Canned Beans,18
+314,Canned Tomatoes,7
+314,Cooking Oil,3
+314,Lentils,6
+314,Oats,9
+314,Pasta,4
+314,Powdered Milk,4
+314,Rice,8
+314,Sugar,5
+314,Tea,5
+315,Beans,2
+315,Biscuits,5
+315,Canned Beans,7
+315,Canned Tomatoes,5
+315,Cooking Oil,1
+315,Lentils,3
+315,Oats,3
+315,Pasta,1
+315,Powdered Milk,1
+315,Rice,4
+315,Sugar,1
+315,Tea,5
+316,Beans,2
+316,Biscuits,2
+316,Canned Beans,4
+316,Canned Tomatoes,2
+316,Cooking Oil,2
+316,Lentils,1
+316,Oats,3
+316,Pasta,6
+316,Powdered Milk,1
+316,Rice,6
+316,Sugar,4
+316,Tea,3
+317,Beans,2
+317,Biscuits,7
+317,Canned Beans,8
+317,Canned Tomatoes,8
+317,Cooking Oil,14
+317,Lentils,4
+317,Pasta,8
+317,Powdered Milk,2
+317,Rice,11
+317,Sugar,8
+317,Tea,5
+318,Beans,5
+318,Biscuits,4
+318,Canned Beans,2
+318,Canned Tomatoes,2
+318,Cooking Oil,9
+318,Oats,1
+318,Pasta,7
+318,Powdered Milk,9
+318,Rice,5
+318,Sugar,3
+318,Tea,5
+319,Beans,5
+319,Biscuits,15
+319,Canned Beans,11
+319,Canned Tomatoes,6
+319,Cooking Oil,12
+319,Lentils,4
+319,Oats,4
+319,Pasta,15
+319,Powdered Milk,11
+319,Rice,11
+319,Sugar,9
+319,Tea,5
+320,Beans,5
+320,Biscuits,9
+320,Canned Beans,7
+320,Canned Tomatoes,6
+320,Cooking Oil,7
+320,Lentils,2
+320,Pasta,6
+320,Powdered Milk,4
+320,Rice,6
+320,Sugar,5
+320,Tea,4
+321,Beans,4
+321,Biscuits,4
+321,Canned Beans,3
+321,Canned Tomatoes,14
+321,Cooking Oil,2
+321,Lentils,3
+321,Oats,3
+321,Pasta,5
+321,Powdered Milk,6
+321,Rice,10
+321,Sugar,13
+321,Tea,9
+322,Beans,3
+322,Biscuits,1
+322,Canned Beans,7
+322,Canned Tomatoes,7
+322,Cooking Oil,1
+322,Lentils,2
+322,Oats,1
+322,Pasta,7
+322,Powdered Milk,4
+322,Rice,3
+322,Sugar,6
+322,Tea,1
+323,Beans,6
+323,Biscuits,4
+323,Canned Beans,5
+323,Canned Tomatoes,14
+323,Cooking Oil,11
+323,Lentils,4
+323,Oats,3
+323,Pasta,7
+323,Powdered Milk,3
+323,Rice,11
+323,Sugar,11
+323,Tea,3
+324,Beans,4
+324,Biscuits,1
+324,Canned Beans,6
+324,Canned Tomatoes,5
+324,Cooking Oil,4
+324,Lentils,2
+324,Oats,1
+324,Pasta,5
+324,Powdered Milk,3
+324,Rice,1
+324,Sugar,4
+324,Tea,2
+325,Beans,4
+325,Biscuits,5
+325,Canned Beans,6
+325,Canned Tomatoes,9
+325,Cooking Oil,2
+325,Lentils,4
+325,Oats,3
+325,Pasta,8
+325,Powdered Milk,5
+325,Rice,9
+325,Sugar,17
+325,Tea,6
+326,Beans,2
+326,Biscuits,5
+326,Canned Beans,6
+326,Canned Tomatoes,5
+326,Cooking Oil,3
+326,Oats,2
+326,Pasta,11
+326,Powdered Milk,3
+326,Rice,11
+326,Sugar,13
+327,Biscuits,7
+327,Canned Beans,5
+327,Canned Tomatoes,11
+327,Cooking Oil,7
+327,Lentils,2
+327,Pasta,11
+327,Powdered Milk,7
+327,Rice,2
+327,Sugar,8
+327,Tea,6
+328,Beans,5
+328,Biscuits,3
+328,Canned Beans,5
+328,Canned Tomatoes,8
+328,Cooking Oil,5
+328,Lentils,3
+328,Oats,1
+328,Pasta,8
+328,Powdered Milk,4
+328,Rice,6
+328,Sugar,5
+328,Tea,1
+329,Beans,6
+329,Biscuits,6
+329,Canned Beans,6
+329,Canned Tomatoes,7
+329,Cooking Oil,7
+329,Lentils,4
+329,Oats,3
+329,Pasta,9
+329,Powdered Milk,2
+329,Rice,11
+329,Sugar,14
+329,Tea,8
+330,Beans,2
+330,Biscuits,1
+330,Canned Beans,4
+330,Canned Tomatoes,10
+330,Cooking Oil,5
+330,Lentils,2
+330,Oats,1
+330,Pasta,6
+330,Powdered Milk,4
+330,Rice,11
+330,Sugar,7
+330,Tea,1
+331,Beans,4
+331,Biscuits,2
+331,Canned Beans,4
+331,Canned Tomatoes,27
+331,Cooking Oil,17
+331,Lentils,3
+331,Oats,2
+331,Pasta,12
+331,Powdered Milk,2
+331,Rice,13
+331,Sugar,12
+331,Tea,6
+332,Beans,3
+332,Biscuits,4
+332,Canned Beans,6
+332,Canned Tomatoes,5
+332,Cooking Oil,1
+332,Lentils,4
+332,Oats,5
+332,Pasta,12
+332,Powdered Milk,6
+332,Rice,6
+332,Sugar,8
+332,Tea,4
+333,Beans,3
+333,Biscuits,3
+333,Canned Beans,8
+333,Canned Tomatoes,6
+333,Cooking Oil,7
+333,Lentils,3
+333,Oats,5
+333,Pasta,7
+333,Powdered Milk,2
+333,Rice,16
+333,Sugar,16
+333,Tea,1
+334,Beans,5
+334,Biscuits,4
+334,Canned Beans,6
+334,Canned Tomatoes,4
+334,Lentils,3
+334,Pasta,5
+334,Powdered Milk,3
+334,Rice,4
+334,Sugar,3
+334,Tea,7
+335,Beans,6
+335,Biscuits,4
+335,Canned Beans,8
+335,Canned Tomatoes,10
+335,Cooking Oil,7
+335,Lentils,3
+335,Oats,1
+335,Pasta,17
+335,Powdered Milk,5
+335,Rice,7
+335,Sugar,14
+335,Tea,6
+336,Beans,7
+336,Biscuits,4
+336,Canned Beans,7
+336,Canned Tomatoes,4
+336,Lentils,1
+336,Pasta,5
+336,Powdered Milk,4
+336,Rice,10
+336,Sugar,7
+336,Tea,1
+337,Beans,13
+337,Biscuits,7
+337,Canned Beans,11
+337,Canned Tomatoes,11
+337,Cooking Oil,4
+337,Oats,3
+337,Pasta,13
+337,Powdered Milk,4
+337,Rice,11
+337,Sugar,17
+337,Tea,7
+338,Beans,5
+338,Biscuits,3
+338,Canned Beans,7
+338,Canned Tomatoes,5
+338,Cooking Oil,1
+338,Lentils,2
+338,Pasta,7
+338,Powdered Milk,1
+338,Rice,3
+338,Sugar,8
+338,Tea,3
+339,Beans,2
+339,Biscuits,3
+339,Canned Beans,12
+339,Canned Tomatoes,10
+339,Cooking Oil,8
+339,Lentils,3
+339,Oats,2
+339,Pasta,12
+339,Powdered Milk,4
+339,Rice,7
+339,Sugar,13
+339,Tea,16
+340,Beans,3
+340,Biscuits,3
+340,Canned Beans,7
+340,Canned Tomatoes,9
+340,Cooking Oil,4
+340,Lentils,5
+340,Oats,1
+340,Pasta,2
+340,Powdered Milk,3
+340,Rice,12
+340,Sugar,8
+340,Tea,5
+341,Beans,4
+341,Biscuits,7
+341,Canned Beans,10
+341,Canned Tomatoes,11
+341,Cooking Oil,10
+341,Lentils,4
+341,Oats,3
+341,Pasta,12
+341,Powdered Milk,8
+341,Rice,9
+341,Sugar,15
+341,Tea,2
+342,Beans,3
+342,Biscuits,6
+342,Canned Beans,3
+342,Canned Tomatoes,4
+342,Cooking Oil,3
+342,Lentils,2
+342,Pasta,6
+342,Powdered Milk,3
+342,Rice,6
+342,Sugar,7
+342,Tea,3
+343,Beans,4
+343,Biscuits,7
+343,Canned Beans,7
+343,Canned Tomatoes,11
+343,Cooking Oil,3
+343,Lentils,3
+343,Oats,1
+343,Pasta,8
+343,Powdered Milk,1
+343,Rice,19
+343,Sugar,12
+343,Tea,3
+344,Beans,3
+344,Biscuits,3
+344,Canned Beans,12
+344,Canned Tomatoes,4
+344,Cooking Oil,4
+344,Lentils,1
+344,Pasta,11
+344,Powdered Milk,1
+344,Rice,4
+344,Sugar,6
+344,Tea,2
+345,Beans,7
+345,Biscuits,5
+345,Canned Beans,6
+345,Canned Tomatoes,15
+345,Cooking Oil,6
+345,Lentils,1
+345,Oats,3
+345,Pasta,26
+345,Powdered Milk,5
+345,Rice,17
+345,Sugar,13
+345,Tea,4
+346,Beans,5
+346,Biscuits,8
+346,Canned Beans,10
+346,Canned Tomatoes,5
+346,Cooking Oil,4
+346,Lentils,3
+346,Oats,2
+346,Pasta,7
+346,Powdered Milk,5
+346,Rice,8
+346,Sugar,4
+346,Tea,4
+347,Beans,14
+347,Biscuits,6
+347,Canned Beans,12
+347,Canned Tomatoes,13
+347,Cooking Oil,5
+347,Lentils,4
+347,Oats,1
+347,Pasta,16
+347,Powdered Milk,20
+347,Rice,11
+347,Sugar,15
+347,Tea,8
+348,Beans,3
+348,Biscuits,6
+348,Canned Beans,7
+348,Canned Tomatoes,1
+348,Cooking Oil,6
+348,Lentils,2
+348,Oats,4
+348,Pasta,6
+348,Powdered Milk,6
+348,Rice,4
+348,Sugar,10
+348,Tea,2
+349,Beans,4
+349,Biscuits,5
+349,Canned Beans,17
+349,Canned Tomatoes,7
+349,Cooking Oil,6
+349,Lentils,2
+349,Oats,1
+349,Pasta,12
+349,Powdered Milk,7
+349,Rice,10
+349,Sugar,15
+349,Tea,5
+350,Beans,5
+350,Biscuits,2
+350,Canned Beans,2
+350,Canned Tomatoes,11
+350,Cooking Oil,6
+350,Lentils,1
+350,Pasta,5
+350,Powdered Milk,4
+350,Rice,5
+350,Sugar,8
+350,Tea,4
+351,Beans,6
+351,Biscuits,7
+351,Canned Beans,9
+351,Canned Tomatoes,12
+351,Cooking Oil,5
+351,Lentils,2
+351,Oats,3
+351,Pasta,13
+351,Powdered Milk,8
+351,Rice,12
+351,Sugar,9
+351,Tea,7
+352,Beans,1
+352,Biscuits,5
+352,Canned Beans,4
+352,Canned Tomatoes,7
+352,Cooking Oil,4
+352,Lentils,2
+352,Oats,1
+352,Pasta,6
+352,Powdered Milk,1
+352,Rice,2
+352,Sugar,2
+352,Tea,5
+353,Beans,5
+353,Biscuits,4
+353,Canned Beans,4
+353,Canned Tomatoes,5
+353,Cooking Oil,7
+353,Lentils,4
+353,Oats,2
+353,Pasta,8
+353,Powdered Milk,6
+353,Rice,15
+353,Sugar,11
+353,Tea,5
+354,Beans,4
+354,Biscuits,3
+354,Canned Beans,14
+354,Canned Tomatoes,3
+354,Cooking Oil,2
+354,Lentils,2
+354,Oats,1
+354,Pasta,5
+354,Powdered Milk,4
+354,Sugar,9
+354,Tea,1
+355,Beans,4
+355,Biscuits,6
+355,Canned Beans,7
+355,Canned Tomatoes,10
+355,Cooking Oil,3
+355,Lentils,2
+355,Oats,3
+355,Pasta,11
+355,Powdered Milk,10
+355,Rice,8
+355,Sugar,9
+355,Tea,5
+356,Beans,5
+356,Biscuits,5
+356,Canned Beans,6
+356,Canned Tomatoes,6
+356,Cooking Oil,4
+356,Lentils,2
+356,Oats,1
+356,Pasta,13
+356,Powdered Milk,1
+356,Rice,1
+356,Sugar,6
+356,Tea,4
+357,Beans,6
+357,Biscuits,4
+357,Canned Beans,8
+357,Canned Tomatoes,19
+357,Cooking Oil,3
+357,Lentils,6
+357,Oats,3
+357,Pasta,4
+357,Powdered Milk,8
+357,Rice,10
+357,Sugar,8
+357,Tea,3
+358,Beans,3
+358,Biscuits,1
+358,Canned Beans,3
+358,Canned Tomatoes,5
+358,Cooking Oil,1
+358,Lentils,4
+358,Oats,1
+358,Pasta,8
+358,Powdered Milk,6
+358,Rice,11
+358,Sugar,9
+358,Tea,2
+359,Beans,4
+359,Biscuits,7
+359,Canned Beans,5
+359,Canned Tomatoes,11
+359,Cooking Oil,1
+359,Lentils,4
+359,Oats,5
+359,Pasta,9
+359,Powdered Milk,4
+359,Rice,13
+359,Sugar,12
+359,Tea,3
+360,Beans,1
+360,Biscuits,3
+360,Canned Beans,6
+360,Canned Tomatoes,10
+360,Cooking Oil,2
+360,Lentils,2
+360,Oats,1
+360,Pasta,9
+360,Powdered Milk,1
+360,Rice,8
+360,Sugar,5
+360,Tea,3
+361,Beans,7
+361,Biscuits,11
+361,Canned Beans,7
+361,Canned Tomatoes,18
+361,Cooking Oil,4
+361,Lentils,4
+361,Oats,4
+361,Pasta,16
+361,Powdered Milk,4
+361,Rice,14
+361,Sugar,11
+361,Tea,7
+362,Beans,2
+362,Biscuits,4
+362,Canned Beans,9
+362,Canned Tomatoes,6
+362,Cooking Oil,3
+362,Lentils,3
+362,Pasta,4
+362,Powdered Milk,4
+362,Rice,6
+362,Sugar,4
+362,Tea,5
+363,Beans,4
+363,Biscuits,3
+363,Canned Beans,6
+363,Canned Tomatoes,6
+363,Cooking Oil,7
+363,Lentils,3
+363,Oats,1
+363,Pasta,14
+363,Powdered Milk,4
+363,Rice,14
+363,Sugar,13
+363,Tea,3
+364,Beans,4
+364,Biscuits,2
+364,Canned Beans,9
+364,Canned Tomatoes,5
+364,Cooking Oil,5
+364,Lentils,1
+364,Oats,3
+364,Pasta,7
+364,Powdered Milk,2
+364,Rice,6
+364,Sugar,4
+364,Tea,5
+365,Beans,4
+365,Biscuits,8
+365,Canned Beans,10
+365,Canned Tomatoes,11
+365,Cooking Oil,8
+365,Oats,1
+365,Pasta,11
+365,Powdered Milk,3
+365,Rice,10
+365,Sugar,19
+365,Tea,3
+366,Beans,3
+366,Biscuits,3
+366,Canned Beans,10
+366,Canned Tomatoes,6
+366,Cooking Oil,2
+366,Lentils,4
+366,Oats,2
+366,Pasta,8
+366,Powdered Milk,2
+366,Rice,6
+366,Sugar,7
+366,Tea,3
+367,Beans,6
+367,Biscuits,4
+367,Canned Beans,7
+367,Canned Tomatoes,9
+367,Cooking Oil,6
+367,Lentils,2
+367,Oats,1
+367,Pasta,8
+367,Powdered Milk,6
+367,Rice,9
+367,Sugar,12
+367,Tea,4
+368,Beans,3
+368,Biscuits,3
+368,Canned Beans,5
+368,Canned Tomatoes,9
+368,Cooking Oil,2
+368,Lentils,2
+368,Oats,3
+368,Pasta,9
+368,Rice,3
+368,Sugar,5
+368,Tea,6
+369,Beans,6
+369,Biscuits,5
+369,Canned Beans,8
+369,Canned Tomatoes,5
+369,Cooking Oil,8
+369,Lentils,3
+369,Pasta,12
+369,Powdered Milk,4
+369,Rice,7
+369,Sugar,8
+369,Tea,6
+370,Beans,2
+370,Biscuits,2
+370,Canned Beans,3
+370,Canned Tomatoes,9
+370,Cooking Oil,2
+370,Lentils,1
+370,Pasta,7
+370,Powdered Milk,3
+370,Rice,4
+370,Sugar,4
+370,Tea,2
+371,Beans,9
+371,Biscuits,5
+371,Canned Beans,6
+371,Canned Tomatoes,6
+371,Cooking Oil,7
+371,Lentils,7
+371,Oats,2
+371,Pasta,18
+371,Powdered Milk,7
+371,Rice,9
+371,Sugar,12
+371,Tea,9
+372,Beans,4
+372,Biscuits,4
+372,Canned Beans,4
+372,Canned Tomatoes,7
+372,Cooking Oil,5
+372,Lentils,1
+372,Pasta,9
+372,Powdered Milk,1
+372,Rice,9
+372,Sugar,11
+372,Tea,6
+373,Beans,6
+373,Biscuits,4
+373,Canned Beans,5
+373,Canned Tomatoes,9
+373,Cooking Oil,4
+373,Lentils,4
+373,Oats,2
+373,Pasta,11
+373,Powdered Milk,5
+373,Rice,8
+373,Sugar,8
+373,Tea,4
+374,Beans,4
+374,Biscuits,7
+374,Canned Beans,6
+374,Canned Tomatoes,9
+374,Cooking Oil,3
+374,Lentils,3
+374,Pasta,8
+374,Powdered Milk,3
+374,Rice,7
+374,Sugar,9
+374,Tea,3
+375,Beans,6
+375,Biscuits,7
+375,Canned Beans,10
+375,Canned Tomatoes,14
+375,Cooking Oil,5
+375,Lentils,5
+375,Oats,1
+375,Pasta,9
+375,Powdered Milk,5
+375,Rice,6
+375,Sugar,12
+375,Tea,5
+376,Beans,2
+376,Biscuits,4
+376,Canned Beans,3
+376,Canned Tomatoes,9
+376,Cooking Oil,1
+376,Lentils,4
+376,Oats,4
+376,Pasta,5
+376,Powdered Milk,2
+376,Rice,4
+376,Sugar,8
+376,Tea,3
+377,Beans,6
+377,Biscuits,4
+377,Canned Beans,8
+377,Canned Tomatoes,8
+377,Cooking Oil,10
+377,Lentils,2
+377,Pasta,13
+377,Powdered Milk,6
+377,Rice,11
+377,Sugar,13
+377,Tea,6
+378,Beans,4
+378,Biscuits,4
+378,Canned Beans,4
+378,Canned Tomatoes,14
+378,Cooking Oil,3
+378,Lentils,2
+378,Oats,2
+378,Pasta,8
+378,Rice,3
+378,Sugar,4
+378,Tea,4
+379,Beans,6
+379,Canned Beans,9
+379,Canned Tomatoes,6
+379,Cooking Oil,5
+379,Lentils,3
+379,Pasta,17
+379,Powdered Milk,8
+379,Rice,16
+379,Sugar,15
+379,Tea,3
+380,Biscuits,1
+380,Canned Beans,17
+380,Canned Tomatoes,10
+380,Cooking Oil,3
+380,Oats,5
+380,Pasta,14
+380,Powdered Milk,1
+380,Rice,7
+380,Sugar,6
+380,Tea,3
+381,Biscuits,10
+381,Canned Beans,20
+381,Canned Tomatoes,10
+381,Cooking Oil,4
+381,Lentils,2
+381,Oats,2
+381,Pasta,16
+381,Powdered Milk,5
+381,Rice,16
+381,Sugar,18
+381,Tea,3
+382,Biscuits,3
+382,Canned Beans,3
+382,Canned Tomatoes,2
+382,Cooking Oil,1
+382,Lentils,2
+382,Oats,1
+382,Pasta,5
+382,Powdered Milk,1
+382,Rice,9
+382,Sugar,6
+382,Tea,3
+383,Beans,5
+383,Biscuits,5
+383,Canned Beans,14
+383,Canned Tomatoes,10
+383,Cooking Oil,8
+383,Lentils,4
+383,Oats,2
+383,Pasta,11
+383,Powdered Milk,2
+383,Rice,5
+383,Sugar,9
+383,Tea,4
+384,Beans,2
+384,Biscuits,4
+384,Canned Beans,5
+384,Canned Tomatoes,11
+384,Cooking Oil,6
+384,Oats,1
+384,Pasta,4
+384,Powdered Milk,2
+384,Rice,10
+384,Sugar,7
+384,Tea,6
+385,Beans,5
+385,Biscuits,6
+385,Canned Beans,9
+385,Canned Tomatoes,7
+385,Cooking Oil,6
+385,Lentils,3
+385,Oats,3
+385,Pasta,8
+385,Powdered Milk,2
+385,Rice,7
+385,Sugar,10
+385,Tea,5
+386,Beans,4
+386,Biscuits,3
+386,Canned Beans,9
+386,Canned Tomatoes,6
+386,Cooking Oil,4
+386,Lentils,3
+386,Oats,2
+386,Pasta,7
+386,Powdered Milk,2
+386,Rice,5
+386,Sugar,9
+386,Tea,4
+387,Beans,6
+387,Biscuits,9
+387,Canned Beans,8
+387,Canned Tomatoes,13
+387,Cooking Oil,9
+387,Lentils,6
+387,Oats,2
+387,Pasta,9
+387,Powdered Milk,11
+387,Rice,7
+387,Sugar,16
+387,Tea,3
+388,Beans,2
+388,Biscuits,2
+388,Canned Beans,8
+388,Canned Tomatoes,5
+388,Cooking Oil,2
+388,Lentils,3
+388,Oats,2
+388,Pasta,7
+388,Powdered Milk,1
+388,Rice,7
+388,Sugar,9
+388,Tea,4
+389,Beans,1
+389,Biscuits,6
+389,Canned Beans,5
+389,Canned Tomatoes,6
+389,Cooking Oil,2
+389,Lentils,2
+389,Oats,2
+389,Pasta,11
+389,Powdered Milk,4
+389,Rice,6
+389,Sugar,12
+389,Tea,5
+390,Beans,2
+390,Biscuits,4
+390,Canned Beans,7
+390,Canned Tomatoes,4
+390,Cooking Oil,3
+390,Oats,4
+390,Pasta,12
+390,Powdered Milk,1
+390,Rice,6
+390,Sugar,7
+390,Tea,4
+391,Beans,4
+391,Biscuits,5
+391,Canned Beans,10
+391,Canned Tomatoes,19
+391,Cooking Oil,4
+391,Lentils,2
+391,Oats,1
+391,Pasta,26
+391,Powdered Milk,5
+391,Rice,25
+391,Sugar,15
+391,Tea,5
+392,Beans,2
+392,Biscuits,6
+392,Canned Beans,7
+392,Canned Tomatoes,9
+392,Cooking Oil,3
+392,Lentils,3
+392,Oats,1
+392,Pasta,23
+392,Rice,22
+392,Sugar,15
+392,Tea,6
+393,Beans,4
+393,Biscuits,7
+393,Canned Beans,12
+393,Canned Tomatoes,7
+393,Cooking Oil,8
+393,Lentils,3
+393,Oats,3
+393,Pasta,10
+393,Powdered Milk,4
+393,Rice,7
+393,Sugar,9
+393,Tea,8
+394,Biscuits,6
+394,Canned Beans,7
+394,Canned Tomatoes,8
+394,Cooking Oil,2
+394,Oats,2
+394,Pasta,6
+394,Powdered Milk,4
+394,Rice,3
+394,Sugar,11
+394,Tea,3
+395,Beans,7
+395,Biscuits,8
+395,Canned Beans,8
+395,Canned Tomatoes,12
+395,Cooking Oil,5
+395,Lentils,5
+395,Oats,2
+395,Pasta,5
+395,Powdered Milk,6
+395,Rice,10
+395,Sugar,17
+395,Tea,3
+396,Beans,4
+396,Biscuits,5
+396,Canned Beans,9
+396,Canned Tomatoes,6
+396,Cooking Oil,3
+396,Oats,1
+396,Pasta,3
+396,Powdered Milk,3
+396,Rice,3
+396,Sugar,11
+396,Tea,4
+397,Beans,5
+397,Biscuits,4
+397,Canned Beans,15
+397,Canned Tomatoes,9
+397,Cooking Oil,3
+397,Lentils,2
+397,Pasta,18
+397,Powdered Milk,2
+397,Rice,15
+397,Sugar,4
+397,Tea,3
+398,Beans,2
+398,Biscuits,1
+398,Canned Beans,3
+398,Canned Tomatoes,10
+398,Cooking Oil,2
+398,Lentils,1
+398,Pasta,6
+398,Powdered Milk,7
+398,Rice,10
+398,Sugar,6
+398,Tea,1
+399,Beans,1
+399,Biscuits,2
+399,Canned Beans,9
+399,Canned Tomatoes,6
+399,Cooking Oil,5
+399,Lentils,2
+399,Pasta,13
+399,Powdered Milk,6
+399,Rice,10
+399,Sugar,14
+399,Tea,5
+400,Beans,3
+400,Biscuits,1
+400,Canned Beans,5
+400,Canned Tomatoes,3
+400,Cooking Oil,5
+400,Lentils,2
+400,Pasta,7
+400,Powdered Milk,3
+400,Rice,5
+400,Sugar,7
+400,Tea,3
+401,Beans,4
+401,Biscuits,4
+401,Canned Beans,7
+401,Canned Tomatoes,16
+401,Cooking Oil,5
+401,Lentils,2
+401,Oats,3
+401,Pasta,15
+401,Powdered Milk,7
+401,Rice,11
+401,Sugar,13
+401,Tea,4
+402,Beans,3
+402,Biscuits,1
+402,Canned Beans,5
+402,Canned Tomatoes,7
+402,Cooking Oil,1
+402,Oats,1
+402,Pasta,7
+402,Powdered Milk,3
+402,Rice,5
+402,Sugar,6
+402,Tea,2
+403,Beans,4
+403,Biscuits,4
+403,Canned Beans,9
+403,Canned Tomatoes,12
+403,Cooking Oil,8
+403,Lentils,4
+403,Oats,3
+403,Pasta,19
+403,Powdered Milk,1
+403,Rice,13
+403,Sugar,11
+404,Beans,3
+404,Biscuits,8
+404,Canned Beans,9
+404,Canned Tomatoes,7
+404,Cooking Oil,5
+404,Lentils,1
+404,Oats,2
+404,Pasta,7
+404,Powdered Milk,8
+404,Rice,13
+404,Sugar,9
+404,Tea,3
+405,Beans,5
+405,Biscuits,5
+405,Canned Beans,10
+405,Canned Tomatoes,13
+405,Cooking Oil,4
+405,Lentils,3
+405,Oats,1
+405,Pasta,22
+405,Powdered Milk,2
+405,Rice,7
+405,Sugar,10
+405,Tea,6
+406,Beans,4
+406,Biscuits,6
+406,Canned Beans,5
+406,Canned Tomatoes,7
+406,Cooking Oil,8
+406,Lentils,1
+406,Pasta,5
+406,Powdered Milk,3
+406,Rice,8
+406,Sugar,4
+406,Tea,2
+407,Beans,6
+407,Biscuits,2
+407,Canned Beans,13
+407,Canned Tomatoes,11
+407,Cooking Oil,5
+407,Lentils,3
+407,Pasta,9
+407,Powdered Milk,7
+407,Rice,11
+407,Sugar,11
+407,Tea,5
+408,Beans,2
+408,Biscuits,3
+408,Canned Beans,6
+408,Canned Tomatoes,2
+408,Cooking Oil,1
+408,Lentils,3
+408,Oats,1
+408,Pasta,7
+408,Powdered Milk,3
+408,Rice,8
+408,Sugar,7
+408,Tea,4
+409,Beans,6
+409,Biscuits,4
+409,Canned Beans,7
+409,Canned Tomatoes,20
+409,Cooking Oil,5
+409,Lentils,3
+409,Oats,1
+409,Pasta,11
+409,Powdered Milk,6
+409,Rice,13
+409,Sugar,13
+409,Tea,5
+410,Beans,1
+410,Biscuits,5
+410,Canned Beans,5
+410,Canned Tomatoes,6
+410,Cooking Oil,3
+410,Lentils,1
+410,Pasta,10
+410,Powdered Milk,1
+410,Rice,7
+410,Sugar,7
+410,Tea,3
+411,Beans,3
+411,Biscuits,7
+411,Canned Beans,12
+411,Canned Tomatoes,6
+411,Cooking Oil,4
+411,Lentils,2
+411,Oats,2
+411,Pasta,16
+411,Powdered Milk,4
+411,Rice,7
+411,Sugar,16
+411,Tea,5
+412,Beans,3
+412,Biscuits,3
+412,Canned Beans,5
+412,Canned Tomatoes,10
+412,Cooking Oil,1
+412,Oats,1
+412,Pasta,6
+412,Powdered Milk,2
+412,Rice,7
+412,Sugar,7
+412,Tea,2
+413,Beans,2
+413,Biscuits,6
+413,Canned Beans,4
+413,Canned Tomatoes,16
+413,Cooking Oil,9
+413,Lentils,5
+413,Oats,3
+413,Pasta,19
+413,Powdered Milk,7
+413,Rice,12
+413,Sugar,12
+413,Tea,2
+414,Beans,2
+414,Canned Beans,6
+414,Canned Tomatoes,5
+414,Cooking Oil,4
+414,Lentils,1
+414,Pasta,9
+414,Powdered Milk,5
+414,Rice,4
+414,Sugar,4
+414,Tea,1
+415,Beans,2
+415,Biscuits,3
+415,Canned Beans,18
+415,Canned Tomatoes,13
+415,Cooking Oil,4
+415,Lentils,4
+415,Oats,2
+415,Pasta,9
+415,Powdered Milk,6
+415,Rice,4
+415,Sugar,12
+415,Tea,6
+416,Beans,4
+416,Biscuits,4
+416,Canned Beans,8
+416,Canned Tomatoes,9
+416,Cooking Oil,1
+416,Lentils,4
+416,Pasta,6
+416,Powdered Milk,3
+416,Rice,10
+416,Sugar,4
+416,Tea,2
+417,Beans,8
+417,Biscuits,4
+417,Canned Beans,8
+417,Canned Tomatoes,14
+417,Cooking Oil,7
+417,Lentils,3
+417,Oats,2
+417,Pasta,14
+417,Powdered Milk,5
+417,Rice,11
+417,Sugar,13
+417,Tea,1
+418,Beans,1
+418,Biscuits,4
+418,Canned Beans,6
+418,Canned Tomatoes,6
+418,Lentils,6
+418,Oats,3
+418,Pasta,11
+418,Powdered Milk,1
+418,Rice,9
+418,Sugar,11
+418,Tea,5
+419,Beans,3
+419,Biscuits,8
+419,Canned Beans,11
+419,Canned Tomatoes,11
+419,Cooking Oil,2
+419,Lentils,2
+419,Oats,1
+419,Pasta,12
+419,Powdered Milk,6
+419,Rice,6
+419,Sugar,14
+419,Tea,3
+420,Beans,1
+420,Biscuits,2
+420,Canned Tomatoes,4
+420,Oats,2
+420,Pasta,4
+420,Rice,4
+420,Sugar,1
+420,Tea,1
+421,Beans,7
+421,Biscuits,1
+421,Canned Tomatoes,5
+421,Cooking Oil,3
+421,Lentils,3
+421,Pasta,1
+421,Powdered Milk,10
+421,Rice,6
+421,Sugar,2
+421,Tea,1
+422,Beans,2
+422,Biscuits,1
+422,Canned Tomatoes,8
+422,Cooking Oil,2
+422,Lentils,2
+422,Oats,4
+422,Pasta,6
+422,Powdered Milk,7
+422,Rice,11
+422,Sugar,3
+422,Tea,3
+423,Beans,10
+423,Biscuits,1
+423,Canned Beans,1
+423,Canned Tomatoes,17
+423,Cooking Oil,3
+423,Lentils,1
+423,Oats,4
+423,Pasta,4
+423,Powdered Milk,7
+423,Rice,12
+423,Sugar,2
+423,Tea,1
+424,Beans,5
+424,Biscuits,7
+424,Canned Beans,1
+424,Canned Tomatoes,14
+424,Cooking Oil,5
+424,Lentils,1
+424,Oats,3
+424,Pasta,9
+424,Powdered Milk,18
+424,Rice,12
+424,Sugar,1
+424,Tea,3
+425,Beans,9
+425,Canned Tomatoes,11
+425,Cooking Oil,1
+425,Lentils,1
+425,Oats,1
+425,Pasta,9
+425,Powdered Milk,10
+425,Rice,12
+425,Sugar,1
+425,Tea,2
+426,Beans,16
+426,Biscuits,2
+426,Canned Beans,1
+426,Canned Tomatoes,11
+426,Cooking Oil,2
+426,Lentils,2
+426,Pasta,7
+426,Powdered Milk,7
+426,Rice,11
+426,Sugar,1
+426,Tea,3
+427,Beans,11
+427,Canned Tomatoes,4
+427,Cooking Oil,3
+427,Lentils,4
+427,Oats,2
+427,Pasta,2
+427,Powdered Milk,13
+427,Rice,19
+427,Sugar,1
+427,Tea,1
+428,Beans,9
+428,Canned Beans,1
+428,Canned Tomatoes,16
+428,Cooking Oil,2
+428,Lentils,2
+428,Oats,2
+428,Pasta,4
+428,Powdered Milk,7
+428,Rice,11
+428,Sugar,1
+429,Beans,6
+429,Canned Tomatoes,13
+429,Cooking Oil,1
+429,Lentils,2
+429,Oats,3
+429,Pasta,8
+429,Powdered Milk,12
+429,Rice,10
+429,Sugar,4
+429,Tea,3
+430,Beans,3
+430,Biscuits,1
+430,Canned Tomatoes,12
+430,Cooking Oil,6
+430,Lentils,1
+430,Pasta,8
+430,Powdered Milk,6
+430,Rice,7
+430,Sugar,5
+430,Tea,1
+431,Beans,14
+431,Biscuits,1
+431,Canned Beans,1
+431,Canned Tomatoes,10
+431,Cooking Oil,4
+431,Lentils,5
+431,Oats,2
+431,Pasta,9
+431,Powdered Milk,8
+431,Rice,10
+431,Sugar,4
+431,Tea,1
+432,Beans,8
+432,Biscuits,2
+432,Canned Tomatoes,21
+432,Cooking Oil,2
+432,Lentils,9
+432,Oats,2
+432,Pasta,3
+432,Powdered Milk,10
+432,Rice,5
+432,Tea,3
+433,Beans,5
+433,Canned Tomatoes,13
+433,Cooking Oil,5
+433,Lentils,3
+433,Oats,4
+433,Pasta,5
+433,Powdered Milk,8
+433,Rice,16
+433,Sugar,1
+433,Tea,4
+434,Beans,13
+434,Biscuits,1
+434,Canned Beans,1
+434,Canned Tomatoes,9
+434,Cooking Oil,3
+434,Lentils,3
+434,Oats,2
+434,Pasta,3
+434,Powdered Milk,8
+434,Rice,17
+434,Sugar,1
+434,Tea,1
+435,Beans,11
+435,Biscuits,1
+435,Canned Beans,1
+435,Canned Tomatoes,16
+435,Cooking Oil,5
+435,Lentils,1
+435,Oats,2
+435,Pasta,5
+435,Powdered Milk,7
+435,Rice,13
+435,Sugar,3
+435,Tea,2
+436,Beans,8
+436,Biscuits,1
+436,Canned Tomatoes,25
+436,Cooking Oil,3
+436,Oats,2
+436,Pasta,6
+436,Powdered Milk,6
+436,Rice,13
+436,Sugar,1
+436,Tea,1
+437,Beans,7
+437,Canned Beans,1
+437,Canned Tomatoes,15
+437,Lentils,1
+437,Oats,4
+437,Pasta,9
+437,Powdered Milk,7
+437,Rice,19
+437,Sugar,1
+437,Tea,1
+438,Beans,6
+438,Biscuits,1
+438,Canned Tomatoes,6
+438,Cooking Oil,3
+438,Lentils,3
+438,Oats,1
+438,Pasta,2
+438,Powdered Milk,7
+438,Rice,13
+438,Tea,1
+439,Beans,12
+439,Canned Beans,2
+439,Canned Tomatoes,13
+439,Cooking Oil,1
+439,Lentils,3
+439,Pasta,8
+439,Powdered Milk,4
+439,Rice,15
+439,Sugar,2
+440,Beans,7
+440,Biscuits,2
+440,Canned Tomatoes,17
+440,Cooking Oil,6
+440,Lentils,3
+440,Oats,3
+440,Pasta,5
+440,Powdered Milk,7
+440,Rice,12
+440,Tea,1
+441,Beans,10
+441,Biscuits,1
+441,Canned Tomatoes,10
+441,Cooking Oil,4
+441,Lentils,5
+441,Oats,3
+441,Pasta,4
+441,Powdered Milk,12
+441,Rice,9
+441,Sugar,1
+441,Tea,1
+442,Beans,13
+442,Canned Tomatoes,9
+442,Cooking Oil,6
+442,Lentils,2
+442,Oats,2
+442,Pasta,6
+442,Powdered Milk,5
+442,Rice,18
+442,Tea,2
+443,Beans,11
+443,Canned Tomatoes,11
+443,Cooking Oil,2
+443,Lentils,5
+443,Pasta,7
+443,Powdered Milk,12
+443,Rice,9
+443,Tea,2
+444,Beans,12
+444,Biscuits,1
+444,Canned Tomatoes,10
+444,Cooking Oil,3
+444,Lentils,3
+444,Oats,2
+444,Pasta,6
+444,Powdered Milk,6
+444,Rice,9
+444,Sugar,2
+444,Tea,6
+445,Beans,6
+445,Biscuits,1
+445,Canned Tomatoes,9
+445,Cooking Oil,3
+445,Lentils,1
+445,Oats,1
+445,Pasta,2
+445,Powdered Milk,4
+445,Rice,17
+445,Sugar,1
+445,Tea,6
+446,Beans,6
+446,Biscuits,1
+446,Canned Beans,1
+446,Canned Tomatoes,10
+446,Cooking Oil,3
+446,Oats,1
+446,Pasta,3
+446,Powdered Milk,7
+446,Rice,12
+446,Sugar,1
+446,Tea,1
+447,Beans,7
+447,Canned Beans,1
+447,Canned Tomatoes,13
+447,Cooking Oil,3
+447,Lentils,3
+447,Oats,3
+447,Pasta,5
+447,Powdered Milk,8
+447,Rice,11
+447,Sugar,2
+447,Tea,2
+448,Beans,8
+448,Biscuits,2
+448,Canned Beans,1
+448,Canned Tomatoes,14
+448,Cooking Oil,1
+448,Lentils,2
+448,Oats,4
+448,Pasta,5
+448,Powdered Milk,9
+448,Rice,17
+448,Sugar,1
+448,Tea,1
+449,Beans,10
+449,Canned Beans,2
+449,Canned Tomatoes,10
+449,Cooking Oil,2
+449,Lentils,2
+449,Oats,2
+449,Pasta,5
+449,Powdered Milk,10
+449,Rice,11
+449,Tea,2
+450,Beans,6
+450,Biscuits,2
+450,Canned Beans,1
+450,Canned Tomatoes,13
+450,Cooking Oil,2
+450,Lentils,3
+450,Oats,3
+450,Pasta,8
+450,Powdered Milk,3
+450,Rice,18
+450,Sugar,4
+450,Tea,1
+451,Beans,15
+451,Biscuits,1
+451,Canned Beans,1
+451,Canned Tomatoes,13
+451,Cooking Oil,4
+451,Lentils,3
+451,Oats,3
+451,Pasta,5
+451,Powdered Milk,11
+451,Rice,13
+451,Sugar,1
+451,Tea,3
+452,Beans,35
+452,Biscuits,2
+452,Canned Tomatoes,17
+452,Cooking Oil,3
+452,Lentils,1
+452,Oats,7
+452,Pasta,6
+452,Powdered Milk,19
+452,Rice,9
+452,Sugar,1
+452,Tea,1
+453,Beans,11
+453,Canned Tomatoes,10
+453,Cooking Oil,3
+453,Lentils,1
+453,Oats,1
+453,Pasta,14
+453,Powdered Milk,5
+453,Rice,10
+453,Tea,2
+454,Beans,8
+454,Canned Tomatoes,13
+454,Cooking Oil,4
+454,Lentils,3
+454,Oats,2
+454,Pasta,4
+454,Powdered Milk,6
+454,Rice,14
+454,Sugar,1
+455,Beans,10
+455,Canned Tomatoes,13
+455,Cooking Oil,3
+455,Lentils,4
+455,Oats,3
+455,Pasta,5
+455,Powdered Milk,3
+455,Rice,20
+455,Tea,1
+456,Beans,15
+456,Canned Beans,1
+456,Canned Tomatoes,8
+456,Cooking Oil,1
+456,Lentils,2
+456,Oats,2
+456,Pasta,6
+456,Powdered Milk,5
+456,Rice,5
+456,Tea,2
+457,Beans,9
+457,Biscuits,1
+457,Canned Beans,1
+457,Canned Tomatoes,8
+457,Cooking Oil,2
+457,Lentils,3
+457,Oats,4
+457,Pasta,1
+457,Powdered Milk,12
+457,Rice,14
+457,Sugar,1
+457,Tea,3
+458,Beans,8
+458,Biscuits,4
+458,Canned Beans,1
+458,Canned Tomatoes,11
+458,Cooking Oil,1
+458,Lentils,3
+458,Oats,2
+458,Pasta,5
+458,Powdered Milk,6
+458,Rice,10
+458,Sugar,2
+458,Tea,4
+459,Beans,7
+459,Biscuits,1
+459,Canned Beans,1
+459,Canned Tomatoes,16
+459,Cooking Oil,1
+459,Lentils,6
+459,Oats,1
+459,Pasta,6
+459,Powdered Milk,8
+459,Rice,12
+459,Tea,4
+460,Beans,2
+460,Biscuits,1
+460,Canned Tomatoes,11
+460,Cooking Oil,1
+460,Lentils,3
+460,Oats,1
+460,Pasta,9
+460,Powdered Milk,9
+460,Rice,11
+461,Beans,10
+461,Biscuits,1
+461,Canned Tomatoes,14
+461,Cooking Oil,1
+461,Lentils,1
+461,Oats,4
+461,Pasta,4
+461,Powdered Milk,12
+461,Rice,11
+461,Sugar,2
+461,Tea,1
+462,Beans,6
+462,Biscuits,1
+462,Canned Tomatoes,14
+462,Cooking Oil,1
+462,Lentils,3
+462,Oats,4
+462,Pasta,5
+462,Powdered Milk,6
+462,Rice,16
+462,Sugar,1
+462,Tea,3
+463,Beans,9
+463,Canned Beans,1
+463,Canned Tomatoes,9
+463,Cooking Oil,1
+463,Lentils,2
+463,Oats,3
+463,Pasta,1
+463,Powdered Milk,9
+463,Rice,15
+464,Beans,14
+464,Biscuits,2
+464,Canned Tomatoes,15
+464,Cooking Oil,4
+464,Lentils,2
+464,Pasta,5
+464,Powdered Milk,6
+464,Rice,10
+464,Tea,1
+465,Beans,6
+465,Biscuits,2
+465,Canned Tomatoes,14
+465,Cooking Oil,1
+465,Lentils,5
+465,Oats,3
+465,Pasta,7
+465,Powdered Milk,6
+465,Rice,10
+465,Sugar,3
+465,Tea,2
+466,Beans,7
+466,Canned Tomatoes,10
+466,Oats,1
+466,Pasta,4
+466,Powdered Milk,13
+466,Rice,9
+466,Sugar,1
+466,Tea,3
+467,Beans,10
+467,Biscuits,1
+467,Canned Beans,1
+467,Canned Tomatoes,14
+467,Cooking Oil,4
+467,Lentils,4
+467,Oats,1
+467,Pasta,4
+467,Powdered Milk,9
+467,Rice,13
+467,Sugar,3
+467,Tea,1
+468,Beans,3
+468,Biscuits,1
+468,Canned Tomatoes,13
+468,Cooking Oil,3
+468,Lentils,4
+468,Oats,2
+468,Pasta,3
+468,Powdered Milk,11
+468,Rice,14
+468,Sugar,1
+469,Beans,10
+469,Canned Tomatoes,9
+469,Cooking Oil,2
+469,Oats,1
+469,Pasta,2
+469,Powdered Milk,10
+469,Rice,13
+469,Sugar,1
+469,Tea,1
+470,Beans,12
+470,Canned Tomatoes,14
+470,Cooking Oil,3
+470,Lentils,1
+470,Pasta,1
+470,Powdered Milk,5
+470,Rice,12
+470,Sugar,2
+471,Beans,10
+471,Biscuits,2
+471,Canned Tomatoes,10
+471,Cooking Oil,3
+471,Lentils,2
+471,Oats,1
+471,Pasta,9
+471,Powdered Milk,8
+471,Rice,15
+471,Sugar,1
+471,Tea,3
+472,Beans,10
+472,Canned Tomatoes,16
+472,Cooking Oil,2
+472,Lentils,4
+472,Pasta,10
+472,Powdered Milk,12
+472,Rice,12
+472,Sugar,3
+472,Tea,1
+473,Beans,5
+473,Biscuits,3
+473,Canned Beans,1
+473,Canned Tomatoes,7
+473,Cooking Oil,5
+473,Oats,1
+473,Pasta,4
+473,Powdered Milk,9
+473,Rice,11
+473,Sugar,1
+473,Tea,1
+474,Beans,10
+474,Biscuits,2
+474,Canned Tomatoes,10
+474,Cooking Oil,1
+474,Oats,3
+474,Pasta,8
+474,Powdered Milk,9
+474,Rice,17
+474,Sugar,3
+475,Beans,9
+475,Biscuits,1
+475,Canned Beans,1
+475,Canned Tomatoes,14
+475,Cooking Oil,3
+475,Lentils,2
+475,Oats,1
+475,Pasta,5
+475,Powdered Milk,3
+475,Rice,13
+475,Sugar,2
+475,Tea,1
+476,Beans,7
+476,Biscuits,3
+476,Canned Beans,1
+476,Canned Tomatoes,9
+476,Cooking Oil,1
+476,Lentils,2
+476,Oats,1
+476,Pasta,2
+476,Powdered Milk,15
+476,Rice,8
+476,Tea,1
+477,Beans,13
+477,Canned Tomatoes,12
+477,Lentils,2
+477,Oats,3
+477,Pasta,3
+477,Powdered Milk,12
+477,Rice,15
+477,Tea,2
+478,Beans,10
+478,Biscuits,3
+478,Canned Beans,1
+478,Canned Tomatoes,13
+478,Cooking Oil,2
+478,Lentils,2
+478,Oats,3
+478,Pasta,3
+478,Powdered Milk,10
+478,Rice,10
+479,Beans,10
+479,Canned Beans,1
+479,Canned Tomatoes,10
+479,Lentils,3
+479,Oats,3
+479,Pasta,5
+479,Powdered Milk,5
+479,Rice,10
+479,Sugar,1
+479,Tea,1
+480,Beans,7
+480,Canned Beans,1
+480,Canned Tomatoes,10
+480,Cooking Oil,2
+480,Lentils,1
+480,Oats,4
+480,Pasta,12
+480,Powdered Milk,6
+480,Rice,9
+480,Tea,1
+481,Beans,6
+481,Biscuits,1
+481,Canned Beans,1
+481,Canned Tomatoes,9
+481,Cooking Oil,1
+481,Lentils,1
+481,Oats,2
+481,Pasta,5
+481,Powdered Milk,9
+481,Rice,18
+481,Sugar,2
+481,Tea,2
+482,Beans,6
+482,Canned Tomatoes,8
+482,Cooking Oil,2
+482,Lentils,3
+482,Oats,3
+482,Pasta,6
+482,Powdered Milk,5
+482,Rice,7
+482,Sugar,1
+482,Tea,7
+483,Beans,5
+483,Biscuits,2
+483,Canned Tomatoes,6
+483,Lentils,3
+483,Oats,3
+483,Pasta,8
+483,Powdered Milk,8
+483,Rice,16
+483,Sugar,1
+483,Tea,5
+484,Beans,19
+484,Canned Beans,1
+484,Canned Tomatoes,14
+484,Cooking Oil,2
+484,Lentils,3
+484,Oats,4
+484,Pasta,11
+484,Powdered Milk,7
+484,Rice,14
+484,Tea,1
+485,Beans,11
+485,Canned Beans,2
+485,Canned Tomatoes,15
+485,Cooking Oil,2
+485,Lentils,4
+485,Oats,6
+485,Pasta,13
+485,Powdered Milk,9
+485,Rice,13
+485,Sugar,2
+485,Tea,2
+486,Beans,11
+486,Biscuits,2
+486,Canned Tomatoes,11
+486,Lentils,4
+486,Oats,4
+486,Pasta,5
+486,Powdered Milk,10
+486,Rice,7
+486,Sugar,1
+486,Tea,2
+487,Beans,7
+487,Biscuits,1
+487,Canned Tomatoes,13
+487,Oats,3
+487,Pasta,5
+487,Powdered Milk,7
+487,Rice,20
+487,Sugar,1
+487,Tea,1
+488,Beans,10
+488,Biscuits,1
+488,Canned Tomatoes,12
+488,Lentils,4
+488,Oats,2
+488,Pasta,4
+488,Powdered Milk,10
+488,Rice,17
+489,Beans,8
+489,Biscuits,1
+489,Canned Tomatoes,9
+489,Cooking Oil,3
+489,Lentils,4
+489,Oats,5
+489,Pasta,4
+489,Powdered Milk,8
+489,Rice,12
+489,Sugar,1
+489,Tea,2
+490,Beans,12
+490,Biscuits,1
+490,Canned Tomatoes,10
+490,Cooking Oil,1
+490,Lentils,2
+490,Oats,3
+490,Pasta,5
+490,Powdered Milk,13
+490,Rice,15
+490,Sugar,1
+490,Tea,2
+491,Beans,12
+491,Biscuits,1
+491,Canned Beans,1
+491,Canned Tomatoes,17
+491,Cooking Oil,1
+491,Lentils,6
+491,Oats,3
+491,Pasta,6
+491,Powdered Milk,11
+491,Rice,14
+491,Tea,4
+492,Beans,7
+492,Canned Tomatoes,14
+492,Cooking Oil,5
+492,Lentils,2
+492,Pasta,7
+492,Powdered Milk,13
+492,Rice,9
+492,Sugar,1
+493,Beans,12
+493,Biscuits,4
+493,Canned Tomatoes,14
+493,Cooking Oil,1
+493,Lentils,2
+493,Oats,1
+493,Pasta,6
+493,Powdered Milk,1
+493,Rice,11
+493,Sugar,2
+493,Tea,2
+494,Beans,12
+494,Canned Tomatoes,9
+494,Cooking Oil,4
+494,Lentils,2
+494,Oats,3
+494,Pasta,8
+494,Powdered Milk,7
+494,Rice,6
+494,Sugar,2
+494,Tea,3
+495,Beans,10
+495,Biscuits,1
+495,Canned Tomatoes,17
+495,Lentils,2
+495,Oats,2
+495,Pasta,8
+495,Powdered Milk,6
+495,Rice,12
+495,Sugar,1
+496,Beans,6
+496,Canned Tomatoes,16
+496,Cooking Oil,1
+496,Lentils,1
+496,Pasta,11
+496,Powdered Milk,9
+496,Rice,21
+496,Sugar,2
+496,Tea,1
+497,Beans,7
+497,Canned Beans,1
+497,Canned Tomatoes,15
+497,Cooking Oil,4
+497,Lentils,2
+497,Oats,3
+497,Pasta,8
+497,Powdered Milk,10
+497,Rice,32
+497,Sugar,1
+497,Tea,2
+498,Beans,10
+498,Canned Tomatoes,12
+498,Cooking Oil,2
+498,Lentils,1
+498,Pasta,3
+498,Powdered Milk,10
+498,Rice,10
+498,Sugar,1
+498,Tea,3
+499,Beans,6
+499,Canned Beans,1
+499,Canned Tomatoes,15
+499,Cooking Oil,1
+499,Lentils,2
+499,Oats,1
+499,Pasta,1
+499,Powdered Milk,7
+499,Rice,17
+499,Sugar,3
+499,Tea,4
+500,Beans,11
+500,Biscuits,2
+500,Canned Beans,2
+500,Canned Tomatoes,14
+500,Cooking Oil,2
+500,Lentils,2
+500,Oats,3
+500,Pasta,2
+500,Powdered Milk,7
+500,Rice,14
+500,Sugar,2
+500,Tea,3
+501,Beans,8
+501,Canned Beans,1
+501,Canned Tomatoes,10
+501,Lentils,5
+501,Oats,2
+501,Pasta,6
+501,Powdered Milk,10
+501,Rice,17
+501,Sugar,2
+501,Tea,2
+502,Beans,7
+502,Biscuits,3
+502,Canned Tomatoes,11
+502,Cooking Oil,2
+502,Lentils,2
+502,Pasta,2
+502,Powdered Milk,6
+502,Rice,15
+502,Sugar,3
+502,Tea,2
+503,Beans,9
+503,Biscuits,1
+503,Canned Tomatoes,16
+503,Cooking Oil,2
+503,Lentils,4
+503,Oats,2
+503,Pasta,7
+503,Powdered Milk,7
+503,Rice,11
+503,Sugar,1
+504,Beans,8
+504,Biscuits,1
+504,Canned Beans,2
+504,Canned Tomatoes,12
+504,Cooking Oil,5
+504,Lentils,1
+504,Oats,1
+504,Pasta,5
+504,Powdered Milk,9
+504,Rice,10
+504,Sugar,5
+504,Tea,2
+505,Beans,4
+505,Canned Beans,1
+505,Canned Tomatoes,12
+505,Cooking Oil,1
+505,Lentils,1
+505,Oats,1
+505,Pasta,6
+505,Powdered Milk,6
+505,Rice,14
+505,Sugar,1
+505,Tea,1
+506,Beans,8
+506,Canned Tomatoes,14
+506,Cooking Oil,4
+506,Lentils,2
+506,Pasta,3
+506,Powdered Milk,8
+506,Rice,15
+506,Sugar,1
+506,Tea,3
+507,Beans,12
+507,Canned Tomatoes,11
+507,Cooking Oil,2
+507,Lentils,3
+507,Oats,3
+507,Pasta,2
+507,Powdered Milk,6
+507,Rice,13
+507,Sugar,1
+507,Tea,1
+508,Beans,7
+508,Canned Tomatoes,17
+508,Cooking Oil,2
+508,Lentils,4
+508,Pasta,5
+508,Powdered Milk,15
+508,Rice,11
+508,Sugar,2
+508,Tea,1
+509,Beans,14
+509,Biscuits,2
+509,Canned Tomatoes,9
+509,Lentils,4
+509,Oats,2
+509,Pasta,5
+509,Powdered Milk,11
+509,Rice,11
+509,Sugar,1
+509,Tea,3
+510,Beans,13
+510,Canned Tomatoes,15
+510,Cooking Oil,2
+510,Oats,4
+510,Pasta,7
+510,Powdered Milk,9
+510,Rice,12
+510,Sugar,1
+510,Tea,1
+511,Beans,4
+511,Biscuits,4
+511,Canned Beans,1
+511,Canned Tomatoes,15
+511,Cooking Oil,2
+511,Oats,3
+511,Pasta,4
+511,Powdered Milk,8
+511,Rice,9
+511,Sugar,2
+511,Tea,1
+512,Beans,3
+512,Biscuits,2
+512,Canned Tomatoes,11
+512,Cooking Oil,4
+512,Lentils,2
+512,Oats,2
+512,Pasta,4
+512,Powdered Milk,10
+512,Rice,15
+512,Sugar,2
+512,Tea,2
+513,Beans,10
+513,Biscuits,1
+513,Canned Beans,1
+513,Canned Tomatoes,8
+513,Cooking Oil,2
+513,Lentils,1
+513,Oats,4
+513,Pasta,3
+513,Powdered Milk,12
+513,Rice,17
+513,Sugar,2
+513,Tea,2
+514,Beans,7
+514,Canned Tomatoes,15
+514,Cooking Oil,1
+514,Oats,4
+514,Pasta,4
+514,Powdered Milk,11
+514,Rice,9
+515,Beans,11
+515,Biscuits,3
+515,Canned Tomatoes,20
+515,Cooking Oil,4
+515,Lentils,4
+515,Pasta,6
+515,Powdered Milk,8
+515,Rice,7
+515,Sugar,3
+515,Tea,3
+516,Beans,8
+516,Biscuits,1
+516,Canned Tomatoes,12
+516,Cooking Oil,1
+516,Lentils,3
+516,Oats,1
+516,Pasta,7
+516,Powdered Milk,9
+516,Rice,15
+516,Sugar,1
+516,Tea,2
+517,Beans,9
+517,Biscuits,3
+517,Canned Tomatoes,11
+517,Cooking Oil,2
+517,Lentils,2
+517,Oats,3
+517,Pasta,3
+517,Powdered Milk,7
+517,Rice,15
+517,Sugar,4
+517,Tea,3
+518,Beans,7
+518,Canned Tomatoes,13
+518,Cooking Oil,2
+518,Oats,2
+518,Pasta,4
+518,Powdered Milk,5
+518,Rice,16
+518,Tea,1
+519,Beans,6
+519,Biscuits,1
+519,Canned Beans,1
+519,Canned Tomatoes,15
+519,Cooking Oil,4
+519,Lentils,2
+519,Oats,1
+519,Pasta,11
+519,Powdered Milk,6
+519,Rice,8
+519,Sugar,3
+520,Beans,8
+520,Biscuits,3
+520,Canned Beans,2
+520,Canned Tomatoes,12
+520,Cooking Oil,2
+520,Lentils,3
+520,Oats,2
+520,Pasta,3
+520,Powdered Milk,7
+520,Rice,14
+520,Sugar,2
+521,Beans,9
+521,Biscuits,1
+521,Canned Tomatoes,12
+521,Cooking Oil,1
+521,Lentils,2
+521,Oats,3
+521,Pasta,9
+521,Powdered Milk,10
+521,Rice,11
+521,Sugar,2
+521,Tea,1
+522,Beans,6
+522,Canned Tomatoes,14
+522,Cooking Oil,2
+522,Lentils,4
+522,Oats,1
+522,Pasta,4
+522,Powdered Milk,5
+522,Rice,14
+522,Tea,1
+523,Beans,7
+523,Biscuits,1
+523,Canned Tomatoes,13
+523,Cooking Oil,3
+523,Oats,1
+523,Pasta,5
+523,Powdered Milk,13
+523,Rice,8
+523,Sugar,1
+523,Tea,1
+524,Beans,6
+524,Biscuits,1
+524,Canned Tomatoes,10
+524,Lentils,1
+524,Oats,6
+524,Pasta,5
+524,Powdered Milk,9
+524,Rice,15
+525,Beans,5
+525,Biscuits,1
+525,Canned Beans,2
+525,Canned Tomatoes,8
+525,Oats,1
+525,Pasta,7
+525,Powdered Milk,3
+525,Rice,5
+525,Tea,1
+526,Beans,3
+526,Biscuits,3
+526,Canned Beans,1
+526,Canned Tomatoes,4
+526,Lentils,6
+526,Oats,2
+526,Pasta,3
+526,Powdered Milk,1
+526,Rice,6
+526,Sugar,5
+527,Beans,4
+527,Biscuits,2
+527,Canned Beans,5
+527,Canned Tomatoes,14
+527,Cooking Oil,1
+527,Lentils,8
+527,Oats,4
+527,Pasta,3
+527,Rice,15
+527,Sugar,2
+528,Beans,4
+528,Biscuits,3
+528,Canned Beans,3
+528,Canned Tomatoes,12
+528,Cooking Oil,3
+528,Lentils,13
+528,Oats,1
+528,Pasta,3
+528,Powdered Milk,1
+528,Rice,9
+528,Sugar,3
+528,Tea,2
+529,Beans,5
+529,Biscuits,3
+529,Canned Beans,6
+529,Canned Tomatoes,8
+529,Lentils,11
+529,Oats,4
+529,Pasta,8
+529,Powdered Milk,2
+529,Rice,12
+529,Sugar,1
+529,Tea,3
+530,Beans,2
+530,Biscuits,2
+530,Canned Beans,2
+530,Canned Tomatoes,4
+530,Cooking Oil,1
+530,Lentils,8
+530,Oats,3
+530,Pasta,6
+530,Powdered Milk,1
+530,Rice,8
+530,Sugar,1
+530,Tea,1
+531,Beans,2
+531,Biscuits,2
+531,Canned Tomatoes,5
+531,Lentils,11
+531,Oats,4
+531,Pasta,5
+531,Powdered Milk,2
+531,Rice,10
+531,Sugar,2
+531,Tea,1
+532,Beans,3
+532,Biscuits,1
+532,Canned Tomatoes,7
+532,Lentils,10
+532,Oats,8
+532,Pasta,3
+532,Powdered Milk,1
+532,Rice,8
+532,Sugar,4
+532,Tea,1
+533,Beans,6
+533,Canned Beans,3
+533,Canned Tomatoes,11
+533,Lentils,12
+533,Oats,4
+533,Pasta,3
+533,Rice,9
+533,Sugar,2
+533,Tea,1
+534,Beans,8
+534,Biscuits,1
+534,Canned Beans,3
+534,Canned Tomatoes,9
+534,Cooking Oil,2
+534,Lentils,9
+534,Oats,4
+534,Pasta,1
+534,Powdered Milk,2
+534,Rice,9
+534,Sugar,1
+534,Tea,1
+535,Beans,4
+535,Biscuits,1
+535,Canned Beans,7
+535,Canned Tomatoes,15
+535,Lentils,13
+535,Oats,5
+535,Pasta,3
+535,Powdered Milk,2
+535,Rice,5
+535,Sugar,2
+535,Tea,4
+536,Beans,1
+536,Biscuits,1
+536,Canned Beans,1
+536,Canned Tomatoes,10
+536,Cooking Oil,1
+536,Lentils,11
+536,Oats,3
+536,Pasta,2
+536,Rice,11
+536,Sugar,3
+536,Tea,2
+537,Beans,9
+537,Biscuits,4
+537,Canned Beans,2
+537,Canned Tomatoes,17
+537,Lentils,11
+537,Oats,4
+537,Pasta,3
+537,Powdered Milk,1
+537,Rice,10
+537,Sugar,1
+537,Tea,1
+538,Beans,1
+538,Biscuits,1
+538,Canned Beans,2
+538,Canned Tomatoes,8
+538,Cooking Oil,3
+538,Lentils,10
+538,Oats,3
+538,Pasta,4
+538,Rice,9
+538,Sugar,2
+538,Tea,1
+539,Beans,1
+539,Biscuits,2
+539,Canned Beans,6
+539,Canned Tomatoes,20
+539,Cooking Oil,2
+539,Lentils,16
+539,Oats,6
+539,Pasta,2
+539,Powdered Milk,4
+539,Rice,6
+539,Sugar,3
+540,Beans,3
+540,Biscuits,1
+540,Canned Beans,2
+540,Canned Tomatoes,14
+540,Cooking Oil,4
+540,Lentils,9
+540,Oats,4
+540,Pasta,1
+540,Rice,7
+540,Sugar,1
+541,Beans,4
+541,Canned Beans,1
+541,Canned Tomatoes,35
+541,Cooking Oil,1
+541,Lentils,10
+541,Oats,3
+541,Pasta,2
+541,Rice,8
+541,Sugar,4
+542,Beans,4
+542,Biscuits,6
+542,Canned Beans,1
+542,Canned Tomatoes,10
+542,Cooking Oil,1
+542,Lentils,12
+542,Oats,6
+542,Pasta,3
+542,Powdered Milk,3
+542,Rice,9
+542,Sugar,4
+542,Tea,1
+543,Beans,4
+543,Biscuits,3
+543,Canned Beans,1
+543,Canned Tomatoes,12
+543,Cooking Oil,1
+543,Lentils,13
+543,Oats,5
+543,Pasta,1
+543,Powdered Milk,1
+543,Rice,12
+543,Sugar,1
+543,Tea,2
+544,Beans,6
+544,Biscuits,1
+544,Canned Beans,1
+544,Canned Tomatoes,13
+544,Cooking Oil,1
+544,Lentils,10
+544,Oats,2
+544,Pasta,2
+544,Powdered Milk,1
+544,Rice,13
+544,Sugar,2
+544,Tea,1
+545,Beans,1
+545,Canned Beans,4
+545,Canned Tomatoes,9
+545,Cooking Oil,1
+545,Lentils,9
+545,Oats,1
+545,Pasta,2
+545,Powdered Milk,2
+545,Rice,10
+545,Sugar,1
+545,Tea,1
+546,Beans,4
+546,Biscuits,1
+546,Canned Beans,3
+546,Canned Tomatoes,10
+546,Cooking Oil,1
+546,Lentils,6
+546,Oats,5
+546,Pasta,1
+546,Rice,6
+546,Sugar,5
+547,Beans,2
+547,Biscuits,1
+547,Canned Beans,3
+547,Canned Tomatoes,16
+547,Lentils,21
+547,Oats,5
+547,Pasta,2
+547,Rice,12
+547,Sugar,2
+547,Tea,1
+548,Beans,5
+548,Biscuits,3
+548,Canned Beans,3
+548,Canned Tomatoes,8
+548,Cooking Oil,3
+548,Lentils,7
+548,Oats,2
+548,Pasta,4
+548,Rice,5
+548,Sugar,5
+549,Beans,4
+549,Biscuits,2
+549,Canned Beans,2
+549,Canned Tomatoes,13
+549,Cooking Oil,3
+549,Lentils,16
+549,Oats,6
+549,Pasta,3
+549,Powdered Milk,1
+549,Rice,9
+549,Sugar,1
+549,Tea,2
+550,Beans,2
+550,Biscuits,2
+550,Canned Beans,2
+550,Canned Tomatoes,14
+550,Lentils,7
+550,Oats,2
+550,Powdered Milk,2
+550,Rice,6
+550,Tea,1
+551,Beans,7
+551,Biscuits,1
+551,Canned Beans,5
+551,Canned Tomatoes,12
+551,Lentils,10
+551,Oats,8
+551,Pasta,5
+551,Powdered Milk,3
+551,Rice,7
+551,Sugar,3
+552,Beans,5
+552,Biscuits,1
+552,Canned Beans,4
+552,Canned Tomatoes,9
+552,Cooking Oil,1
+552,Lentils,8
+552,Oats,3
+552,Pasta,4
+552,Powdered Milk,4
+552,Rice,5
+552,Sugar,2
+553,Beans,7
+553,Biscuits,3
+553,Canned Beans,1
+553,Canned Tomatoes,16
+553,Cooking Oil,2
+553,Lentils,12
+553,Oats,9
+553,Pasta,5
+553,Powdered Milk,1
+553,Rice,10
+553,Sugar,3
+553,Tea,1
+554,Beans,3
+554,Biscuits,2
+554,Canned Beans,2
+554,Canned Tomatoes,13
+554,Lentils,8
+554,Oats,5
+554,Pasta,1
+554,Rice,9
+554,Sugar,2
+554,Tea,2
+555,Beans,3
+555,Biscuits,2
+555,Canned Tomatoes,14
+555,Lentils,22
+555,Oats,11
+555,Pasta,2
+555,Powdered Milk,1
+555,Rice,9
+555,Sugar,2
+556,Beans,8
+556,Biscuits,2
+556,Canned Tomatoes,8
+556,Cooking Oil,1
+556,Lentils,9
+556,Oats,8
+556,Pasta,3
+556,Powdered Milk,1
+556,Rice,3
+557,Beans,4
+557,Biscuits,2
+557,Canned Tomatoes,13
+557,Cooking Oil,1
+557,Lentils,13
+557,Oats,23
+557,Pasta,3
+557,Powdered Milk,2
+557,Rice,10
+557,Sugar,5
+557,Tea,1
+558,Beans,3
+558,Canned Tomatoes,3
+558,Lentils,13
+558,Oats,5
+558,Pasta,2
+558,Rice,6
+558,Sugar,1
+559,Beans,6
+559,Biscuits,1
+559,Canned Beans,2
+559,Canned Tomatoes,17
+559,Lentils,14
+559,Oats,6
+559,Pasta,3
+559,Powdered Milk,1
+559,Rice,11
+559,Sugar,2
+559,Tea,3
+560,Beans,2
+560,Biscuits,1
+560,Canned Beans,3
+560,Canned Tomatoes,11
+560,Cooking Oil,1
+560,Lentils,11
+560,Oats,2
+560,Pasta,3
+560,Rice,4
+560,Sugar,2
+560,Tea,1
+561,Beans,1
+561,Canned Beans,2
+561,Canned Tomatoes,12
+561,Cooking Oil,4
+561,Lentils,9
+561,Oats,4
+561,Pasta,2
+561,Powdered Milk,1
+561,Rice,10
+561,Sugar,2
+561,Tea,1
+562,Beans,2
+562,Biscuits,2
+562,Canned Beans,4
+562,Canned Tomatoes,11
+562,Cooking Oil,1
+562,Lentils,10
+562,Oats,2
+562,Pasta,1
+562,Powdered Milk,1
+562,Rice,8
+562,Sugar,1
+563,Beans,5
+563,Canned Beans,3
+563,Canned Tomatoes,13
+563,Cooking Oil,2
+563,Lentils,15
+563,Oats,4
+563,Pasta,3
+563,Powdered Milk,2
+563,Rice,10
+563,Sugar,2
+563,Tea,1
+564,Beans,2
+564,Canned Beans,1
+564,Canned Tomatoes,9
+564,Lentils,10
+564,Oats,3
+564,Powdered Milk,2
+564,Rice,10
+564,Sugar,3
+564,Tea,1
+565,Beans,1
+565,Biscuits,1
+565,Canned Beans,1
+565,Canned Tomatoes,12
+565,Lentils,14
+565,Oats,8
+565,Pasta,3
+565,Powdered Milk,2
+565,Rice,9
+565,Sugar,2
+565,Tea,1
+566,Beans,6
+566,Biscuits,2
+566,Canned Beans,1
+566,Canned Tomatoes,7
+566,Cooking Oil,4
+566,Lentils,6
+566,Oats,2
+566,Powdered Milk,2
+566,Rice,7
+566,Sugar,3
+567,Beans,6
+567,Biscuits,3
+567,Canned Beans,1
+567,Canned Tomatoes,11
+567,Cooking Oil,2
+567,Lentils,13
+567,Oats,5
+567,Pasta,1
+567,Powdered Milk,1
+567,Rice,11
+567,Sugar,1
+567,Tea,1
+568,Beans,1
+568,Biscuits,1
+568,Canned Beans,2
+568,Canned Tomatoes,8
+568,Lentils,13
+568,Oats,5
+568,Pasta,1
+568,Powdered Milk,1
+568,Rice,10
+568,Tea,1
+569,Beans,4
+569,Biscuits,1
+569,Canned Beans,1
+569,Canned Tomatoes,18
+569,Lentils,14
+569,Oats,4
+569,Pasta,1
+569,Powdered Milk,2
+569,Rice,13
+569,Sugar,3
+570,Beans,1
+570,Biscuits,1
+570,Canned Beans,1
+570,Canned Tomatoes,7
+570,Cooking Oil,1
+570,Lentils,5
+570,Oats,6
+570,Pasta,2
+570,Powdered Milk,2
+570,Rice,13
+570,Sugar,1
+570,Tea,3
+571,Beans,7
+571,Biscuits,1
+571,Canned Beans,3
+571,Canned Tomatoes,16
+571,Lentils,9
+571,Oats,2
+571,Pasta,8
+571,Rice,8
+571,Tea,1
+572,Beans,3
+572,Biscuits,2
+572,Canned Beans,3
+572,Canned Tomatoes,15
+572,Cooking Oil,3
+572,Lentils,8
+572,Oats,5
+572,Pasta,3
+572,Rice,6
+572,Sugar,4
+573,Beans,3
+573,Canned Beans,3
+573,Canned Tomatoes,13
+573,Cooking Oil,2
+573,Lentils,8
+573,Oats,8
+573,Pasta,3
+573,Powdered Milk,2
+573,Rice,7
+573,Sugar,1
+573,Tea,1
+574,Beans,4
+574,Biscuits,1
+574,Canned Tomatoes,15
+574,Lentils,11
+574,Oats,3
+574,Pasta,5
+574,Powdered Milk,1
+574,Rice,8
+574,Sugar,1
+575,Beans,3
+575,Biscuits,2
+575,Canned Beans,3
+575,Canned Tomatoes,14
+575,Cooking Oil,2
+575,Lentils,8
+575,Oats,3
+575,Pasta,3
+575,Powdered Milk,2
+575,Rice,5
+575,Sugar,1
+575,Tea,4
+576,Beans,2
+576,Biscuits,3
+576,Canned Beans,1
+576,Canned Tomatoes,6
+576,Cooking Oil,2
+576,Lentils,9
+576,Oats,5
+576,Pasta,1
+576,Powdered Milk,1
+576,Rice,5
+576,Sugar,2
+576,Tea,1
+577,Beans,1
+577,Biscuits,2
+577,Canned Beans,2
+577,Canned Tomatoes,16
+577,Lentils,12
+577,Oats,6
+577,Pasta,4
+577,Rice,7
+577,Sugar,2
+577,Tea,1
+578,Beans,4
+578,Biscuits,1
+578,Canned Beans,1
+578,Canned Tomatoes,8
+578,Lentils,10
+578,Oats,1
+578,Pasta,1
+578,Powdered Milk,1
+578,Rice,5
+578,Sugar,3
+579,Beans,3
+579,Canned Beans,4
+579,Canned Tomatoes,11
+579,Cooking Oil,1
+579,Lentils,10
+579,Oats,1
+579,Pasta,1
+579,Powdered Milk,2
+579,Rice,12
+579,Sugar,4
+579,Tea,1
+580,Beans,1
+580,Biscuits,4
+580,Canned Tomatoes,11
+580,Cooking Oil,1
+580,Lentils,10
+580,Oats,3
+580,Pasta,2
+580,Powdered Milk,4
+580,Rice,5
+580,Sugar,1
+580,Tea,1
+581,Beans,4
+581,Biscuits,1
+581,Canned Tomatoes,16
+581,Lentils,3
+581,Oats,8
+581,Pasta,2
+581,Rice,10
+581,Sugar,2
+581,Tea,1
+582,Biscuits,2
+582,Canned Tomatoes,6
+582,Cooking Oil,1
+582,Lentils,7
+582,Oats,3
+582,Pasta,2
+582,Powdered Milk,1
+582,Rice,9
+582,Sugar,2
+583,Beans,5
+583,Biscuits,3
+583,Canned Beans,2
+583,Canned Tomatoes,15
+583,Lentils,17
+583,Oats,3
+583,Pasta,4
+583,Powdered Milk,1
+583,Rice,9
+583,Sugar,1
+584,Beans,5
+584,Canned Beans,1
+584,Canned Tomatoes,8
+584,Cooking Oil,1
+584,Lentils,12
+584,Oats,2
+584,Pasta,3
+584,Powdered Milk,4
+584,Rice,5
+584,Sugar,3
+584,Tea,2
+585,Beans,2
+585,Biscuits,4
+585,Canned Beans,2
+585,Canned Tomatoes,22
+585,Cooking Oil,2
+585,Lentils,14
+585,Oats,7
+585,Pasta,1
+585,Powdered Milk,1
+585,Rice,10
+585,Sugar,2
+585,Tea,3
+586,Beans,1
+586,Canned Beans,2
+586,Canned Tomatoes,12
+586,Cooking Oil,1
+586,Lentils,13
+586,Oats,4
+586,Pasta,4
+586,Powdered Milk,1
+586,Rice,11
+586,Sugar,2
+587,Beans,7
+587,Biscuits,1
+587,Canned Beans,3
+587,Canned Tomatoes,11
+587,Cooking Oil,1
+587,Lentils,19
+587,Oats,3
+587,Pasta,6
+587,Powdered Milk,2
+587,Rice,13
+587,Sugar,1
+587,Tea,1
+588,Beans,3
+588,Biscuits,2
+588,Canned Beans,2
+588,Canned Tomatoes,14
+588,Lentils,9
+588,Oats,3
+588,Pasta,2
+588,Powdered Milk,2
+588,Rice,6
+588,Tea,1
+589,Beans,4
+589,Biscuits,3
+589,Canned Beans,5
+589,Canned Tomatoes,9
+589,Cooking Oil,3
+589,Lentils,11
+589,Oats,9
+589,Pasta,4
+589,Powdered Milk,2
+589,Rice,3
+589,Sugar,3
+589,Tea,1
+590,Beans,2
+590,Biscuits,5
+590,Canned Beans,1
+590,Canned Tomatoes,12
+590,Cooking Oil,2
+590,Lentils,10
+590,Oats,6
+590,Pasta,6
+590,Powdered Milk,1
+590,Rice,3
+590,Sugar,1
+591,Beans,4
+591,Canned Beans,4
+591,Canned Tomatoes,13
+591,Cooking Oil,3
+591,Lentils,8
+591,Oats,4
+591,Pasta,3
+591,Powdered Milk,1
+591,Rice,5
+592,Beans,6
+592,Biscuits,2
+592,Canned Beans,2
+592,Canned Tomatoes,12
+592,Lentils,6
+592,Oats,2
+592,Pasta,4
+592,Powdered Milk,2
+592,Rice,5
+592,Sugar,2
+592,Tea,1
+593,Beans,4
+593,Biscuits,3
+593,Canned Beans,1
+593,Canned Tomatoes,13
+593,Cooking Oil,2
+593,Lentils,11
+593,Pasta,3
+593,Powdered Milk,1
+593,Rice,13
+593,Sugar,3
+594,Beans,2
+594,Biscuits,1
+594,Canned Tomatoes,9
+594,Lentils,9
+594,Oats,2
+594,Pasta,1
+594,Rice,4
+594,Sugar,2
+595,Beans,4
+595,Biscuits,3
+595,Canned Beans,3
+595,Canned Tomatoes,11
+595,Cooking Oil,1
+595,Lentils,11
+595,Oats,7
+595,Pasta,6
+595,Rice,9
+595,Sugar,2
+595,Tea,1
+596,Beans,2
+596,Biscuits,4
+596,Canned Beans,2
+596,Canned Tomatoes,16
+596,Cooking Oil,2
+596,Lentils,11
+596,Oats,5
+596,Pasta,4
+596,Powdered Milk,1
+596,Rice,4
+596,Sugar,3
+596,Tea,1
+597,Beans,4
+597,Canned Beans,4
+597,Canned Tomatoes,11
+597,Lentils,12
+597,Oats,6
+597,Pasta,2
+597,Rice,10
+597,Sugar,3
+597,Tea,1
+598,Canned Beans,1
+598,Canned Tomatoes,7
+598,Lentils,7
+598,Oats,1
+598,Pasta,5
+598,Rice,6
+598,Sugar,3
+599,Beans,2
+599,Canned Beans,4
+599,Canned Tomatoes,9
+599,Lentils,19
+599,Oats,2
+599,Pasta,4
+599,Powdered Milk,4
+599,Rice,5
+599,Sugar,4
+600,Beans,2
+600,Biscuits,3
+600,Canned Beans,2
+600,Canned Tomatoes,10
+600,Cooking Oil,1
+600,Lentils,10
+600,Oats,7
+600,Powdered Milk,1
+600,Rice,4
+600,Sugar,2
+600,Tea,1
+601,Beans,3
+601,Biscuits,2
+601,Canned Beans,8
+601,Canned Tomatoes,9
+601,Lentils,16
+601,Oats,5
+601,Pasta,6
+601,Powdered Milk,1
+601,Rice,10
+601,Sugar,3
+601,Tea,2
+602,Beans,1
+602,Biscuits,1
+602,Canned Beans,3
+602,Canned Tomatoes,6
+602,Lentils,12
+602,Oats,3
+602,Pasta,6
+602,Powdered Milk,1
+602,Rice,11
+602,Sugar,4
+603,Beans,5
+603,Biscuits,1
+603,Canned Beans,5
+603,Canned Tomatoes,19
+603,Lentils,19
+603,Oats,4
+603,Pasta,1
+603,Powdered Milk,2
+603,Rice,11
+603,Sugar,3
+603,Tea,1
+604,Beans,1
+604,Biscuits,1
+604,Canned Beans,1
+604,Canned Tomatoes,5
+604,Cooking Oil,1
+604,Lentils,12
+604,Oats,5
+604,Pasta,3
+604,Rice,10
+604,Sugar,4
+604,Tea,1
+605,Beans,3
+605,Biscuits,5
+605,Canned Beans,3
+605,Canned Tomatoes,17
+605,Cooking Oil,5
+605,Lentils,9
+605,Oats,7
+605,Pasta,2
+605,Rice,9
+605,Sugar,4
+605,Tea,2
+606,Beans,2
+606,Biscuits,1
+606,Canned Tomatoes,12
+606,Lentils,9
+606,Oats,5
+606,Rice,8
+606,Sugar,3
+607,Beans,2
+607,Biscuits,3
+607,Canned Beans,4
+607,Canned Tomatoes,7
+607,Cooking Oil,1
+607,Lentils,9
+607,Oats,4
+607,Pasta,1
+607,Powdered Milk,5
+607,Rice,10
+607,Sugar,5
+607,Tea,5
+608,Beans,2
+608,Biscuits,5
+608,Canned Tomatoes,13
+608,Lentils,8
+608,Oats,7
+608,Pasta,2
+608,Powdered Milk,1
+608,Rice,5
+608,Sugar,2
+609,Beans,2
+609,Canned Beans,4
+609,Canned Tomatoes,14
+609,Cooking Oil,1
+609,Lentils,7
+609,Oats,6
+609,Pasta,2
+609,Powdered Milk,1
+609,Rice,10
+609,Sugar,3
+609,Tea,2
+610,Beans,4
+610,Biscuits,2
+610,Canned Beans,1
+610,Canned Tomatoes,4
+610,Lentils,7
+610,Oats,4
+610,Pasta,2
+610,Powdered Milk,2
+610,Rice,9
+610,Sugar,2
+611,Beans,1
+611,Biscuits,2
+611,Canned Beans,1
+611,Canned Tomatoes,5
+611,Cooking Oil,2
+611,Lentils,5
+611,Oats,2
+611,Pasta,3
+611,Powdered Milk,2
+611,Rice,13
+611,Sugar,3
+612,Biscuits,1
+612,Canned Beans,4
+612,Canned Tomatoes,8
+612,Lentils,4
+612,Oats,1
+612,Pasta,1
+612,Powdered Milk,3
+612,Rice,3
+612,Sugar,2
+612,Tea,1
+613,Beans,2
+613,Biscuits,3
+613,Canned Beans,2
+613,Canned Tomatoes,22
+613,Lentils,10
+613,Oats,6
+613,Pasta,4
+613,Powdered Milk,1
+613,Rice,11
+613,Sugar,5
+614,Beans,1
+614,Canned Beans,2
+614,Canned Tomatoes,11
+614,Cooking Oil,1
+614,Lentils,8
+614,Oats,4
+614,Pasta,4
+614,Rice,8
+614,Sugar,5
+615,Beans,2
+615,Biscuits,2
+615,Canned Beans,3
+615,Canned Tomatoes,12
+615,Cooking Oil,1
+615,Lentils,9
+615,Oats,3
+615,Pasta,4
+615,Rice,7
+615,Sugar,4
+615,Tea,1
+616,Beans,3
+616,Biscuits,1
+616,Canned Beans,1
+616,Canned Tomatoes,22
+616,Cooking Oil,1
+616,Lentils,9
+616,Oats,11
+616,Pasta,2
+616,Powdered Milk,4
+616,Rice,11
+616,Sugar,3
+617,Beans,5
+617,Biscuits,2
+617,Canned Tomatoes,13
+617,Cooking Oil,1
+617,Lentils,9
+617,Oats,6
+617,Pasta,8
+617,Powdered Milk,3
+617,Rice,7
+617,Sugar,2
+617,Tea,1
+618,Beans,4
+618,Biscuits,2
+618,Canned Beans,3
+618,Canned Tomatoes,5
+618,Lentils,12
+618,Oats,5
+618,Pasta,4
+618,Powdered Milk,2
+618,Rice,13
+618,Sugar,3
+619,Beans,4
+619,Biscuits,5
+619,Canned Beans,1
+619,Canned Tomatoes,11
+619,Lentils,8
+619,Oats,5
+619,Pasta,4
+619,Powdered Milk,4
+619,Rice,8
+619,Sugar,4
+619,Tea,1
+620,Beans,1
+620,Biscuits,2
+620,Canned Beans,2
+620,Canned Tomatoes,9
+620,Cooking Oil,2
+620,Lentils,14
+620,Oats,3
+620,Pasta,2
+620,Rice,3
+620,Sugar,2
+621,Beans,2
+621,Biscuits,2
+621,Canned Beans,1
+621,Canned Tomatoes,12
+621,Cooking Oil,1
+621,Lentils,10
+621,Oats,7
+621,Pasta,6
+621,Rice,11
+621,Sugar,5
+621,Tea,1
+622,Beans,2
+622,Biscuits,2
+622,Canned Beans,3
+622,Canned Tomatoes,7
+622,Cooking Oil,2
+622,Lentils,7
+622,Oats,3
+622,Pasta,6
+622,Rice,4
+622,Sugar,1
+622,Tea,1
+623,Beans,1
+623,Biscuits,1
+623,Canned Beans,3
+623,Canned Tomatoes,12
+623,Cooking Oil,2
+623,Lentils,11
+623,Oats,5
+623,Pasta,4
+623,Powdered Milk,3
+623,Rice,8
+623,Tea,1
+624,Beans,2
+624,Biscuits,4
+624,Canned Beans,3
+624,Canned Tomatoes,7
+624,Lentils,16
+624,Oats,7
+624,Pasta,5
+624,Powdered Milk,1
+624,Rice,5
+625,Biscuits,4
+625,Canned Beans,2
+625,Canned Tomatoes,15
+625,Cooking Oil,1
+625,Lentils,13
+625,Oats,2
+625,Pasta,5
+625,Powdered Milk,1
+625,Rice,16
+625,Sugar,2
+625,Tea,3
+626,Beans,5
+626,Biscuits,1
+626,Canned Beans,1
+626,Canned Tomatoes,10
+626,Cooking Oil,2
+626,Lentils,11
+626,Oats,6
+626,Pasta,3
+626,Rice,9
+626,Sugar,2
+627,Beans,4
+627,Biscuits,3
+627,Canned Beans,5
+627,Canned Tomatoes,12
+627,Cooking Oil,1
+627,Lentils,12
+627,Oats,9
+627,Pasta,2
+627,Rice,7
+627,Sugar,3
+628,Beans,2
+628,Canned Beans,4
+628,Canned Tomatoes,10
+628,Lentils,13
+628,Oats,2
+628,Pasta,4
+628,Rice,4
+628,Sugar,6
+629,Beans,2
+629,Biscuits,4
+629,Canned Tomatoes,12
+629,Lentils,9
+629,Oats,10
+629,Pasta,2
+629,Powdered Milk,1
+629,Rice,9
+629,Sugar,2
+629,Tea,3
+630,Beans,2
+630,Biscuits,1
+630,Canned Beans,2
+630,Canned Tomatoes,2
+630,Cooking Oil,1
+630,Lentils,3
+630,Oats,2
+630,Rice,4

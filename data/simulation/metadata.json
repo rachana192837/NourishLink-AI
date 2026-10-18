@@ -1,0 +1,137 @@
+{
+  "seed": 42,
+  "days": 365,
+  "start_date": "2025-10-15",
+  "end_date": "2026-10-14",
+  "n_products": 12,
+  "n_organizations": 6,
+  "n_spikes": 10,
+  "spikes": [
+    {
+      "start_day": 114,
+      "duration": 3,
+      "products": [
+        "Canned Beans",
+        "Oats"
+      ],
+      "multiplier": 2.04
+    },
+    {
+      "start_day": 50,
+      "duration": 5,
+      "products": [
+        "Canned Tomatoes",
+        "Cooking Oil"
+      ],
+      "multiplier": 2.81
+    },
+    {
+      "start_day": 343,
+      "duration": 4,
+      "products": [
+        "Canned Beans"
+      ],
+      "multiplier": 2.29
+    },
+    {
+      "start_day": 222,
+      "duration": 5,
+      "products": [
+        "Canned Beans",
+        "Oats",
+        "Pasta"
+      ],
+      "multiplier": 2.04
+    },
+    {
+      "start_day": 106,
+      "duration": 5,
+      "products": [
+        "Beans",
+        "Oats",
+        "Powdered Milk"
+      ],
+      "multiplier": 2.89
+    },
+    {
+      "start_day": 79,
+      "duration": 7,
+      "products": [
+        "Tea"
+      ],
+      "multiplier": 2.32
+    },
+    {
+      "start_day": 7,
+      "duration": 6,
+      "products": [
+        "Biscuits",
+        "Cooking Oil"
+      ],
+      "multiplier": 2.09
+    },
+    {
+      "start_day": 262,
+      "duration": 6,
+      "products": [
+        "Pasta",
+        "Rice"
+      ],
+      "multiplier": 2.24
+    },
+    {
+      "start_day": 11,
+      "duration": 3,
+      "products": [
+        "Powdered Milk"
+      ],
+      "multiplier": 2.15
+    },
+    {
+      "start_day": 266,
+      "duration": 3,
+      "products": [
+        "Lentils",
+        "Tea"
+      ],
+      "multiplier": 2.2
+    }
+  ],
+  "donation_gaps": [
+    {
+      "start_day": 115,
+      "end_day": 126
+    },
+    {
+      "start_day": 334,
+      "end_day": 347
+    }
+  ],
+  "blocked_fraction_target": 0.08,
+  "scarce_products": [
+    "Cooking Oil",
+    "Powdered Milk",
+    "Rice"
+  ],
+  "supply_demand_ratio": {
+    "Rice": 0.846,
+    "Beans": 1.367,
+    "Pasta": 1.133,
+    "Canned Tomatoes": 1.085,
+    "Cooking Oil": 0.88,
+    "Sugar": 1.209,
+    "Tea": 1.404,
+    "Biscuits": 1.058,
+    "Lentils": 1.317,
+    "Powdered Milk": 0.762,
+    "Oats": 1.177,
+    "Canned Beans": 1.004
+  },
+  "n_demand_rows": 17952,
+  "n_batches": 352,
+  "n_requests": 630,
+  "n_request_items": 7000,
+  "total_demand_units": 41611,
+  "total_supply_units": 45277,
+  "note": "SYNTHETIC simulation study data \u2014 not real food-bank records."
+}
