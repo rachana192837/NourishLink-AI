@@ -1,0 +1,49 @@
+{% if total == 0 %}
+<div class="empty-state">
+  <p>No batches match the current filters.</p>
+</div>
+{% else %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Product</th>
+        <th>Donor</th>
+        <th>Available (Reserved)</th>
+        <th>Received</th>
+        <th>Cutoff</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for batch in page_obj %}{% include "core/_batch_row.html" %}{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<p style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">{{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} of {{ total }} batches</p>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<nav style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;">
+  {% if page_obj.has_previous %}
+    <a href="{% querystring page=page_obj.previous_page_number %}" class="btn btn-sm btn-ghost">Previous</a>
+  {% else %}
+    <span class="btn btn-sm btn-ghost" style="opacity:.5;cursor:not-allowed;">Previous</span>
+  {% endif %}
+  {% for num in page_obj.paginator.page_range %}
+    {% if num == page_obj.number %}
+      <span class="btn btn-sm btn-primary">{{ num }}</span>
+    {% else %}
+      <a href="{% querystring page=num %}" class="btn btn-sm btn-ghost">{{ num }}</a>
+    {% endif %}
+  {% endfor %}
+  {% if page_obj.has_next %}
+    <a href="{% querystring page=page_obj.next_page_number %}" class="btn btn-sm btn-ghost">Next</a>
+  {% else %}
+    <span class="btn btn-sm btn-ghost" style="opacity:.5;cursor:not-allowed;">Next</span>
+  {% endif %}
+</nav>
+{% endif %}
+{% endif %}

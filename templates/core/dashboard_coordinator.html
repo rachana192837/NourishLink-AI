@@ -29,17 +29,17 @@
 <div class="card">
   <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Quick Actions</h3>
   <div style="display:flex;gap:12px;flex-wrap:wrap;">
-    <a href="#" class="btn btn-primary">
+    <a href="{% url 'donation_create' %}" class="btn btn-primary">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       New Batch
     </a>
-    <a href="#" class="btn btn-primary">
+    <a href="{% url 'request_list' %}" class="btn btn-primary">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Review Requests
     </a>
-    <a href="#" class="btn btn-primary">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 12l-4-4-4 4m4-4v8"/></svg>
-      Create Allocation Plan
+    <a href="{% url 'inventory' %}" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+      Manage Inventory
     </a>
   </div>
 </div>

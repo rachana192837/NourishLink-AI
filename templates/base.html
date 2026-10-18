@@ -245,6 +245,73 @@
     .badge-fulfilled { background: #d1ecf1; color: #0c5460; }
     .badge-cancelled { background: #f8d7da; color: #721c24; }
     .badge-partial  { background: #fde8d0; color: #7e4a1c; }
+    .badge-available { background: #d4edda; color: #155724; }
+    .badge-blocked  { background: #f8d7da; color: #721c24; }
+    .badge-expired  { background: #e9ecef; color: #6c757d; }
+    .badge-draft    { background: #e2e3e5; color: #495057; }
+    .badge-completed { background: #d1ecf1; color: #0c5460; }
+
+    /* ── Chips (days-until-cutoff) ── */
+    .chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: .72rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .chip-danger { background: #f8d7da; color: #721c24; }
+    .chip-warn   { background: #fff3cd; color: #856404; }
+    .chip-muted  { background: #e9ecef; color: #6c757d; }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .filter-bar .fg { display: flex; flex-direction: column; gap: 4px; }
+    .filter-bar label { font-size: .75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .filter-bar select, .filter-bar input[type="text"], .filter-bar input[type="search"] {
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: .85rem;
+      min-width: 140px;
+      background: #fff;
+    }
+    .filter-bar .check {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 0; font-size: .85rem;
+    }
+    .filter-actions { margin-left: auto; display: flex; gap: 8px; }
+
+    /* ── Buttons (extended) ── */
+    .btn-sm { padding: 5px 12px; font-size: .8rem; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #a93226; }
+    .btn-ghost { background: transparent; color: var(--primary-dark); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--primary-light); }
+    .btn-outline { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-outline:hover { background: #f8d7da; }
+
+    /* ── Detail cards ── */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .detail-grid .field-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-bottom: 3px; }
+    .detail-grid .field-value { font-size: .95rem; color: var(--text); }
+    .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .back-link { font-size: .85rem; color: var(--text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 14px; }
+    .back-link:hover { color: var(--primary); }
 
     /* ── Buttons ── */
     .btn {
@@ -389,11 +456,11 @@
           Dashboard
         </a>
         <div class="sidebar-section" style="margin-top:18px;">Manage</div>
-        <a href="#">
+        <a href="{% url 'inventory' %}" class="{% if request.resolver_match.url_name in 'inventory,batch_detail,donation_create' %}active{% endif %}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
           Inventory
         </a>
-        <a href="#">
+        <a href="{% url 'request_list' %}" class="{% if request.resolver_match.url_name in 'request_list,request_detail' %}active{% endif %}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           Requests
         </a>
@@ -417,7 +484,7 @@
           Dashboard
         </a>
         <div class="sidebar-section" style="margin-top:18px;">Requests</div>
-        <a href="#">
+        <a href="{% url 'my_requests' %}" class="{% if request.resolver_match.url_name in 'my_requests,request_detail,request_create' %}active{% endif %}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           My Requests
         </a>

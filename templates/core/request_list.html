@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Requests — NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Requests</h1>
+  <p>Partner requests, ordered by required-by date.</p>
+</div>
+
+<form method="get" class="filter-bar">
+  <div class="fg">
+    <label for="status-filter">Status</label>
+    <select name="status" id="status-filter">
+      <option value="">All statuses</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="fg">
+    <label for="org-filter">Organization</label>
+    <select name="org" id="org-filter">
+      <option value="">All organizations</option>
+      {% for org in organizations %}
+        <option value="{{ org.pk }}" {% if request.GET.org == org.pk|stringformat:"s" %}selected{% endif %}>{{ org.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+    <a href="{% url 'request_list' %}" class="btn btn-sm btn-ghost">Clear</a>
+  </div>
+</form>
+
+{% if total == 0 %}
+<div class="empty-state">
+  <p>No requests found.</p>
+</div>
+{% else %}
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Organization</th>
+          <th>Submitted</th>
+          <th>Required by</th>
+          <th>Items</th>
+          <th>Total qty</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for req in page_obj %}
+        <tr>
+          <td><a href="{% url 'request_detail' req.pk %}">#{{ req.id }}</a></td>
+          <td>{{ req.organization.name }}</td>
+          <td>{{ req.created_at|date:"M d, Y" }}</td>
+          <td>{{ req.required_by_date|date:"M d, Y" }}</td>
+          <td>{{ req.item_count }}</td>
+          <td>{{ req.total_qty }}</td>
+          <td>
+            {% if req.status == 'PENDING' %}
+              <span class="badge badge-pending">Pending</span>
+            {% elif req.status == 'APPROVED' %}
+              <span class="badge badge-approved">Approved</span>
+            {% elif req.status == 'PARTIALLY_FULFILLED' %}
+              <span class="badge badge-partial">Partial</span>
+            {% elif req.status == 'FULFILLED' %}
+              <span class="badge badge-fulfilled">Fulfilled</span>
+            {% elif req.status == 'CANCELLED' %}
+              <span class="badge badge-cancelled">Cancelled</span>
+            {% endif %}
+          </td>
+          <td><a href="{% url 'request_detail' req.pk %}" class="btn btn-sm btn-ghost">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">{{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} of {{ total }} requests</p>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;">
+    {% if page_obj.has_previous %}
+      <a href="{% querystring page=page_obj.previous_page_number %}" class="btn btn-sm btn-ghost">Previous</a>
+    {% else %}
+      <span class="btn btn-sm btn-ghost" style="opacity:.5;cursor:not-allowed;">Previous</span>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+        <span class="btn btn-sm btn-primary">{{ num }}</span>
+      {% else %}
+        <a href="{% querystring page=num %}" class="btn btn-sm btn-ghost">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <a href="{% querystring page=page_obj.next_page_number %}" class="btn btn-sm btn-ghost">Next</a>
+    {% else %}
+      <span class="btn btn-sm btn-ghost" style="opacity:.5;cursor:not-allowed;">Next</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

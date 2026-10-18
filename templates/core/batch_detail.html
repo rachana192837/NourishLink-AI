@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}{{ batch.batch_code }} — NourishLink{% endblock %}
+
+{% block content %}
+<a href="{% url 'inventory' %}" class="back-link">&larr; Inventory</a>
+
+<div class="page-header">
+  <h1>{{ batch.batch_code }}</h1>
+  <p>{{ batch.product.name }} ({{ batch.product.unit }})</p>
+</div>
+
+<div class="card">
+  <div class="detail-grid">
+    <div>
+      <div class="field-label">Product</div>
+      <div class="field-value">{{ batch.product.name }} ({{ batch.product.unit }})</div>
+    </div>
+    <div>
+      <div class="field-label">Donor</div>
+      <div class="field-value">{{ batch.donor.name|default:"&mdash;" }}</div>
+    </div>
+    <div>
+      <div class="field-label">Status</div>
+      <div class="field-value">
+        {% if batch.status == 'AVAILABLE' %}
+          <span class="badge badge-available">Available</span>
+        {% elif batch.status == 'BLOCKED' %}
+          <span class="badge badge-blocked">Blocked</span>
+        {% elif batch.status == 'EXPIRED' %}
+          <span class="badge badge-expired">Expired</span>
+        {% else %}
+          <span class="badge">Depleted</span>
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <div class="field-label">Quantity received</div>
+      <div class="field-value">{{ batch.quantity_received }}</div>
+    </div>
+    <div>
+      <div class="field-label">Quantity available</div>
+      <div class="field-value">{{ batch.quantity_available }}</div>
+    </div>
+    <div>
+      <div class="field-label">Quantity reserved</div>
+      <div class="field-value">{{ batch.quantity_reserved }}</div>
+    </div>
+    <div>
+      <div class="field-label">Received date</div>
+      <div class="field-value">{{ batch.received_date|date:"M d, Y" }}</div>
+    </div>
+    <div>
+      <div class="field-label">Distribution cutoff</div>
+      <div class="field-value">
+        {{ batch.distribution_cutoff|date:"M d, Y" }}
+        {% if batch.status == 'AVAILABLE' or batch.status == 'BLOCKED' %}
+          {% if batch.status == 'EXPIRED' or batch.days_until_cutoff < 0 %}
+            <span class="chip chip-danger">expired</span>
+          {% elif batch.days_until_cutoff <= 7 %}
+            <span class="chip chip-warn">{{ batch.days_until_cutoff }}d left</span>
+          {% else %}
+            <span class="chip chip-muted">{{ batch.days_until_cutoff }}d</span>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% if batch.notes %}
+    <div>
+      <div class="field-label">Notes</div>
+      <div class="field-value">{{ batch.notes }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if batch.status == 'AVAILABLE' or batch.status == 'BLOCKED' %}
+  <div class="detail-actions">
+    <form method="post" action="{% url 'batch_toggle_block' batch.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      {% if batch.status == 'AVAILABLE' %}
+        <button type="submit" class="btn btn-outline">Block</button>
+      {% else %}
+        <button type="submit" class="btn btn-ghost">Unblock</button>
+      {% endif %}
+    </form>
+  </div>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:14px;">Allocations from this batch</h2>
+  {% if allocations %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Request</th>
+            <th>Product</th>
+            <th>Qty allocated</th>
+            <th>Plan status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for allocation in allocations %}
+          <tr>
+            <td>{{ allocation.plan.name }}</td>
+            <td>
+              <a href="{% url 'request_detail' allocation.request_item.request_id %}">#{{ allocation.request_item.request_id }}</a>
+            </td>
+            <td>{{ allocation.request_item.product.name }}</td>
+            <td>{{ allocation.quantity_allocated }}</td>
+            <td>
+              {% if allocation.plan.status == 'DRAFT' %}
+                <span class="badge badge-draft">Draft</span>
+              {% elif allocation.plan.status == 'APPROVED' %}
+                <span class="badge badge-approved">Approved</span>
+              {% elif allocation.plan.status == 'COMPLETED' %}
+                <span class="badge badge-completed">Completed</span>
+              {% else %}
+                <span class="badge badge-cancelled">Cancelled</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>No allocations use this batch yet.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+<tr>
+  <td>
+    <a href="{% url 'batch_detail' batch.pk %}" style="font-family:monospace;font-size:.85rem;">{{ batch.batch_code }}</a>
+  </td>
+  <td>
+    {{ batch.product.name }}
+    <small style="color:var(--text-muted);">{{ batch.product.unit }}</small>
+  </td>
+  <td>{{ batch.donor.name|default:"&mdash;" }}</td>
+  <td>
+    {{ batch.quantity_available }}
+    <small style="color:var(--text-muted);">({{ batch.quantity_reserved }} res)</small>
+  </td>
+  <td>{{ batch.received_date|date:"M d, Y" }}</td>
+  <td>
+    {{ batch.distribution_cutoff|date:"M d, Y" }}
+    {% if batch.status == 'AVAILABLE' or batch.status == 'BLOCKED' %}
+      {% if batch.status == 'EXPIRED' or batch.days_until_cutoff < 0 %}
+        <span class="chip chip-danger">expired</span>
+      {% elif batch.days_until_cutoff <= 7 %}
+        <span class="chip chip-warn">{{ batch.days_until_cutoff }}d left</span>
+      {% else %}
+        <span class="chip chip-muted">{{ batch.days_until_cutoff }}d</span>
+      {% endif %}
+    {% endif %}
+  </td>
+  <td>
+    {% if batch.status == 'AVAILABLE' %}
+      <span class="badge badge-available">Available</span>
+    {% elif batch.status == 'BLOCKED' %}
+      <span class="badge badge-blocked">Blocked</span>
+    {% elif batch.status == 'EXPIRED' %}
+      <span class="badge badge-expired">Expired</span>
+    {% else %}
+      <span class="badge">Depleted</span>
+    {% endif %}
+  </td>
+  <td>
+    <a href="{% url 'batch_detail' batch.pk %}" class="btn btn-sm btn-ghost">View</a>
+    {% if batch.status == 'AVAILABLE' or batch.status == 'BLOCKED' %}
+    <form method="post" action="{% url 'batch_toggle_block' batch.pk %}" style="display:inline;">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      {% if batch.status == 'AVAILABLE' %}
+        <button type="submit" class="btn btn-sm btn-outline">Block</button>
+      {% else %}
+        <button type="submit" class="btn btn-sm btn-ghost">Unblock</button>
+      {% endif %}
+    </form>
+    {% endif %}
+  </td>
+</tr>

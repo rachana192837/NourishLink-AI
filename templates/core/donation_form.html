@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Record Donation — NourishLink{% endblock %}
+
+{% block content %}
+<a href="{% url 'inventory' %}" class="back-link">&larr; Inventory</a>
+
+<div class="page-header">
+  <h1>Record Donation</h1>
+  <p>Register a new donation batch into inventory.</p>
+</div>
+
+<div class="card" style="max-width:640px;">
+  <form method="post">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="form-errors">
+      <ul>
+        {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+      <label for="{{ form.product.id_for_label }}">{{ form.product.label }}</label>
+      {{ form.product }}
+      {% for error in form.product.errors %}
+      <div style="color:#721c24;font-size:.8rem;margin-top:4px;">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label for="{{ form.donor.id_for_label }}">{{ form.donor.label }}</label>
+      {{ form.donor }}
+      {% for error in form.donor.errors %}
+      <div style="color:#721c24;font-size:.8rem;margin-top:4px;">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label for="{{ form.batch_code.id_for_label }}">{{ form.batch_code.label }}</label>
+      {{ form.batch_code }}
+      {% for error in form.batch_code.errors %}
+      <div style="color:#721c24;font-size:.8rem;margin-top:4px;">{{ error }}</div>
+      {% endfor %}
+      <div style="color:var(--text-muted);font-size:.78rem;margin-top:4px;">
+        Unique code for this batch, e.g. <code>BATCH-RICE-004</code>.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="{{ form.quantity_received.id_for_label }}">{{ form.quantity_received.label }}</label>
+      {{ form.quantity_received }}
+      {% for error in form.quantity_received.errors %}
+      <div style="color:#721c24;font-size:.8rem;margin-top:4px;">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="form-group" style="flex:1;min-width:180px;">
+        <label for="{{ form.received_date.id_for_label }}">{{ form.received_date.label }}</label>
+        {{ form.received_date }}
+        {% for error in form.received_date.errors %}
+        <div style="color:#721c24;font-size:.8rem;margin-top:4px;">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group" style="flex:1;min-width:180px;">
+        <label for="{{ form.distribution_cutoff.id_for_label }}">{{ form.distribution_cutoff.label }}</label>
+        {{ form.distribution_cutoff }}
+        {% for error in form.distribution_cutoff.errors %}
+        <div style="color:#721c24;font-size:.8rem;margin-top:4px;">{{ error }}</div>
+        {% endfor %}
+        <div style="color:var(--text-muted);font-size:.78rem;margin-top:4px;">
+          Last date this batch should be distributed.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+      {{ form.notes }}
+      {% for error in form.notes.errors %}
+      <div style="color:#721c24;font-size:.8rem;margin-top:4px;">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn-submit">Record Donation</button>
+  </form>
+
+  <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+    <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:8px;">
+      Missing a product? <a href="{% url 'product_create' %}?next=/inventory/donate/" style="color:var(--primary);font-weight:600;">Create a new product</a> first.
+    </p>
+  </div>
+</div>
+{% endblock %}

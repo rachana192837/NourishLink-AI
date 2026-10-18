@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}My Requests — NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+  <div>
+    <h1>My Requests</h1>
+    <p>{{ organization.name|default:"" }}</p>
+  </div>
+  <a href="{% url 'request_create' %}" class="btn btn-primary">New Request</a>
+</div>
+
+{% if total == 0 %}
+<div class="card">
+  <div class="empty-state">
+    <p>No requests yet. Create one to get started.</p>
+    <p style="margin-top:14px;">
+      <a href="{% url 'request_create' %}" class="btn btn-primary">Create Request</a>
+    </p>
+  </div>
+</div>
+{% else %}
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Submitted</th>
+          <th>Required by</th>
+          <th>Items</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for req in page_obj %}
+        <tr>
+          <td><a href="{% url 'request_detail' req.pk %}">#{{ req.id }}</a></td>
+          <td>{{ req.created_at|date:"M d, Y" }}</td>
+          <td>{{ req.required_by_date|date:"M d, Y" }}</td>
+          <td>{{ req.items.all|length }}</td>
+          <td>
+            {% if req.status == 'PENDING' %}
+              <span class="badge badge-pending">Pending</span>
+            {% elif req.status == 'APPROVED' %}
+              <span class="badge badge-approved">Approved</span>
+            {% elif req.status == 'PARTIALLY_FULFILLED' %}
+              <span class="badge badge-partial">Partial</span>
+            {% elif req.status == 'FULFILLED' %}
+              <span class="badge badge-fulfilled">Fulfilled</span>
+            {% elif req.status == 'CANCELLED' %}
+              <span class="badge badge-cancelled">Cancelled</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">{{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} of {{ total }} requests</p>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;">
+    {% if page_obj.has_previous %}
+      <a href="{% querystring page=page_obj.previous_page_number %}" class="btn btn-sm btn-ghost">Previous</a>
+    {% else %}
+      <span class="btn btn-sm btn-ghost" style="opacity:.5;cursor:not-allowed;">Previous</span>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+        <span class="btn btn-sm btn-primary">{{ num }}</span>
+      {% else %}
+        <a href="{% querystring page=num %}" class="btn btn-sm btn-ghost">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <a href="{% querystring page=page_obj.next_page_number %}" class="btn btn-sm btn-ghost">Next</a>
+    {% else %}
+      <span class="btn btn-sm btn-ghost" style="opacity:.5;cursor:not-allowed;">Next</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

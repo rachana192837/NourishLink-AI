@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Request #{{ req.id }} — NourishLink{% endblock %}
+
+{% block content %}
+{% if can_update %}
+<a href="{% url 'request_list' %}" class="back-link">&larr; All Requests</a>
+{% else %}
+<a href="{% url 'my_requests' %}" class="back-link">&larr; My Requests</a>
+{% endif %}
+
+<div class="page-header">
+  <h1>Request #{{ req.id }}</h1>
+  <p>{{ req.organization.name }}</p>
+</div>
+
+<div class="card">
+  <div class="detail-grid">
+    <div>
+      <div class="field-label">Organization</div>
+      <div class="field-value">{{ req.organization.name }}</div>
+    </div>
+    <div>
+      <div class="field-label">Submitted by</div>
+      <div class="field-value">{{ req.requested_by.get_full_name|default:req.requested_by.username }}</div>
+    </div>
+    <div>
+      <div class="field-label">Submitted</div>
+      <div class="field-value">{{ req.created_at|date:"M d, Y" }}</div>
+    </div>
+    <div>
+      <div class="field-label">Required by</div>
+      <div class="field-value">{{ req.required_by_date|date:"M d, Y" }}</div>
+    </div>
+    <div>
+      <div class="field-label">Status</div>
+      <div class="field-value">
+        {% if req.status == 'PENDING' %}
+          <span class="badge badge-pending">Pending</span>
+        {% elif req.status == 'APPROVED' %}
+          <span class="badge badge-approved">Approved</span>
+        {% elif req.status == 'PARTIALLY_FULFILLED' %}
+          <span class="badge badge-partial">Partial</span>
+        {% elif req.status == 'FULFILLED' %}
+          <span class="badge badge-fulfilled">Fulfilled</span>
+        {% elif req.status == 'CANCELLED' %}
+          <span class="badge badge-cancelled">Cancelled</span>
+        {% endif %}
+      </div>
+    </div>
+    {% if req.notes %}
+    <div>
+      <div class="field-label">Notes</div>
+      <div class="field-value">{{ req.notes }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="detail-actions">
+    {% if can_update and req.status == 'PENDING' %}
+      <form method="post" action="{% url 'request_status_update' req.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="approve">
+        <button type="submit" class="btn btn-sm btn-primary">Approve</button>
+      </form>
+      <form method="post" action="{% url 'request_status_update' req.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="cancel">
+        <button type="submit" class="btn btn-sm btn-outline">Cancel Request</button>
+      </form>
+    {% elif can_update and req.status == 'APPROVED' %}
+      <form method="post" action="{% url 'request_status_update' req.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="cancel">
+        <button type="submit" class="btn btn-sm btn-outline">Cancel Request</button>
+      </form>
+    {% elif can_update and req.status == 'CANCELLED' %}
+      <form method="post" action="{% url 'request_status_update' req.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="reopen">
+        <button type="submit" class="btn btn-sm btn-ghost">Reopen</button>
+      </form>
+    {% endif %}
+    {% if can_cancel %}
+      <form method="post" action="{% url 'request_cancel' req.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline">Cancel Request</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Requested Items</h3>
+  {% if items %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Requested</th>
+          <th>Allocated</th>
+          <th>Unmet</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.product.name }} ({{ item.product.unit }})</td>
+          <td>{{ item.quantity_requested }}</td>
+          <td>{{ item.quantity_allocated }}</td>
+          <td>
+            {% if item.quantity_unmet > 0 %}
+              <span style="color:#c0392b;">{{ item.quantity_unmet }}</span>
+            {% else %}
+              {{ item.quantity_unmet }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>No items on this request.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

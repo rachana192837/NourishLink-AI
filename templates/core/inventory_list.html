@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory — NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+  <div>
+    <h1>Inventory</h1>
+    <p>Donation batches, ordered by distribution cutoff.</p>
+  </div>
+  <a href="{% url 'donation_create' %}" class="btn btn-primary">Record Donation</a>
+</div>
+
+<form method="get" id="filter-form" class="filter-bar"
+      hx-get="{% url 'inventory' %}"
+      hx-target="#batch-table"
+      hx-swap="innerHTML"
+      hx-trigger="change from:form, keyup from:[name='q'] delay:300ms, search from:[name='q']">
+  <div class="fg">
+    <label for="filter-product">Product</label>
+    <select name="product" id="filter-product">
+      <option value="">All products</option>
+      {% for product in products %}
+        <option value="{{ product.pk }}" {% if request.GET.product == product.pk|stringformat:"s" %}selected{% endif %}>{{ product.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="fg">
+    <label for="filter-status">Status</label>
+    <select name="status" id="filter-status">
+      <option value="">All statuses</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <label class="check">
+    <input type="checkbox" name="expiring" value="1" {% if request.GET.expiring %}checked{% endif %}>
+    Expiring &le; 7 days
+  </label>
+  <div class="fg">
+    <label for="filter-q">Search</label>
+    <input type="search" name="q" value="{{ request.GET.q }}">
+  </div>
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+    <a href="{% url 'inventory' %}" class="btn btn-sm btn-ghost">Clear</a>
+  </div>
+</form>
+
+<div id="batch-table">{% include "core/_batch_table.html" %}</div>
+{% endblock %}

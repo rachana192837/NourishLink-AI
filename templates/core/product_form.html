@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}New Product — NourishLink{% endblock %}
+
+{% block content %}
+<a href="{% url 'inventory' %}" class="back-link">&larr; Inventory</a>
+
+<div class="card" style="max-width:560px;">
+  <h2 style="font-size:1.2rem;font-weight:600;margin-bottom:16px;">Add New Product</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% if next %}
+      <input type="hidden" name="next" value="{{ next }}">
+    {% endif %}
+    {% if form.non_field_errors %}
+      <div class="form-errors">
+        <ul>
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}
+          <small style="display:block;color:#721c24;font-size:.8rem;">{{ error }}</small>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn-submit">Create Product</button>
+  </form>
+  <p style="font-size:.8rem;color:var(--text-muted);margin-top:14px;">Products are the catalogue of food items (e.g. 'Rice &mdash; 1kg pack'). Batches reference a product.</p>
+</div>
+{% endblock %}
