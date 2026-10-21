@@ -200,6 +200,44 @@ class DemandForecast(models.Model):
         return f"{self.product.name} forecast for {self.forecast_date}"
 
 
+class AgentRun(models.Model):
+    """Record of one AI agent invocation (LLM-backed or deterministic fallback).
+
+    Persisted for the factual-consistency audit and cost metrics in the
+    evaluation phase; never used to authorise anything itself.
+    """
+
+    class Role(models.TextChoices):
+        ANALYST = 'ANALYST', 'Inventory Analyst'
+        PLANNER = 'PLANNER', 'Distribution Planner'
+
+    class Status(models.TextChoices):
+        OK = 'OK', 'LLM responded'
+        FALLBACK = 'FALLBACK', 'Deterministic fallback'
+
+    role = models.CharField(max_length=10, choices=Role.choices)
+    status = models.CharField(max_length=10, choices=Status.choices)
+    model_name = models.CharField(max_length=120, blank=True,
+                                  help_text='Model id reported by the provider, blank for fallback')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
+                             blank=True, related_name='agent_runs')
+    plan = models.ForeignKey(AllocationPlan, on_delete=models.SET_NULL,
+                             null=True, blank=True, related_name='agent_runs')
+    tool_calls = models.JSONField(default=list, blank=True)
+    output = models.JSONField(default=dict, blank=True)
+    prompt_tokens = models.PositiveIntegerField(default=0)
+    completion_tokens = models.PositiveIntegerField(default=0)
+    latency_ms = models.PositiveIntegerField(default=0)
+    error_message = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.get_role_display()} run #{self.pk} ({self.status})"
+
+
 class ActivityLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     action_type = models.CharField(max_length=50)

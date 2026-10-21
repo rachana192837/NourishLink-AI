@@ -1,4 +1,5 @@
 from datetime import timedelta
+from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -8,12 +9,15 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
+from . import allocation, forecast as forecasting
+from .activity import log_activity
 from .decorators import coordinator_required, partner_required
 from .forms import BatchForm, ProductForm, RequestForm, RequestItemFormSet
 from .models import (
     ActivityLog,
     AllocationItem,
     AllocationPlan,
+    DemandForecast,
     FoodBatch,
     Organization,
     Product,
@@ -21,17 +25,10 @@ from .models import (
     RequestItem,
 )
 
-
-def log_activity(user, action_type, description, obj=None):
-    from django.contrib.contenttypes.models import ContentType
-    ct = ContentType.objects.get_for_model(obj) if obj is not None else None
-    ActivityLog.objects.create(
-        user=user,
-        action_type=action_type,
-        description=description,
-        content_type=ct,
-        object_id=getattr(obj, 'pk', None),
-    )
+BASE_DIR = Path(__file__).resolve().parent.parent
+REPORT_PATH = BASE_DIR / 'data' / 'forecast' / 'report.json'
+MLP_VERSION = forecasting.MODEL_NAME     # DemandForecast row version for the NN
+BASELINE_VERSION = forecasting.BASELINE_NAME
 
 
 @login_required
@@ -298,9 +295,18 @@ def request_detail(request, pk):
                        "You can only view your organization's requests.")
         return redirect('my_requests')
 
+    allocations = None
+    if profile.is_partner:
+        allocations = (
+            AllocationItem.objects.filter(request_item__request=req)
+            .select_related('food_batch__product', 'plan')
+            .order_by('plan__created_at')
+        )
+
     return render(request, 'core/request_detail.html', {
         'req': req,
         'items': req.items.select_related('product'),
+        'allocations': allocations,
         'can_update': profile.is_coordinator,
         'can_cancel': (
             profile.is_partner
@@ -361,3 +367,243 @@ def request_cancel(request, pk):
                  f'Request #{req.pk} cancelled by partner.', req)
     messages.success(request, f'Request #{req.pk} cancelled.')
     return redirect('my_requests')
+
+# ---------------------------------------------------------------------------
+# Allocation plans (coordinator)
+# ---------------------------------------------------------------------------
+
+@coordinator_required
+def plan_list(request):
+    plans = (
+        AllocationPlan.objects
+        .annotate(item_count=Count('items'),
+                  total_qty=Sum('items__quantity_allocated'))
+        .order_by('-created_at')
+    )
+    status = request.GET.get('status') or ''
+    if status:
+        plans = plans.filter(status=status)
+
+    paginator = Paginator(plans, 20)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'core/plan_list.html', {
+        'page_obj': page,
+        'total': paginator.count,
+        'status_choices': AllocationPlan.Status.choices,
+        'heading': 'Allocation Plans',
+        'subtitle': 'FEFO proposals, approvals, and history.',
+    })
+
+
+@coordinator_required
+def pickups(request):
+    plans = (
+        AllocationPlan.objects.filter(status__in=['APPROVED', 'COMPLETED'])
+        .annotate(item_count=Count('items'),
+                  total_qty=Sum('items__quantity_allocated'))
+        .order_by('-created_at')
+    )
+    status = request.GET.get('status') or ''
+    if status:
+        plans = plans.filter(status=status)
+
+    paginator = Paginator(plans, 20)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'core/plan_list.html', {
+        'page_obj': page,
+        'total': paginator.count,
+        'status_choices': [('APPROVED', 'Approved'), ('COMPLETED', 'Completed')],
+        'heading': 'Pickups',
+        'subtitle': 'Approved plans awaiting pickup and completed pickups.',
+    })
+
+
+@coordinator_required
+def plan_detail(request, pk):
+    plan = get_object_or_404(
+        AllocationPlan.objects.select_related('created_by', 'approved_by'),
+        pk=pk)
+    items = plan.items.select_related(
+        'request_item__product',
+        'request_item__request__organization',
+        'food_batch__product',
+    )
+    validation = allocation.validate_plan(plan) if plan.status == 'DRAFT' else None
+    return render(request, 'core/plan_detail.html', {
+        'plan': plan,
+        'items': items,
+        'validation': validation,
+    })
+
+
+@coordinator_required
+def plan_generate(request):
+    if request.method != 'POST':
+        return redirect('plan_list')
+    plan = allocation.generate_plan(request.user)
+    if not plan.items.exists():
+        plan.delete()
+        messages.info(request,
+                      'No unmet demand to allocate — every pending request is '
+                      'already fully covered.')
+        return redirect('plan_list')
+    messages.success(request, f'Plan "{plan.name}" generated (draft).')
+    return redirect('plan_detail', pk=plan.pk)
+
+
+@coordinator_required
+def plan_approve(request, pk):
+    if request.method != 'POST':
+        return redirect('plan_detail', pk=pk)
+    plan = get_object_or_404(AllocationPlan, pk=pk)
+    ok, errors = allocation.approve_plan(plan, request.user)
+    if ok:
+        messages.success(request, f'Plan "{plan.name}" approved — stock reserved.')
+    else:
+        for error in errors:
+            messages.error(request, error)
+    return redirect('plan_detail', pk=pk)
+
+
+@coordinator_required
+def plan_cancel(request, pk):
+    if request.method != 'POST':
+        return redirect('plan_detail', pk=pk)
+    plan = get_object_or_404(AllocationPlan, pk=pk)
+    was_approved = plan.status == 'APPROVED'
+    ok, errors = allocation.cancel_plan(plan, request.user)
+    if ok:
+        messages.success(request, f'Plan "{plan.name}" cancelled'
+                         + (' — reservations released.' if was_approved else '.'))
+    else:
+        for error in errors:
+            messages.error(request, error)
+    return redirect('plan_detail', pk=pk)
+
+
+@coordinator_required
+def plan_complete(request, pk):
+    if request.method != 'POST':
+        return redirect('plan_detail', pk=pk)
+    plan = get_object_or_404(AllocationPlan, pk=pk)
+    ok, errors = allocation.complete_plan(plan, request.user)
+    if ok:
+        messages.success(request,
+                         f'Pickup for "{plan.name}" recorded — stock reduced.')
+    else:
+        for error in errors:
+            messages.error(request, error)
+    return redirect('plan_detail', pk=pk)
+
+
+# ---------------------------------------------------------------------------
+# Forecasts (coordinator)
+# ---------------------------------------------------------------------------
+
+REPORT_PATH = BASE_DIR / 'data' / 'forecast' / 'report.json'
+
+@coordinator_required
+def forecast_list(request):
+    report = forecasting.load_report(REPORT_PATH)
+
+    forecasts = {}
+    mlp_rows = DemandForecast.objects.filter(
+        model_version=MLP_VERSION).select_related('product')
+    base_rows = DemandForecast.objects.filter(
+        model_version=BASELINE_VERSION).select_related('product')
+    for row in mlp_rows:
+        forecasts.setdefault(row.product_id, {})['mlp'] = row
+    for row in base_rows:
+        forecasts.setdefault(row.product_id, {})['baseline'] = row
+
+    today = timezone.localdate()
+    stock = {}
+    product_rows = []
+    for product in Product.objects.all():
+        agg = FoodBatch.objects.filter(
+            product=product, status='AVAILABLE',
+            distribution_cutoff__gte=today).aggregate(
+            available=Sum('quantity_available'),
+            reserved=Sum('quantity_reserved'))
+        available = agg['available'] or 0
+        reserved = agg['reserved'] or 0
+        entry = forecasts.get(product.pk, {})
+        mlp_row = entry.get('mlp')
+        base_row = entry.get('baseline')
+        predicted = mlp_row.predicted_quantity if mlp_row else None
+        baseline = base_row.predicted_quantity if base_row else None
+        product_rows.append({
+            'product': product,
+            'stock_all': available,
+            'stock_free': available - reserved,
+            'forecast': predicted,
+            'baseline': baseline,
+            'gap': None if predicted is None else (available - reserved
+                                                   - predicted),
+            'forecast_date': mlp_row.forecast_date if mlp_row else None,
+        })
+    product_rows.sort(key=lambda r: (r['gap'] is None, r['gap'] if r['gap']
+                                     is not None else 0))
+
+    ov = report['overall'] if report else None
+    return render(request, 'core/forecast_list.html', {
+        'report': report,
+        'overall': ov,
+        'per_product': (report['per_product'].items()
+                        if report else []),
+        'rows': product_rows,
+        'model_version': MLP_VERSION,
+        'baseline_name': BASELINE_VERSION,
+    })
+
+
+# ---------------------------------------------------------------------------
+# AI agents (coordinator) — Config C
+# ---------------------------------------------------------------------------
+
+@coordinator_required
+def ai_list(request):
+    """Recent agent runs plus the run-proposal action.
+
+    The button runs the Inventory Analyst, then the Distribution Planner.
+    With an OPENROUTER_API_KEY set this reaches the free OpenRouter tier;
+    without one it stays fully functional via the deterministic fallback
+    (AgentRun.status FALLBACK).
+    """
+    import os
+    from . import agents as agent_runner
+    from .models import AgentRun
+
+    if request.method == 'POST':
+        analyst_run, planner_run = agent_runner.run_proposal_cycle(request.user)
+        messages.success(
+            request,
+            f'Proposal cycle complete: analyst run #{analyst_run.pk} '
+            f'({analyst_run.status}), planner run #{planner_run.pk} '
+            f'({planner_run.status}).')
+        return redirect('ai_detail', pk=planner_run.pk)
+
+    has_key = bool(os.environ.get('OPENROUTER_API_KEY', '').strip())
+    runs = (AgentRun.objects
+            .select_related('user', 'plan__created_by')
+            .order_by('-created_at'))
+    paginator = Paginator(runs, 15)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'core/ai_run_list.html', {
+        'page_obj': page,
+        'total': paginator.count,
+        'has_key': has_key,
+        'model_name': os.environ.get('OPENROUTER_MODEL', 'openrouter/free'),
+    })
+
+
+@coordinator_required
+def ai_detail(request, pk):
+    from .models import AgentRun
+    run = get_object_or_404(
+        AgentRun.objects.select_related('user', 'plan'), pk=pk)
+    return render(request, 'core/ai_run_detail.html', {
+        'run': run,
+        'validation': (allocation.validate_plan(run.plan)
+                       if run.plan and run.plan.status == 'DRAFT' else None),
+    })

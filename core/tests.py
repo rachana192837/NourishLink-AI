@@ -1,4 +1,10 @@
 from datetime import date, timedelta
+import json
+from pathlib import Path
+import tempfile
+
+import numpy as np
+import pandas as pd
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -6,14 +12,20 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
+from core import agent_tools
+from core import agents as agents_module
+from core import llm as llm_module
 from .models import (
     ActivityLog,
+    AgentRun,
+    AllocationPlan,
     Donor,
     FoodBatch,
     Organization,
     Product,
     Request,
     RequestItem,
+    DemandForecast,
 )
 
 
@@ -370,3 +382,715 @@ class MyRequestsTests(BaseTestData):
         response = self.client.get(reverse("my_requests"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, f"#{mine.pk}")
+
+
+class AllocationEngineTests(BaseTestData):
+    """Phase 4: FEFO engine — generation, validation, approval, pickup."""
+
+    def setUp(self):
+        super().setUp()
+        from core import allocation
+        self.allocation = allocation
+        # Engine tests need full control over the stock picture; drop the
+        # base-fixture batch (B-001) so FEFO only sees test-created batches.
+        FoodBatch.objects.all().delete()
+
+    def make_request(self, org=None, partner=None, requirements=None,
+                     status='PENDING', days=5):
+        from core.models import Request, RequestItem
+        org = org or self.org
+        partner = partner or self.partner
+        req = Request.objects.create(
+            organization=org,
+            requested_by=partner,
+            required_by_date=date.today() + timedelta(days=days),
+            status=status,
+        )
+        for product, qty in requirements:
+            RequestItem.objects.create(
+                request=req, product=product, quantity_requested=qty)
+        return req
+
+    def make_batch(self, code, product, qty, cutoff_days, status='AVAILABLE',
+                   reserved=0):
+        return FoodBatch.objects.create(
+            product=product,
+            batch_code=code,
+            quantity_received=qty,
+            quantity_available=qty,
+            quantity_reserved=reserved,
+            received_date=date.today() - timedelta(days=1),
+            distribution_cutoff=date.today() + timedelta(days=cutoff_days),
+            status=status,
+        )
+
+    def test_fefo_prefers_earliest_cutoff(self):
+        early = self.make_batch('B-EARLY', self.product, 30, cutoff_days=3)
+        late = self.make_batch('B-LATE', self.product, 50, cutoff_days=60)
+        req = self.make_request(requirements=[(self.product, 40)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.assertEqual(plan.items.count(), 2)
+        allocations = {a.food_batch_id: a.quantity_allocated
+                       for a in plan.items.all()}
+        self.assertEqual(allocations.get(early.pk), 30)
+        self.assertEqual(allocations.get(late.pk), 10)
+        # Draft reserves nothing.
+        early.refresh_from_db(); late.refresh_from_db()
+        self.assertEqual(early.quantity_reserved, 0)
+        self.assertEqual(late.quantity_reserved, 0)
+
+    def test_skips_blocked_and_expired_batches(self):
+        # cutoff in the past -> expired; cutoff today is still eligible.
+        blocked = self.make_batch('B-BLKD', self.product, 100, cutoff_days=30,
+                                  status='BLOCKED')
+        expired = self.make_batch('B-EXPD', self.product, 100, cutoff_days=-5)
+        good = self.make_batch('B-OK', self.product, 20, cutoff_days=10)
+        req = self.make_request(requirements=[(self.product, 15)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        used = {a.food_batch_id for a in plan.items.all()}
+        self.assertIn(good.pk, used)
+        self.assertNotIn(blocked.pk, used)
+        self.assertNotIn(expired.pk, used)
+
+    def test_unmet_quantity_recorded_not_invented(self):
+        self.make_batch('B-SMALL', self.product, 30, cutoff_days=10)
+        req = self.make_request(requirements=[(self.product, 100)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        total = sum(a.quantity_allocated for a in plan.items.all())
+        self.assertEqual(total, 30)  # allocated only what exists
+        item = req.items.first()
+        item.refresh_from_db()
+        self.assertEqual(item.quantity_allocated, 0)  # draft: not committed
+        ok, errors = self.allocation.approve_plan(plan, self.coordinator)
+        self.assertTrue(ok)
+        item.refresh_from_db()
+        self.assertEqual(item.quantity_allocated, 30)
+        req.refresh_from_db()
+        self.assertEqual(req.status, 'PARTIALLY_FULFILLED')
+
+    def test_reserved_stock_not_double_allocated(self):
+        # 60 received; 50 reserved by an approved plan; 10 unreserved.
+        b = self.make_batch('B-RES', self.product, 60, cutoff_days=30, reserved=50)
+        req = self.make_request(requirements=[(self.product, 40)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.assertEqual(sum(a.quantity_allocated for a in plan.items.all()), 10)
+
+    def test_approval_reserves_stock_and_updates_status(self):
+        b1 = self.make_batch('B-A', self.product, 30, cutoff_days=3)
+        b2 = self.make_batch('B-B', self.other_product, 50, cutoff_days=30)
+        req = self.make_request(requirements=[(self.product, 30),
+                                              (self.other_product, 50)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        ok, errors = self.allocation.approve_plan(plan, self.coordinator)
+        self.assertTrue(ok, errors)
+        b1.refresh_from_db(); b2.refresh_from_db()
+        self.assertEqual(b1.quantity_reserved, 30)
+        self.assertEqual(b2.quantity_reserved, 50)
+        req.refresh_from_db()
+        self.assertEqual(req.status, 'APPROVED')
+
+    def test_approval_rejects_when_stock_consumed(self):
+        # plan1 drains the batch via approval; a plan generated afterwards
+        # has no unreserved stock to reserve and must fail cleanly.
+        self.make_batch('B-ONE', self.product, 30, cutoff_days=10)
+        req1 = self.make_request(requirements=[(self.product, 30)])
+        req2 = self.make_request(requirements=[(self.product, 25)])
+        plan1 = self.allocation.generate_plan(self.coordinator,
+                                              request_ids=[req1.pk])
+        plan2 = self.allocation.generate_plan(self.coordinator,
+                                              request_ids=[req2.pk])
+        ok, _ = self.allocation.approve_plan(plan1, self.coordinator)
+        self.assertTrue(ok)
+        ok, errors = self.allocation.approve_plan(plan2, self.coordinator)
+        self.assertFalse(ok)
+        self.assertTrue(errors)
+        plan2.refresh_from_db()
+        self.assertEqual(plan2.status, 'DRAFT')  # reverted cleanly
+        b = FoodBatch.objects.get(batch_code='B-ONE')
+        self.assertEqual(b.quantity_reserved, 30)  # only plan1 reserved
+        req2.refresh_from_db()
+        self.assertEqual(req2.status, 'PENDING')  # untouched
+
+    def test_cancel_releases_reservations(self):
+        b = self.make_batch('B-C', self.product, 30, cutoff_days=10)
+        req = self.make_request(requirements=[(self.product, 30)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.allocation.approve_plan(plan, self.coordinator)
+        ok, _ = self.allocation.cancel_plan(plan, self.coordinator)
+        self.assertTrue(ok)
+        b.refresh_from_db()
+        self.assertEqual(b.quantity_reserved, 0)
+        item = req.items.first()
+        item.refresh_from_db()
+        self.assertEqual(item.quantity_allocated, 0)
+        req.refresh_from_db()
+        self.assertEqual(req.status, 'PENDING')
+
+    def test_complete_pickup_reduces_stock(self):
+        b = self.make_batch('B-P', self.product, 30, cutoff_days=10)
+        req = self.make_request(requirements=[(self.product, 30)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.allocation.approve_plan(plan, self.coordinator)
+        ok, errors = self.allocation.complete_plan(plan, self.coordinator)
+        self.assertTrue(ok, errors)
+        b.refresh_from_db()
+        self.assertEqual(b.quantity_available, 0)
+        self.assertEqual(b.quantity_reserved, 0)
+        self.assertEqual(b.status, 'DEPLETED')
+        plan.refresh_from_db()
+        self.assertEqual(plan.status, 'COMPLETED')
+        req.refresh_from_db()
+        self.assertEqual(req.status, 'FULFILLED')
+
+    def test_blocked_batch_prevents_pickup(self):
+        b = self.make_batch('B-BLK', self.product, 30, cutoff_days=10)
+        req = self.make_request(requirements=[(self.product, 30)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.allocation.approve_plan(plan, self.coordinator)
+        b.status = 'BLOCKED'
+        b.save(update_fields=['status'])
+        ok, errors = self.allocation.complete_plan(plan, self.coordinator)
+        self.assertFalse(ok)
+        plan.refresh_from_db()
+        self.assertEqual(plan.status, 'APPROVED')
+        # Reservations unchanged — nothing lost.
+        b.refresh_from_db()
+        self.assertEqual(b.quantity_reserved, 30)
+
+    def test_generate_skips_cancelled_requests(self):
+        b = self.make_batch('B-S', self.product, 100, cutoff_days=10)
+        self.make_request(requirements=[(self.product, 10)], status='CANCELLED')
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.assertEqual(plan.items.count(), 0)
+
+    def test_generation_order_by_required_by(self):
+        self.make_batch('B-G', self.product, 40, cutoff_days=30)
+        urgent = self.make_request(requirements=[(self.product, 30)], days=2)
+        later = self.make_request(requirements=[(self.product, 30)], days=10)
+        plan = self.allocation.generate_plan(self.coordinator)
+        by_request = [a.request_item.request_id for a in plan.items.all()]
+        # Urgent request's item comes first.
+        self.assertEqual(by_request[0], urgent.items.first().pk)
+
+    def test_partner_cannot_access_plan_pages(self):
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.client.force_login(self.partner)
+        for url, kwargs in [('plan_list', {}), ('plan_detail', {'pk': plan.pk}),
+                            ('pickups', {})]:
+            response = self.client.get(reverse(url, kwargs=kwargs))
+            self.assertEqual(response.status_code, 302, url)
+        for url in ['plan_generate', 'plan_approve', 'plan_cancel',
+                    'plan_complete']:
+            kwargs = {} if url == 'plan_generate' else {'pk': plan.pk}
+            response = self.client.post(reverse(url, kwargs=kwargs))
+            self.assertEqual(response.status_code, 302, url)
+
+    def test_plan_views_render_for_coordinator(self):
+        b = self.make_batch('B-V', self.product, 30, cutoff_days=10)
+        req = self.make_request(requirements=[(self.product, 30)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.client.force_login(self.coordinator)
+        self.assertEqual(self.client.get(reverse('plan_list')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('pickups')).status_code, 200)
+        response = self.client.get(reverse('plan_detail', args=[plan.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'B-V')
+
+    def test_partner_sees_own_allocations_on_request_detail(self):
+        b = self.make_batch('B-PA', self.product, 30, cutoff_days=10)
+        req = self.make_request(requirements=[(self.product, 30)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.allocation.approve_plan(plan, self.coordinator)
+        self.client.force_login(self.partner)
+        response = self.client.get(reverse('request_detail', args=[req.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Allocations for this request')
+        self.assertContains(response, 'B-PA')
+
+    def test_other_partner_cannot_see_allocations(self):
+        b = self.make_batch('B-PB', self.product, 30, cutoff_days=10)
+        req = self.make_request(requirements=[(self.product, 30)])
+        plan = self.allocation.generate_plan(self.coordinator)
+        self.allocation.approve_plan(plan, self.coordinator)
+        self.client.force_login(self.other_partner)
+        response = self.client.get(reverse('request_detail', args=[req.pk]),
+                                   follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Allocations for this request')
+
+
+
+
+class ForecastTests(BaseTestData):
+    """Phase 5: demand forecaster — features, split integrity, baseline, NN."""
+
+    def setUp(self):
+        super().setUp()
+        import core.forecast
+        self.f = core.forecast
+
+    def _synthetic(self, days=200):
+        return self.f.make_synthetic_daily(
+            ['Rice', 'Oats'], {'Rice': 70, 'Oats': 40},
+            {'Rice': 30, 'Oats': 0}, days=days)
+
+    def test_feature_vector_layout(self):
+        f = self.f = __import__('core.forecast', fromlist=['x'])
+        hist = np.arange(50, dtype=float)
+        vec = f.feature_vector(hist, 3)
+        self.assertEqual(len(vec), f.NUMERIC_FEATURES)
+        lags = vec[:f.LOOKBACK]
+        self.assertEqual(lags[0], hist[-1])          # lag1 = yesterday
+        self.assertEqual(lags[1], hist[-2])
+        self.assertEqual(lags[f.LOOKBACK - 1], hist[-f.LOOKBACK])
+        # weekday one-hot is the last 7 numeric positions
+        self.assertEqual(vec[-7 + 3], 1.0)
+        self.assertEqual(np.count_nonzero(vec[-7:]), 1)
+
+    def test_supervised_shapes(self):
+        f = self.f
+        df = self._synthetic()
+        packed = f.build_supervised(df)
+        n_dates = len(df) - f.WARMUP - (f.HORIZON - 1)
+        self.assertEqual(packed['X'].shape,
+                         (n_dates * len(df.columns),
+                          f.NUMERIC_FEATURES + 2))
+        self.assertEqual(packed['Y'].shape, (n_dates * len(df.columns),))
+        self.assertEqual(len(packed['dates']), n_dates)
+
+    def test_split_layout_and_spacing(self):
+        f = self.f
+        df = self._synthetic()
+        packed = f.build_supervised(df)
+        split = f.chronological_split(packed, test_weeks=4)
+        self.assertEqual(len(split['test_dates']), 4)
+        deltas = {(b - a).days
+                  for a, b in zip(split['test_dates'],
+                                  split['test_dates'][1:])}
+        self.assertEqual(deltas, {7})
+        # the last holdout window covers the final observed data day
+        self.assertEqual(df.index[-1],
+                         split['test_dates'][-1] + timedelta(days=6))
+
+    def test_no_leakage_into_training(self):
+        """Corrupt every observed day the training pipeline never reads
+        (from the earliest test window start, minus one) — deterministic
+        training must then produce IDENTICAL first-holdout predictions."""
+        import copy
+        f = self.f
+        df = self._synthetic()
+        packed = f.build_supervised(df)
+        split = f.chronological_split(packed, test_weeks=4)
+        test_first = split['test_first_date']
+
+        def fit_preds(frame):
+            packed2 = f.build_supervised(frame)
+            split2 = f.chronological_split(packed2, test_weeks=4)
+            f._scale_features(split2)
+            n_products = 2
+            rows = split2['X_train'].shape[0]
+            y_means = f._target_scales(packed2, range(rows))
+            y_row_tr = y_means[f._row_product_index(rows, n_products)]
+            y_row_te = y_means[f._row_product_index(
+                split2['X_test'].shape[0], n_products)]
+            model, _ = f.train_model(split2, y_row_scales=y_row_tr, seed=42,
+                                     epochs=25, val_rows=0)
+            preds = f.predict_matrix(model, split2, y_row_scales=y_row_te)
+            return preds[:n_products]       # earliest test window, per product
+
+        df_mut = df.copy()
+        df_mut.loc[test_first:] = 99.0
+        self.assertTrue(np.allclose(fit_preds(df), fit_preds(df_mut)))
+
+    def test_baseline_constant_series_perfect(self):
+        f = self.f
+        df = pd.DataFrame(
+            20.0, index=pd.date_range('2025-01-01', periods=60, freq='D'),
+            columns=['Rice'])
+        packed = f.build_supervised(df)
+        f.chronological_split(packed, test_weeks=2)
+        value = f.weekly_baseline_row(packed['values'][:, 0])
+        self.assertAlmostEqual(value, 140.0)  # 20/day * 7
+
+    def test_train_and_evaluate_report(self):
+        f = self.f
+        df = self._synthetic()
+        r = f.train_and_evaluate(df=df, seed=42, epochs=15, test_weeks=2)
+        for key in ('overall', 'per_product', 'future_model',
+                    'future_baseline', 'model_name', 'baseline_name'):
+            self.assertIn(key, r)
+        overall = r['overall']
+        self.assertTrue(np.isfinite(overall['model_mae']))
+        self.assertTrue(np.isfinite(overall['baseline_mae']))
+        self.assertEqual(set(r['per_product']), {'Rice', 'Oats'})
+        for pred in r['future_model'].values():
+            self.assertGreaterEqual(pred, 0.0)
+
+    def test_forecast_command_persists(self):
+        from django.core.management import call_command
+        from io import StringIO
+        f = self.f
+        df = f.make_synthetic_daily(['Rice'], {'Rice': 50}, {'Rice': 20},
+                                    days=90)
+        df.index.name = 'date'
+        long = (df.reset_index()
+                .melt(id_vars=['date'], var_name='product',
+                      value_name='quantity'))
+        long['organization'] = 'Hope Shelter'
+        tmp_dir = Path(tempfile.mkdtemp())
+        tmp_csv = tmp_dir / 'daily_demand.csv'
+        tmp_json = tmp_dir / 'report.json'
+        long.to_csv(tmp_csv, index=False)
+        out = StringIO()
+        call_command('forecast', '--epochs', '5', '--test-weeks', '1',
+                     '--source', str(tmp_csv), '--report', str(tmp_json),
+                     stdout=out)
+        self.assertIn('OVERALL', out.getvalue())
+        self.assertTrue(tmp_json.exists())
+        mlp = DemandForecast.objects.filter(model_version=f.MODEL_NAME)
+        self.assertEqual(mlp.count(), 1)
+        self.assertEqual(mlp.first().product.name, 'Rice')
+        self.assertGreater(mlp.first().predicted_quantity, 0)
+        base = DemandForecast.objects.filter(model_version=f.BASELINE_NAME)
+        self.assertEqual(base.count(), 1)
+
+    def test_forecast_list_page(self):
+        f = self.f
+        self.client.force_login(self.coordinator)
+        DemandForecast.objects.create(
+            product=self.product, forecast_date=date.today(),
+            period_days=7, predicted_quantity=88.5,
+            model_version=f.MODEL_NAME)
+        DemandForecast.objects.create(
+            product=self.product, forecast_date=date.today(),
+            period_days=7, predicted_quantity=77.5,
+            model_version=f.BASELINE_NAME)
+        response = self.client.get(reverse('forecast_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '88.5')
+        self.assertContains(response, '77.5')
+
+    def test_forecast_page_partner_blocked(self):
+        self.client.force_login(self.partner)
+        response = self.client.get(reverse('forecast_list'), follow=True)
+        self.assertNotContains(response, 'Demand Forecasts')
+
+
+class AgentToolTests(BaseTestData):
+    """Phase 6: agent tool layer — same data and engine the UI uses."""
+
+    def _batch(self, product, qty=20, cutoff_days=10, code='T-B1',
+               reserved=0, status=FoodBatch.Status.AVAILABLE):
+        return FoodBatch.objects.create(
+            product=product, donor=self.donor, batch_code=code,
+            quantity_received=qty, quantity_available=qty,
+            quantity_reserved=reserved,
+            received_date=date.today() - timedelta(days=5),
+            distribution_cutoff=date.today() + timedelta(days=cutoff_days),
+            status=status)
+
+    def _request(self, product, qty, required_days=5, org=None, user=None):
+        req = Request.objects.create(
+            organization=org or self.org,
+            requested_by=user or self.partner,
+            required_by_date=date.today() + timedelta(days=required_days))
+        RequestItem.objects.create(request=req, product=product,
+                                   quantity_requested=qty)
+        return req
+
+    def test_get_inventory_lists_batch_rows(self):
+        self._batch(self.product, qty=30, code='T-INV-1')
+        rows = agent_tools.get_inventory()
+        row = next(r for r in rows if r['batch_code'] == 'T-INV-1')
+        self.assertEqual(row['qty_available'], 30)
+        self.assertEqual(row['qty_unreserved'], 30)
+        self.assertEqual(row['cutoff_date'],
+                         (date.today() + timedelta(days=10)).isoformat())
+
+    def test_get_pending_requests_summary_and_items(self):
+        before = agent_tools.get_pending_requests()['n_requests_open']
+        self._request(self.product, qty=17)
+        open_row = agent_tools.get_pending_requests()
+        self.assertEqual(open_row['n_requests_open'], before + 1)
+        self.assertEqual(len(open_row['requests']), before + 1)
+        item = open_row['requests'][0]['items'][0]
+        self.assertEqual(item['qty_unmet'], 17)
+
+        req2 = self._request(self.product, qty=5)
+        item2 = req2.items.first()
+        item2.quantity_allocated = 5
+        item2.save()
+        open_row = agent_tools.get_pending_requests()
+        # req2 is now fully covered, so it no longer counts as open demand
+        self.assertEqual(open_row['n_requests_open'], before + 1)
+
+    def test_get_pending_requests_caps_listing(self):
+        for i in range(30):
+            self._request(self.product, qty=i + 1, required_days=i + 1)
+        open_row = agent_tools.get_pending_requests(cap=25)
+        self.assertEqual(open_row['n_requests_open'], 30)
+        self.assertEqual(len(open_row['requests']), 25)
+        self.assertTrue(open_row['truncated'])
+
+    def test_demand_forecast_gap(self):
+        self._batch(self.product, qty=40, code='T-FC-1')
+        DemandForecast.objects.create(
+            product=self.product, forecast_date=date.today(),
+            period_days=7, predicted_quantity=25.0,
+            model_version=agent_tools.FORECAST_VERSION)
+        rows = agent_tools.get_demand_forecast()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['forecast_7d'], 25.0)
+        # stock includes the BaseTestData fixture batch (100 free units)
+        self.assertEqual(rows[0]['stock_free'], 140)
+        self.assertEqual(rows[0]['gap'], 115.0)
+
+    def test_at_risk_excludes_passed_cutoffs(self):
+        self._batch(self.product, qty=10, cutoff_days=-1, code='T-OLD-1')
+        self._batch(self.product, qty=12, cutoff_days=2, code='T-NEAR-1')
+        rows = agent_tools.get_batches_at_risk(days=7)
+        codes = {r['batch_code'] for r in rows}
+        self.assertIn('T-NEAR-1', codes)
+        self.assertNotIn('T-OLD-1', codes)
+
+    def test_generate_allocation_creates_draft_without_reservation(self):
+        self._batch(self.product, qty=30, code='T-GEN-1')
+        req = self._request(self.product, qty=10)
+        result = agent_tools.generate_allocation(self.coordinator, [req.pk])
+        self.assertIn('plan_id', result)
+        self.assertEqual(len(result['items']), 1)
+        self.assertEqual(result['items'][0]['qty'], 10)
+        plan = AllocationPlan.objects.get(pk=result['plan_id'])
+        self.assertEqual(plan.status, AllocationPlan.Status.DRAFT)
+        self.assertEqual(plan.created_by, self.coordinator)
+        batch = FoodBatch.objects.get(batch_code='T-GEN-1')
+        self.assertEqual(batch.quantity_reserved, 0)
+        self.assertIsNone(plan.approved_at)
+
+    def test_generate_allocation_reports_unmet(self):
+        # other_product has no batches except the small one we add, so the
+        # 10-unit request can only be 4 covered -> unmet 6.
+        self._batch(self.other_product, qty=4, code='T-SHORT-2')
+        req = self._request(self.other_product, qty=10)
+        result = agent_tools.generate_allocation(self.coordinator, [req.pk])
+        self.assertEqual(result['unmet'][0]['unmet'], 6)
+        self.assertEqual(len(result['items']), 1)
+
+    def test_generate_allocation_unmet_relative_to_plan(self):
+        # A fully coverable request must report NO unmet even though the
+        # engine does not touch RequestItem.quantity_allocated (that only
+        # happens on approval).
+        self._batch(self.product, qty=5, code='T-COVER-1', cutoff_days=3)
+        req = self._request(self.product, qty=10)
+        result = agent_tools.generate_allocation(self.coordinator, [req.pk])
+        self.assertEqual(result['unmet'], [])
+        self.assertEqual(len(result['items']), 2)  # split across FEFO batches
+
+    def test_validate_allocation_flags_bad_state(self):
+        self._batch(self.product, qty=30, code='T-VAL-1')
+        req = self._request(self.product, qty=10)
+        result = agent_tools.generate_allocation(self.coordinator, [req.pk])
+        validation = agent_tools.validate_allocation(result['plan_id'])
+        self.assertTrue(validation['valid'])
+        batch = FoodBatch.objects.get(batch_code='T-VAL-1')
+        batch.quantity_available = 2
+        batch.save()
+        validation = agent_tools.validate_allocation(result['plan_id'])
+        self.assertFalse(validation['valid'])
+        self.assertTrue(any('T-VAL-1' in e for e in validation['errors']))
+
+    def test_validate_allocation_unknown_plan(self):
+        result = agent_tools.validate_allocation(999999)
+        self.assertFalse(result['valid'])
+
+
+def _tool_call(name, arguments='', call_id='call-1'):
+    return {'id': call_id, 'type': 'function',
+            'function': {'name': name, 'arguments': arguments}}
+
+
+class _FakeLLM:
+    """Scripted LLM stand-in for hermetic agent tests (no network)."""
+
+    def __init__(self, script):
+        # Each step: {'tool_calls': [...]} or {'content': '...'};
+        # a 'raise' value raises LLMUnavailable; a 'hook' callable runs
+        # mid-loop (lets tests mutate DB state between rounds).
+        self.script = list(script)
+        self.chat_log = []
+
+    def chat(self, messages, tools=None, tool_choice=None, **kwargs):
+        self.chat_log.append({'n_messages': len(messages),
+                              'tool_choice': tool_choice})
+        step = self.script.pop(0)
+        if 'raise' in step:
+            raise llm_module.LLMUnavailable(step['raise'])
+        if 'hook' in step:
+            step['hook']()
+        return {
+            'content': step.get('content'),
+            'tool_calls': step.get('tool_calls', []),
+            'model': 'fake/agent-1',
+            'prompt_tokens': 11,
+            'completion_tokens': 7,
+        }
+
+
+def _tool_call(name, arguments='', call_id='call-1'):
+    return {'id': call_id, 'type': 'function',
+            'function': {'name': name, 'arguments': arguments}}
+
+
+class AgentRunnerTests(BaseTestData):
+    """Phase 6: agent loop, planner retry rule, fallback paths."""
+
+    def _batch(self, qty=30, code='T-RUN-1', cutoff_days=10):
+        return FoodBatch.objects.create(
+            product=self.product, donor=self.donor, batch_code=code,
+            quantity_received=qty, quantity_available=qty,
+            received_date=date.today() - timedelta(days=5),
+            distribution_cutoff=date.today() + timedelta(days=cutoff_days))
+
+    def _request(self, qty=10):
+        req = Request.objects.create(
+            organization=self.org, requested_by=self.partner,
+            required_by_date=date.today() + timedelta(days=5))
+        RequestItem.objects.create(request=req, product=self.product,
+                                   quantity_requested=qty)
+        return req
+
+    def test_analyst_llm_loop_uses_tools(self):
+        fake = _FakeLLM([
+            {'tool_calls': [_tool_call('get_pending_requests', '{}', 'c1')]},
+            {'content': '1 pending request; stock healthy.'},
+        ])
+        run = agents_module.run_analyst(self.coordinator, client=fake)
+        self.assertEqual(run.status, AgentRun.Status.OK)
+        self.assertEqual(run.model_name, 'fake/agent-1')
+        self.assertEqual(len(run.tool_calls), 1)
+        self.assertEqual(run.tool_calls[0]['tool'], 'get_pending_requests')
+        self.assertIn('pending', run.output['report'].lower())
+        self.assertEqual(run.prompt_tokens, 22)     # summed across rounds
+        self.assertEqual(run.completion_tokens, 14)
+
+    def test_analyst_falls_back_when_llm_unavailable(self):
+        blank = _FakeLLM([{'raise': 'HTTP 429: rate limited'}])
+        run = agents_module.run_analyst(self.coordinator, client=blank)
+        self.assertEqual(run.status, AgentRun.Status.FALLBACK)
+        self.assertIn('429', run.error_message)
+        self.assertIn('shortages', run.output)
+        self.assertEqual(len(run.tool_calls), 0)
+
+    def test_planner_llm_traces_sequential_tools(self):
+        req = self._request(qty=10)
+        fake = _FakeLLM([
+            {'tool_calls': [_tool_call('get_pending_requests', '{}', 'c1')]},
+            {'tool_calls': [_tool_call(
+                'generate_allocation',
+                json.dumps({'request_ids': [req.pk]}), 'c2')]},
+            {'tool_calls': [_tool_call(
+                'validate_allocation',
+                json.dumps({'plan_id': 999999}), 'c3')]},
+            {'content': 'Plan 999999 invalid: unknown plan id.'},
+        ])
+        run = agents_module.run_planner(self.coordinator, client=fake)
+        self.assertEqual(run.status, AgentRun.Status.OK)
+        traced = [t['tool'] for t in run.tool_calls]
+        self.assertEqual(
+            traced,
+            ['get_pending_requests', 'generate_allocation',
+             'validate_allocation'])
+        self.assertIn('unknown', run.output['report'].lower())
+        # the planner DID generate a real draft before validating a bogus id
+        self.assertIsNotNone(run.plan)
+        self.assertEqual(run.plan.items.count(), 1)
+
+    def test_planner_tracks_generated_plan(self):
+        self._batch(qty=30)
+        req = self._request(qty=10)
+        fake = _FakeLLM([
+            {'tool_calls': [
+                _tool_call('get_pending_requests', '{}', 'c1'),
+                _tool_call('generate_allocation',
+                           json.dumps({'request_ids': [req.pk]}), 'c2')]},
+            {'tool_calls': [_tool_call(
+                'validate_allocation',
+                json.dumps({'plan_id': 1}), 'c3')]},
+            {'content': 'Plan proposed and validated.'},
+        ])
+        run = agents_module.run_planner(self.coordinator, client=fake)
+        self.assertEqual(run.status, AgentRun.Status.OK)
+        self.assertIsNotNone(run.plan)
+        self.assertEqual(run.plan.status, AllocationPlan.Status.DRAFT)
+        self.assertEqual(run.plan.items.count(), 1)
+
+    def test_planner_retry_after_validation_failure(self):
+        self._batch(qty=30, code='T-RETRY-1')
+        req = self._request(qty=10)
+        fake = _FakeLLM([
+            {'tool_calls': [
+                _tool_call('generate_allocation',
+                           json.dumps({'request_ids': [req.pk]}), 'c1')]},
+            # one step: run the hook (cancel the request) just before the
+            # model gets billed for this round's validate tool call
+            {'hook': lambda: Request.objects.filter(pk=req.pk).update(
+                status=Request.Status.CANCELLED),
+             'tool_calls': [
+                _tool_call('validate_allocation',
+                           json.dumps({'plan_id': 1}), 'c2')]},
+            {'content': 'Validated; one retry considered.'},
+        ])
+        run = agents_module.run_planner(self.coordinator, client=fake)
+        # The nudge makes the weak validation failure visible to the model;
+        # messages history grows by the tool rounds + injected nudge.
+        planner_calls = [c for c in fake.chat_log]
+        self.assertEqual(len(planner_calls), 3)
+        self.assertEqual(planner_calls[0]['n_messages'], 2)
+        self.assertEqual(planner_calls[1]['n_messages'], 4)
+        # the nudge user message is injected after the validation result
+        self.assertEqual(planner_calls[2]['n_messages'], 7)
+
+    def test_planner_falls_back_when_llm_unavailable(self):
+        self._batch(qty=30)
+        self._request(qty=10)
+        broken = _FakeLLM([{'raise': 'HTTP 402: out of credits'}])
+        run = agents_module.run_planner(self.coordinator, client=broken)
+        self.assertEqual(run.status, AgentRun.Status.FALLBACK)
+        self.assertIn('402', run.error_message)
+        self.assertIsNotNone(run.plan)
+        self.assertEqual(run.plan.status, AllocationPlan.Status.DRAFT)
+
+    def test_tool_budget_exhaustion_forces_summary(self):
+        fake = _FakeLLM(
+            [{'tool_calls': [_tool_call('get_pending_requests', '{}',
+                                        'cf')]}] * 5
+            + [{'content': 'budget exhausted summary'}])
+        run = agents_module.run_analyst(self.coordinator, client=fake)
+        self.assertEqual(run.status, AgentRun.Status.OK)
+        self.assertEqual(len(run.tool_calls), 5)
+        self.assertIn('budget exhausted', run.output['report'])
+        forced = fake.chat_log[-1]
+        self.assertEqual(forced['tool_choice'], 'none')
+
+    def test_unknown_tool_reports_error_not_crash(self):
+        fake = _FakeLLM([
+            {'tool_calls': [_tool_call('delete_everything', '{}', 'cx')]},
+            {'content': 'Cannot do that.'},
+        ])
+        run = agents_module.run_analyst(self.coordinator, client=fake)
+        self.assertEqual(run.tool_calls[0]['result'],
+                         {'error': 'Unknown tool: delete_everything'})
+        self.assertEqual(run.status, AgentRun.Status.OK)
+
+
+class AgentPermissionTests(BaseTestData):
+    def test_partner_blocked_from_ai_pages(self):
+        self.client.force_login(self.partner)
+        response = self.client.get(reverse('ai_list'), follow=True)
+        self.assertNotContains(response, 'AI Proposals')
+
+    def test_coordinator_reads_ai_pages(self):
+        self.client.force_login(self.coordinator)
+        response = self.client.get(reverse('ai_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'AI Proposals')

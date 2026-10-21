@@ -22,4 +22,20 @@ urlpatterns = [
          name='request_status_update'),
     path('requests/<int:pk>/cancel/', views.request_cancel,
          name='request_cancel'),
+
+    # Allocation plans
+    path('plans/', views.plan_list, name='plan_list'),
+    path('plans/generate/', views.plan_generate, name='plan_generate'),
+    path('plans/<int:pk>/', views.plan_detail, name='plan_detail'),
+    path('plans/<int:pk>/approve/', views.plan_approve, name='plan_approve'),
+    path('plans/<int:pk>/cancel/', views.plan_cancel, name='plan_cancel'),
+    path('plans/<int:pk>/complete/', views.plan_complete, name='plan_complete'),
+    path('pickups/', views.pickups, name='pickups'),
+
+    # Demand forecasts
+    path('forecasts/', views.forecast_list, name='forecast_list'),
+
+    # AI agents (Config C)
+    path('ai/', views.ai_list, name='ai_list'),
+    path('ai/<int:pk>/', views.ai_detail, name='ai_detail'),
 ]

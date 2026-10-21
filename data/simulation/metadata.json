@@ -1,8 +1,8 @@
 {
   "seed": 42,
   "days": 365,
-  "start_date": "2025-10-15",
-  "end_date": "2026-10-14",
+  "start_date": "2025-10-22",
+  "end_date": "2026-10-21",
   "n_products": 12,
   "n_organizations": 6,
   "n_spikes": 10,
