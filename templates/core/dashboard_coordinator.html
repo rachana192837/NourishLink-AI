@@ -26,6 +26,45 @@
   </div>
 </div>
 
+<div class="card" style="margin-bottom:20px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+    <h3 style="font-size:1rem;color:var(--text-muted);">AI Demand Highlights</h3>
+    <a href="{% url 'forecast_list' %}" style="font-size:.8rem;color:var(--primary);text-decoration:none;">All forecasts →</a>
+  </div>
+  {% if forecast_generated %}
+    <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:10px;">
+      Model {{ forecast_generated.model_version }} · latest horizon date
+      {{ forecast_generated.forecast_date }} ({{ forecast_generated.period_days }}-day period)
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Product</th><th>Free stock</th><th>7-day forecast</th><th>Gap</th></tr></thead>
+        <tbody>
+          {% for row in forecast_top_gaps %}
+          <tr>
+            <td>{{ row.product.name }}</td>
+            <td>{{ row.stock_free }}</td>
+            <td>{{ row.forecast|default_if_none:"—" }}</td>
+            <td>
+              {% if row.gap is not None %}
+                <span class="chip {% if row.gap < 0 %}chip-danger{% elif row.gap > 50 %}chip-warn{% else %}chip-muted{% endif %}">
+                  {{ row.gap }}
+                </span>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.78rem;color:var(--text-muted);margin-top:10px;">
+      Negative gap = predicted week demand exceeds free stock — order or realloc before the cutoff.
+    </p>
+  {% else %}
+    <div class="empty-state"><p>No forecasts yet — run <code>python manage.py forecast</code>.</p></div>
+  {% endif %}
+</div>
+
 <div class="card">
   <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Quick Actions</h3>
   <div style="display:flex;gap:12px;flex-wrap:wrap;">

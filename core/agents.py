@@ -251,6 +251,7 @@ def fallback_planner(user):
     validation = agent_tools.validate_allocation(generated['plan_id'])
     plan = AllocationPlan.objects.get(pk=generated['plan_id'])
     items = generated['items']
+    items_head = items[:10]
     total_units = sum(i['qty'] for i in items)
     orgs = sorted({i['organization'] for i in items})
 
@@ -277,15 +278,18 @@ def fallback_planner(user):
         model_name='',
         user=user,
         plan=plan,
-        tool_calls=[{'tool': 'get_pending_requests',
-                     'args': {}, 'result': {'n_requests_open':
-                                            pending['n_requests_open']}},
-                    {'tool': 'generate_allocation',
-                     'args': {'request_ids': request_ids},
-                     'result': {'plan_id': plan.pk,
-                                'n_items': len(items)}},
-                    {'tool': 'validate_allocation',
-                     'args': {'plan_id': plan.pk}, 'result': validation}],
+        tool_calls=[
+            {'tool': 'get_pending_requests', 'args': {'cap': 25},
+             'result': {'n_requests_open': pending['n_requests_open'],
+                        'listed_requests': pending['listed_requests'],
+                        'request_ids': [r['request_id']
+                                        for r in pending['requests']]}},
+            {'tool': 'generate_allocation',
+             'args': {'request_ids': request_ids},
+             'result': {'plan_id': plan.pk, 'n_items': len(items),
+                        'items': items_head}},
+            {'tool': 'validate_allocation', 'args': {'plan_id': plan.pk},
+             'result': validation}],
         output={'report': '\n'.join(lines),
                 'plan_id': plan.pk,
                 'validation': validation},
@@ -356,8 +360,8 @@ def run_planner(user, client=None, request_ids=None):
 # Combined proposal cycle (what the "Run AI proposal" button does)
 # ---------------------------------------------------------------------------
 
-def run_proposal_cycle(user, client=None):
+def run_proposal_cycle(user, client=None, request_ids=None):
     """Analyst first, then planner informed by the analyst's report."""
     analyst_run = run_analyst(user, client=client)
-    planner_run = run_planner(user, client=client)
+    planner_run = run_planner(user, client=client, request_ids=request_ids)
     return analyst_run, planner_run

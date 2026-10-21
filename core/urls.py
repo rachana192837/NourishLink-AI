@@ -35,6 +35,9 @@ urlpatterns = [
     # Demand forecasts
     path('forecasts/', views.forecast_list, name='forecast_list'),
 
+    # Reports
+    path('reports/', views.reports, name='reports'),
+
     # AI agents (Config C)
     path('ai/', views.ai_list, name='ai_list'),
     path('ai/<int:pk>/', views.ai_detail, name='ai_detail'),

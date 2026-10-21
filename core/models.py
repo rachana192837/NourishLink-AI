@@ -118,6 +118,10 @@ class FoodBatch(models.Model):
     def days_until_cutoff(self):
         return (self.distribution_cutoff - timezone.now().date()).days
 
+    @property
+    def days_since_cutoff(self):
+        return max(0, -self.days_until_cutoff)
+
 
 class Request(models.Model):
     class Status(models.TextChoices):

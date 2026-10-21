@@ -50,6 +50,10 @@ def dashboard(request):
             ).count(),
             'pending_requests': Request.objects.filter(status='PENDING').count(),
             'draft_plans': AllocationPlan.objects.filter(status='DRAFT').count(),
+            'forecast_top_gaps': _forecast_product_rows()[:5],
+            'forecast_generated': DemandForecast.objects.filter(
+                model_version=MLP_VERSION
+            ).order_by('-forecast_date').first(),
         }
         return render(request, 'core/dashboard_coordinator.html', context)
     else:
@@ -502,10 +506,9 @@ def plan_complete(request, pk):
 
 REPORT_PATH = BASE_DIR / 'data' / 'forecast' / 'report.json'
 
-@coordinator_required
-def forecast_list(request):
-    report = forecasting.load_report(REPORT_PATH)
 
+def _forecast_product_rows():
+    """Per-product stock vs 7-day NN forecast (latest stored rows)."""
     forecasts = {}
     mlp_rows = DemandForecast.objects.filter(
         model_version=MLP_VERSION).select_related('product')
@@ -517,7 +520,6 @@ def forecast_list(request):
         forecasts.setdefault(row.product_id, {})['baseline'] = row
 
     today = timezone.localdate()
-    stock = {}
     product_rows = []
     for product in Product.objects.all():
         agg = FoodBatch.objects.filter(
@@ -544,6 +546,13 @@ def forecast_list(request):
         })
     product_rows.sort(key=lambda r: (r['gap'] is None, r['gap'] if r['gap']
                                      is not None else 0))
+    return product_rows
+
+
+@coordinator_required
+def forecast_list(request):
+    report = forecasting.load_report(REPORT_PATH)
+    product_rows = _forecast_product_rows()
 
     ov = report['overall'] if report else None
     return render(request, 'core/forecast_list.html', {
@@ -555,6 +564,79 @@ def forecast_list(request):
         'model_version': MLP_VERSION,
         'baseline_name': BASELINE_VERSION,
     })
+
+
+# ---------------------------------------------------------------------------
+# Reports (coordinator)
+# ---------------------------------------------------------------------------
+
+@coordinator_required
+def reports(request):
+    """Operational summary: distributions, waste, backlog, activity."""
+    today = timezone.localdate()
+
+    # Distribution totals — completed plans only (approved = distributed).
+    completed_plans = AllocationPlan.objects.filter(status='COMPLETED')
+    distributed_units = (AllocationItem.objects
+                         .filter(plan__in=completed_plans)
+                         .aggregate(total=Sum('quantity_allocated'))
+                         ['total'] or 0)
+    distributed_by_product = sorted(
+        AllocationItem.objects
+        .filter(plan__in=completed_plans)
+        .values('request_item__product__name')
+        .annotate(units=Sum('quantity_allocated'),
+                  n=Count('pk'))
+        .order_by('-units'),
+        key=lambda r: r['request_item__product__name'])
+
+    # Recorded waste — past distribution cutoff with undistributed units.
+    wasted = (FoodBatch.objects
+              .filter(distribution_cutoff__lt=today,
+                      quantity_available__gt=0)
+              .exclude(status__in=['BLOCKED'])
+              .select_related('product', 'donor')
+              .order_by('distribution_cutoff'))
+    wasted_units = sum(b.quantity_available for b in wasted)
+
+    # At-risk stock — cut-off within the next 7 days, units still free.
+    at_risk = (FoodBatch.objects
+               .filter(status='AVAILABLE',
+                       distribution_cutoff__gte=today,
+                       distribution_cutoff__lte=today + timedelta(days=7)))
+    at_risk_units = sum(b.quantity_available - b.quantity_reserved
+                        for b in at_risk)
+    at_risk_rows = (at_risk.select_related('product', 'donor')
+                    .order_by('distribution_cutoff')[:10])
+
+    # Open backlog — pending/pre-approved requests and their unmet units.
+    backlog_items = RequestItem.objects.filter(
+        request__status__in=['PENDING', 'APPROVED'])
+    backlog_requested = sum(i.quantity_requested for i in backlog_items)
+    backlog_allocated = sum(i.quantity_allocated for i in backlog_items)
+    backlog_unmet = max(0, backlog_requested - backlog_allocated)
+
+    activity = (ActivityLog.objects.select_related('user')
+                .order_by('-created_at'))
+    paginator = Paginator(activity, 20)
+    page = paginator.get_page(request.GET.get('page'))
+
+    context = {
+        'distributed_units': distributed_units,
+        'distributed_plans': completed_plans.count(),
+        'distributed_by_product': distributed_by_product,
+        'wasted_count': wasted.count(),
+        'wasted_units': wasted_units,
+        'wasted_rows': wasted[:10],
+        'at_risk_count': at_risk.count(),
+        'at_risk_units': at_risk_units,
+        'open_backlog_requests': backlog_items.values('request')
+                                                .distinct().count(),
+        'backlog_unmet': backlog_unmet,
+        'page_obj': page,
+        'forecast_highlights': _forecast_product_rows()[:5],
+    }
+    return render(request, 'core/reports.html', context)
 
 
 # ---------------------------------------------------------------------------

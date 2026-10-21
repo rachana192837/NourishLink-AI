@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Reports — NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Reports</h1>
+  <p>Operational summary — distributions, waste, backlog and recent activity.</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card success">
+    <div class="stat-value">{{ distributed_units }}</div>
+    <div class="stat-label">Units distributed ({{ distributed_plans }} completed plans)</div>
+  </div>
+  <div class="stat-card danger">
+    <div class="stat-value">{{ wasted_units }}</div>
+    <div class="stat-label">Units wasted ({{ wasted_count }} past-cutoff batches)</div>
+  </div>
+  <div class="stat-card warning">
+    <div class="stat-value">{{ at_risk_units }}</div>
+    <div class="stat-label">Units at risk now (≤ 7 days)</div>
+  </div>
+  <div class="stat-card info">
+    <div class="stat-value">{{ backlog_unmet }}</div>
+    <div class="stat-label">Unmet units in backlog ({{ open_backlog_requests }} open requests)</div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+  <h3 style="font-size:1rem;color:var(--text-muted);margin-bottom:12px;">At-risk stock right now (distribution cutoff within 7 days)</h3>
+  {% if at_risk_rows %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Batch</th><th>Product</th><th>Free units</th><th>Cutoff</th><th>Donor</th></tr></thead>
+      <tbody>
+        {% for b in at_risk_rows %}
+        <tr>
+          <td><a href="{% url 'batch_detail' b.pk %}">{{ b.batch_code }}</a></td>
+          <td>{{ b.product.name }}</td>
+          <td>{{ b.quantity_unreserved }}</td>
+          <td>{{ b.distribution_cutoff }}</td>
+          <td>{{ b.donor.name|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><p>No batches at risk in the next 7 days.</p></div>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+  <h3 style="font-size:1rem;color:var(--text-muted);margin-bottom:12px;">Waste history — passed cutoff with undistributed units</h3>
+  {% if wasted_rows %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Batch</th><th>Product</th><th>Units left</th><th>Days past cutoff</th><th>Donor</th></tr></thead>
+      <tbody>
+        {% for b in wasted_rows %}
+        <tr>
+          <td><a href="{% url 'batch_detail' b.pk %}">{{ b.batch_code }}</a></td>
+          <td>{{ b.product.name }}</td>
+          <td>{{ b.quantity_available }}</td>
+          <td>{{ b.days_since_cutoff }}</td>
+          <td>{{ b.donor.name|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><p>No recorded waste — every past-cutoff batch was fully distributed.</p></div>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+  <h3 style="font-size:1rem;color:var(--text-muted);margin-bottom:12px;">Distributed by product (completed plans)</h3>
+  {% if distributed_by_product %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Product</th><th>Units</th><th>Allocation items</th></tr></thead>
+      <tbody>
+        {% for row in distributed_by_product %}
+        <tr><td>{{ row.request_item__product__name }}</td><td>{{ row.units }}</td><td>{{ row.n }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><p>No completed distributions yet — approve and complete a plan first.</p></div>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+  <h3 style="font-size:1rem;color:var(--text-muted);margin-bottom:12px;">Demand vs stock (latest forecasts, biggest negative gaps)</h3>
+  {% if forecast_highlights %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Product</th><th>Free stock</th><th>7-day forecast</th><th>Gap</th></tr></thead>
+      <tbody>
+        {% for row in forecast_highlights %}
+        <tr>
+          <td>{{ row.product.name }}</td>
+          <td>{{ row.stock_free }}</td>
+          <td>{{ row.forecast|default_if_none:"—" }}</td>
+          <td>
+            {% if row.gap is not None %}
+              <span class="chip {% if row.gap < 0 %}chip-danger{% elif row.gap > 50 %}chip-warn{% else %}chip-muted{% endif %}">{{ row.gap }}</span>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><p>No forecasts stored yet — run <code>python manage.py forecast</code>.</p></div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3 style="font-size:1rem;color:var(--text-muted);margin-bottom:12px;">Activity log</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Detail</th></tr></thead>
+      <tbody>
+        {% for entry in page_obj %}
+        <tr>
+          <td>{{ entry.created_at|date:"Y-m-d H:i" }}</td>
+          <td>{% if entry.user %}{{ entry.user.get_full_name|default:entry.user.username }}{% else %}system{% endif %}</td>
+          <td><span class="chip chip-muted">{{ entry.action_type }}</span></td>
+          <td>{{ entry.description }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="empty-state">No activity recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<div style="margin-top:16px;display:flex;gap:8px;align-items:center;">
+  {% if page_obj.has_previous %}
+    <a class="btn btn-ghost btn-sm" href="{% url 'reports' %}?page={{ page_obj.previous_page_number }}">← Prev</a>
+  {% endif %}
+  <span style="font-size:.85rem;color:var(--text-muted);">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="btn btn-ghost btn-sm" href="{% url 'reports' %}?page={{ page_obj.next_page_number }}">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

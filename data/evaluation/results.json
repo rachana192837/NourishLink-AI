@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-10-21T13:51:07.058946+00:00",
+  "scenario": {
+    "n_requests": 25,
+    "open_backlog": 630,
+    "selection": "earliest required-by pending requests"
+  },
+  "forecast": {
+    "model_name": "torch-mlp-v2-residual",
+    "baseline_name": "baseline-rolling28-weekly",
+    "model_mae": 7.66,
+    "baseline_mae": 7.96,
+    "model_wape": 0.118,
+    "baseline_wape": 0.122,
+    "wins_of": [
+      7,
+      12
+    ]
+  },
+  "config_a": {
+    "plan_id": 13,
+    "validation": {
+      "valid": true,
+      "errors": []
+    },
+    "requested_units_subset": 1610,
+    "allocated_units": 1574,
+    "unmet_units_after_plan": 36,
+    "fulfilment_rate": 0.9776,
+    "n_plan_items": 281,
+    "requests_touched": 25,
+    "at_risk_units_covered": 881
+  },
+  "config_b": {
+    "plan_id": 14,
+    "validation": {
+      "valid": true,
+      "errors": []
+    },
+    "requested_units_subset": 1610,
+    "allocated_units": 1574,
+    "unmet_units_after_plan": 36,
+    "fulfilment_rate": 0.9776,
+    "n_plan_items": 281,
+    "requests_touched": 25,
+    "at_risk_units_covered": 881
+  },
+  "config_c": {
+    "plan_id": 15,
+    "validation": {
+      "valid": true,
+      "errors": []
+    },
+    "agent_cost": {
+      "agent_mode": "fallback",
+      "tokens_prompt": 0,
+      "tokens_completion": 0,
+      "latency_ms": 6526,
+      "tool_calls": 3
+    },
+    "agent_audit": {
+      "checks": 22,
+      "violations": [],
+      "passes": true
+    },
+    "requested_units_subset": 1610,
+    "allocated_units": 1574,
+    "unmet_units_after_plan": 36,
+    "fulfilment_rate": 0.9776,
+    "n_plan_items": 281,
+    "requests_touched": 25,
+    "at_risk_units_covered": 881
+  },
+  "runtime_seconds": 17.5
+}

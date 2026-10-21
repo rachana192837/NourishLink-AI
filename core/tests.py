@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from core import agent_tools
+from core import allocation
 from core import agents as agents_module
 from core import llm as llm_module
 from .models import (
@@ -1094,3 +1095,103 @@ class AgentPermissionTests(BaseTestData):
         response = self.client.get(reverse('ai_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'AI Proposals')
+
+
+class ForecastBoostTests(BaseTestData):
+    """Phase 7 / Config B: forecast-informed demand ordering.
+
+    Scenario: Rice has surplus stock, Beans is projected to fall short.
+    A pure-Rice request is calendar-earlier; a Beans+Rice bundle is
+    later. Config A serves calendar order (the early Rice request can
+    drain the shared Rice pool); Config B pulls the shortage-containing
+    bundle forward, so the Beans partner keeps its Rice too.
+    """
+
+    def setUp(self):
+        super().setUp()
+        # isolate: drop fixture batches so stock numbers are exact
+        FoodBatch.objects.all().delete()
+        self.batch_rice = FoodBatch.objects.create(
+            product=self.product, donor=self.donor, batch_code='FB-RICE',
+            quantity_received=100, quantity_available=100,
+            received_date=date.today() - timedelta(days=5),
+            distribution_cutoff=date.today() + timedelta(days=30))
+        self.batch_beans = FoodBatch.objects.create(
+            product=self.other_product, donor=self.donor, batch_code='FB-BEANS',
+            quantity_received=30, quantity_available=30,
+            received_date=date.today() - timedelta(days=5),
+            distribution_cutoff=date.today() + timedelta(days=25))
+        for product, predicted, version in (
+                (self.product, 20.0, agent_tools.FORECAST_VERSION),
+                (self.other_product, 100.0, agent_tools.FORECAST_VERSION)):
+            DemandForecast.objects.create(
+                product=product, forecast_date=date.today(), period_days=7,
+                predicted_quantity=predicted, model_version=version)
+        # calendar-earlier pure-Rice request
+        self.req_early = Request.objects.create(
+            organization=self.org, requested_by=self.partner,
+            required_by_date=date.today() + timedelta(days=2))
+        RequestItem.objects.create(request=self.req_early,
+                                   product=self.product,
+                                   quantity_requested=80)
+        # later Beans(shortage)+Rice bundle
+        self.req_late = Request.objects.create(
+            organization=self.other_org, requested_by=self.other_partner,
+            required_by_date=date.today() + timedelta(days=6))
+        RequestItem.objects.create(request=self.req_late,
+                                   product=self.other_product,
+                                   quantity_requested=50)
+        self.late_rice_item = RequestItem.objects.create(
+            request=self.req_late, product=self.product,
+            quantity_requested=40)
+
+    def _alloc_for(self, plan, item):
+        return next((a.quantity_allocated for a in plan.items.all()
+                     if a.request_item_id == item.pk), 0)
+
+    def test_config_a_serves_calendar_order(self):
+        plan = allocation.generate_plan(self.coordinator, name='A-field')
+        # calendar order: req_early drained the shared Rice pool first,
+        # leaving only 20 units for the bundle's Rice item
+        self.assertEqual(self._alloc_for(plan, self.late_rice_item), 20)
+        beans_item_late = self.req_late.items.first()
+        self.assertEqual(self._alloc_for(plan, beans_item_late), 30)
+        early_alloc = sum(
+            a.quantity_allocated for a in plan.items.all()
+            if a.request_item.request_id == self.req_early.pk)
+        self.assertEqual(early_alloc, 80)
+
+    def test_config_b_pulls_shortage_bundle_forward(self):
+        plan = allocation.generate_plan(self.coordinator, name='B-field',
+                                        forecast_boost=True)
+        # shortage-containing request got Rice BEFORE the early request
+        self.assertEqual(self._alloc_for(plan, self.late_rice_item), 40)
+        # cal-earlier pure-Rice request then saw only 60 units left
+        early_alloc = sum(
+            a.quantity_allocated for a in plan.items.all()
+            if a.request_item.request_id == self.req_early.pk)
+        self.assertEqual(early_alloc, 60)
+        # Beans shortage honoured FEFO-wise identically: all 30 allocated
+        beans_alloc = sum(a.quantity_allocated for a in plan.items.all()
+                          if a.request_item.product_id == self.other_product.id)
+        self.assertEqual(beans_alloc, 30)
+
+    def test_config_b_same_fefo_batch_rules(self):
+        plan = allocation.generate_plan(self.coordinator, forecast_boost=True)
+        self.assertTrue(allocation.validate_plan(plan)['valid'])
+        # Beans still FEFO: single beans batch, nothing invented
+        beans_alloc = sum(a.quantity_allocated for a in plan.items.all()
+                          if a.request_item.product_id == self.other_product.id)
+        self.assertEqual(beans_alloc, min(30, 50))
+
+    def test_config_b_degenerates_to_config_a_without_forecasts(self):
+        DemandForecast.objects.all().delete()
+
+        def sig(plan):
+            return sorted((it.request_item_id, it.food_batch_id,
+                           it.quantity_allocated) for it in plan.items.all())
+        plan_plain = allocation.generate_plan(
+            self.coordinator, name='A-nofc')
+        plan_boost = allocation.generate_plan(
+            self.coordinator, name='B-nofc', forecast_boost=True)
+        self.assertEqual(sig(plan_plain), sig(plan_boost))

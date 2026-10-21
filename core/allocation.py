@@ -2,7 +2,9 @@
 
 Rules (documented in the project plan):
   1. Select pending demand in a fixed order: earliest required-by date,
-     then submission time.
+     then submission time. Config B (forecast_boost=True) reorders so
+     requests for products with a projected 7-day shortage are covered
+     first — see _prioritized_demand.
   2. Match eligible batches: status AVAILABLE, distribution cutoff not
      passed at generation time, unreserved stock > 0.
   3. Allocate from the batch with the EARLIEST cutoff first (FEFO).
@@ -14,11 +16,21 @@ This module is a transparent heuristic, not an optimiser and not a claim
 of fair or optimal distribution.
 """
 
+from datetime import timedelta
+
+from django.db.models import Sum
 from django.db import transaction
 from django.utils import timezone
 
 from .activity import log_activity
-from .models import AllocationItem, AllocationPlan, FoodBatch, Request, RequestItem
+from .models import (
+    AllocationItem,
+    AllocationPlan,
+    DemandForecast,
+    FoodBatch,
+    Request,
+    RequestItem,
+)
 
 
 def _eligible_batches(product, as_of):
@@ -42,16 +54,83 @@ def _pending_demand(request_ids=None):
     return sorted(qs, key=lambda r: (r.required_by_date, r.created_at))
 
 
-def generate_plan(user, name=None, request_ids=None):
-    """Create a DRAFT allocation plan from unmet demand. Reserves nothing."""
+def _forecast_shortage_by_product(max_age_days=14):
+    """product_id -> most recent forecast total, for Config B ordering.
+
+    Returns {} when there is no usable forecast at all (Config B then
+    silently degenerates to Config A ordering).
+    """
+    today = timezone.now().date()
+    forecasts = {}
+    for row in (DemandForecast.objects
+                .filter(forecast_date__gte=today - timedelta(days=max_age_days))
+                .order_by('product_id', '-forecast_date', '-pk')):
+        forecasts.setdefault(row.product_id, row.predicted_quantity)
+    return forecasts
+
+
+def _stock_free_by_product():
+    """product_id -> unreserved units in currently distributable stock."""
+    today = timezone.now().date()
+    stock = {}
+    for row in (FoodBatch.objects
+                .filter(status='AVAILABLE', distribution_cutoff__gte=today)
+                .values('product_id')
+                .annotate(available_sum=Sum('quantity_available'),
+                          reserved_sum=Sum('quantity_reserved'))):
+        stock[row['product_id']] = ((row['available_sum'] or 0)
+                                    - (row['reserved_sum'] or 0))
+    return stock
+
+
+def _prioritized_demand(requests, shortage_by_product, stock_free):
+    """Config B ordering: projected shortage first, then required-by.
+
+    A request's priority gap is its WORST product gap (free stock minus
+    7-day forecast). Requests with a negative gap come first, most
+    negative overall first; everything else keeps the Config A order.
+    Scarcity arrives in a known order instead of pure calendar order, so
+    the partners facing the sharpest shortage get covered while stock —
+    and especially soon-to-expire stock — remains.
+    """
+    def sort_key(req):
+        gaps = []
+        for item in req.items.all():
+            forecast = shortage_by_product.get(item.product_id)
+            if forecast is None:
+                continue
+            gaps.append(stock_free.get(item.product_id, 0) - forecast)
+        if not gaps:
+            return (1, req.required_by_date, req.created_at, req.pk)
+        worst = min(gaps)
+        if worst < 0:
+            return (0, worst, req.required_by_date, req.created_at, req.pk)
+        return (1, req.required_by_date, req.created_at, req.pk)
+
+    return sorted(requests, key=sort_key)
+
+
+def generate_plan(user, name=None, request_ids=None, forecast_boost=False):
+    """Create a DRAFT allocation plan from unmet demand. Reserves nothing.
+
+    forecast_boost=True (Config B) reorders demand by projected shortage
+    before running the identical FEFO matching rules.
+    """
     as_of = timezone.now().date()
     requests = _pending_demand(request_ids)
+    if forecast_boost:
+        shortage = _forecast_shortage_by_product()
+        if shortage:
+            requests = _prioritized_demand(
+                requests, shortage, _stock_free_by_product())
 
     plan = AllocationPlan.objects.create(
         name=name or f'Plan {as_of.isoformat()}',
         created_by=user,
         status='DRAFT',
-        notes='FEFO draft proposal — awaiting coordinator approval.',
+        notes=('FEFO + forecast-boosted demand order draft proposal — '
+               'awaiting coordinator approval.' if forecast_boost else
+               'FEFO draft proposal — awaiting coordinator approval.'),
     )
 
     # Unreserved quantities, cached per batch for this generation run.
