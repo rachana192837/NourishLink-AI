@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{% if heading %}{{ heading }}{% else %}Allocation Plans{% endif %} — NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+  <div>
+    <h1>{{ heading|default:"Allocation Plans" }}</h1>
+    <p>{{ subtitle|default:"" }}</p>
+  </div>
+  <form method="post" action="{% url 'plan_generate' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Generate FEFO Plan</button>
+  </form>
+</div>
+
+<form method="get" class="filter-bar">
+  <div class="fg">
+    <label for="status-filter">Status</label>
+    <select name="status" id="status-filter">
+      <option value="">All statuses</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+    <a href="{% url 'plan_list' %}" class="btn btn-sm btn-ghost">Clear</a>
+  </div>
+</form>
+
+{% if total == 0 %}
+<div class="empty-state">
+  <p>No allocation plans yet. Generate one to get started.</p>
+</div>
+{% else %}
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Plan</th>
+          <th>Status</th>
+          <th>Items</th>
+          <th>Units</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for plan in page_obj %}
+        <tr>
+          <td><a href="{% url 'plan_detail' plan.pk %}">#{{ plan.pk }}</a></td>
+          <td>{{ plan.name }}</td>
+          <td>
+            {% if plan.status == 'DRAFT' %}
+              <span class="badge badge-draft">Draft</span>
+            {% elif plan.status == 'APPROVED' %}
+              <span class="badge badge-approved">Approved</span>
+            {% elif plan.status == 'COMPLETED' %}
+              <span class="badge badge-completed">Completed</span>
+            {% elif plan.status == 'CANCELLED' %}
+              <span class="badge badge-cancelled">Cancelled</span>
+            {% endif %}
+          </td>
+          <td>{{ plan.item_count }}</td>
+          <td>{{ plan.total_qty }}</td>
+          <td>{{ plan.created_at|date:"M d, Y H:i" }}</td>
+          <td><a href="{% url 'plan_detail' plan.pk %}" class="btn btn-sm btn-ghost">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">{{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} of {{ total }}</p>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;">
+    {% if page_obj.has_previous %}
+      <a href="{% querystring page=page_obj.previous_page_number %}" class="btn btn-sm btn-ghost">Previous</a>
+    {% else %}
+      <span class="btn btn-sm btn-ghost" style="opacity:.5;cursor:not-allowed;">Previous</span>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+        <span class="btn btn-sm btn-primary">{{ num }}</span>
+      {% else %}
+        <a href="{% querystring page=num %}" class="btn btn-sm btn-ghost">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <a href="{% querystring page=page_obj.next_page_number %}" class="btn btn-sm btn-ghost">Next</a>
+    {% else %}
+      <span class="btn btn-sm btn-ghost" style="opacity:.5;cursor:not-allowed;">Next</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

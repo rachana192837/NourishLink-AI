@@ -126,4 +126,44 @@
   </div>
   {% endif %}
 </div>
+
+{% if allocations %}
+<div class="card" style="margin-top:24px;">
+  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Allocations for this request</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Plan</th>
+          <th>Batch</th>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Pickup status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for allocation in allocations %}
+        <tr>
+          <td>{{ allocation.plan.name }}</td>
+          <td style="font-family:monospace;font-size:.85rem;">{{ allocation.food_batch.batch_code }}</td>
+          <td>{{ allocation.request_item.product.name }}</td>
+          <td>{{ allocation.quantity_allocated }}</td>
+          <td>
+            {% if allocation.plan.status == 'APPROVED' %}
+              <span class="badge badge-approved">Scheduled</span>
+            {% elif allocation.plan.status == 'COMPLETED' %}
+              <span class="badge badge-completed">Picked up</span>
+            {% elif allocation.plan.status == 'DRAFT' %}
+              <span class="badge badge-draft">Proposed</span>
+            {% else %}
+              <span class="badge badge-cancelled">Cancelled</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
 {% endblock %}

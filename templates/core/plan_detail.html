@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}{{ plan.name }} — NourishLink{% endblock %}
+
+{% block content %}
+<a href="{% url 'plan_list' %}" class="back-link">&larr; Plans</a>
+
+<div class="page-header">
+  <h1>{{ plan.name }}</h1>
+  <p>Created by {{ plan.created_by.get_full_name|default:plan.created_by.username }} on {{ plan.created_at|date:"M d, Y H:i" }}</p>
+</div>
+
+{% if plan.status == 'DRAFT' and validation %}
+<div class="card" style="margin-bottom:20px;">
+  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Pre-approval check</h3>
+  {% if validation.valid %}
+    <p style="color:#155724;font-weight:600;">All checks passed — stock can be reserved on approval.</p>
+  {% else %}
+    <div class="form-errors" style="margin-bottom:0;">
+      <ul>
+        {% for error in validation.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="detail-grid">
+    <div>
+      <div class="field-label">Status</div>
+      <div class="field-value">
+        {% if plan.status == 'DRAFT' %}
+          <span class="badge badge-draft">Draft</span>
+        {% elif plan.status == 'APPROVED' %}
+          <span class="badge badge-approved">Approved</span>
+        {% elif plan.status == 'COMPLETED' %}
+          <span class="badge badge-completed">Completed</span>
+        {% elif plan.status == 'CANCELLED' %}
+          <span class="badge badge-cancelled">Cancelled</span>
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <div class="field-label">Created by</div>
+      <div class="field-value">{{ plan.created_by.get_full_name|default:plan.created_by.username }}</div>
+    </div>
+    <div>
+      <div class="field-label">Created</div>
+      <div class="field-value">{{ plan.created_at|date:"M d, Y H:i" }}</div>
+    </div>
+    {% if plan.approved_by %}
+    <div>
+      <div class="field-label">Approved by</div>
+      <div class="field-value">{{ plan.approved_by.get_full_name|default:plan.approved_by.username }}</div>
+    </div>
+    {% endif %}
+    {% if plan.approved_at %}
+    <div>
+      <div class="field-label">Approved at</div>
+      <div class="field-value">{{ plan.approved_at|date:"M d, Y H:i" }}</div>
+    </div>
+    {% endif %}
+    {% if plan.notes %}
+    <div>
+      <div class="field-label">Notes</div>
+      <div class="field-value">{{ plan.notes }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="detail-actions">
+    {% if plan.status == 'DRAFT' %}
+      <form method="post" action="{% url 'plan_approve' plan.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-primary">Approve & Reserve Stock</button>
+      </form>
+      <form method="post" action="{% url 'plan_cancel' plan.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline">Discard Plan</button>
+      </form>
+    {% elif plan.status == 'APPROVED' %}
+      <form method="post" action="{% url 'plan_complete' plan.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-primary">Record Pickup — Complete</button>
+      </form>
+      <form method="post" action="{% url 'plan_cancel' plan.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline">Cancel & Release Reservations</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Allocation Items</h3>
+  {% if items %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Request</th>
+          <th>Organization</th>
+          <th>Product</th>
+          <th>Batch</th>
+          <th>Batch cutoff</th>
+          <th>Qty allocated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td><a href="{% url 'request_detail' item.request_item.request_id %}">#{{ item.request_item.request_id }}</a></td>
+          <td>{{ item.request_item.request.organization.name }}</td>
+          <td>{{ item.request_item.product.name }} <small style="color:var(--text-muted);">({{ item.request_item.product.unit }})</small></td>
+          <td><span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;">{{ item.food_batch.batch_code }}</span></td>
+          <td>
+            {{ item.food_batch.distribution_cutoff|date:"M d, Y" }}
+            {% if item.food_batch.days_until_cutoff <= 7 %}
+              <span class="chip chip-warn">{{ item.food_batch.days_until_cutoff }}d left</span>
+            {% endif %}
+          </td>
+          <td>{{ item.quantity_allocated }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>This plan has no allocation items.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% if plan.status == 'DRAFT' %}
+<p style="font-size:.8rem;color:var(--text-muted);margin-top:10px;">Draft proposal quantities are provisional. Stock is reserved only when the plan is approved.</p>
+{% endif %}
+{% endblock %}
