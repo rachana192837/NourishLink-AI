@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Agent run #{{ run.pk }} — NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'ai_list' %}" class="back-link">&larr; All AI runs</a>
+  <h1>{{ run.get_role_display }} run #{{ run.pk }}</h1>
+  <p>
+    {% if run.status == 'OK' %}
+      <span class="badge badge-approved">LLM: {{ run.model_name }}</span>
+    {% else %}
+      <span class="badge badge-cancelled">Deterministic fallback</span>
+    {% endif %}
+    <span class="chip">{{ run.prompt_tokens }} prompt + {{ run.completion_tokens }} completion tokens</span>
+    <span class="chip">{{ run.latency_ms }} ms</span>
+    {% if run.created_by %}<span class="chip">by {{ run.user.username }}</span>{% endif %}
+  </p>
+</div>
+
+<div class="detail-grid">
+  <div class="card">
+    <h2>Agent output</h2>
+    <div style="white-space:pre-wrap;font-size:.92rem;line-height:1.55;">{{ run.output.report|default:"(no report)" }}</div>
+    {% if run.plan %}
+      <p style="margin-top:12px;">
+        <a class="btn btn-sm btn-primary" href="{% url 'plan_detail' run.plan.pk %}">
+          Open the proposed plan ({{ run.plan.get_status_display }})
+        </a>
+      </p>
+      {% if validation %}
+        {% if validation.valid %}
+          <p style="color:#0d7c66;margin-top:8px;">Static validation: passed.</p>
+        {% else %}
+          <p style="color:#b23b3b;margin-top:8px;font-weight:600;">Static validation errors:</p>
+          <ul style="color:#b23b3b;margin-top:4px;">
+            {% for error in validation.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Tool trace ({{ run.tool_calls|length }})</h2>
+    {% if run.tool_calls == 0 %}
+      <p style="color:var(--text-muted);font-size:.85rem;">Fallback run &mdash; computes directly from the tools.</p>
+    {% else %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Tool</th><th>Arguments</th><th>Result head</th></tr></thead>
+        <tbody>
+          {% for call in run.tool_calls %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><code>{{ call.tool }}</code></td>
+            <td style="max-width:220px;overflow-wrap:anywhere;"><code>{{ call.args|default:"&mdash;" }}</code></td>
+            <td style="max-width:420px;overflow-wrap:anywhere;font-size:.8rem;">
+              {{ call.result|truncatechars:220 }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% if run.error_message %}
+      <p style="margin-top:10px;color:#b58900;font-size:.85rem;">
+        LLM path failed: {{ run.error_message }}
+      </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

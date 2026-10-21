@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}AI Proposals — NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+  <div>
+    <h1>AI Proposals</h1>
+    <p>Inventory Analyst and Distribution Planner agents. They can only read
+       state and create <strong>draft</strong> plans &mdash; nothing is reserved
+       until a coordinator approves.</p>
+  </div>
+  <form method="post" action="{% url 'ai_list' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Run AI proposal</button>
+  </form>
+</div>
+
+{% if has_key %}
+  <div class="card" style="border-left:3px solid var(--accent,#0d7c66);">
+    <p style="margin:0;">
+      LLM: <strong>{{ model_name }}</strong> (OpenRouter free tier).
+      A run typically takes 20&ndash;90 seconds &mdash; one placeholder click.
+    </p>
+  </div>
+{% else %}
+  <div class="card" style="border-left:3px solid #b58900;">
+    <p style="margin:0;">
+      <strong>Deterministic fallback mode</strong> &mdash; no OPENROUTER_API_KEY
+      is set, so the agents produce the same reports and FEFO drafts from the
+      same tools without an LLM. Runs are labelled FALLBACK below.
+    </p>
+  </div>
+{% endif %}
+
+{% if total == 0 %}
+<div class="empty-state">
+  <p>No agent runs yet. Use "Run AI proposal" above.</p>
+</div>
+{% else %}
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Agent</th>
+          <th>Mode</th>
+          <th>Model</th>
+          <th>Tool calls</th>
+          <th>Tokens</th>
+          <th>Latency</th>
+          <th>Plan</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for run in page_obj %}
+        <tr>
+          <td>#{{ run.pk }}</td>
+          <td>{{ run.get_role_display }}</td>
+          <td>
+            {% if run.status == 'OK' %}
+              <span class="badge badge-approved">LLM</span>
+            {% else %}
+              <span class="badge badge-cancelled">Fallback</span>
+            {% endif %}
+          </td>
+          <td>{{ run.model_name|default:"&mdash;" }}</td>
+          <td>{{ run.tool_calls|length }}</td>
+          <td>{{ run.prompt_tokens }}+{{ run.completion_tokens }}</td>
+          <td>{{ run.latency_ms }} ms</td>
+          <td>
+            {% if run.plan %}
+              <a href="{% url 'plan_detail' run.plan.pk %}">#{{ run.plan.pk }}</a>
+            {% else %}&mdash;{% endif %}
+          </td>
+          <td>{{ run.created_at|date:"M d, Y H:i" }}</td>
+          <td><a href="{% url 'ai_detail' run.pk %}" class="btn btn-sm btn-ghost">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">{{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} of {{ total }}</p>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;">
+    {% if page_obj.has_previous %}
+      <a href="{% querystring page=page_obj.previous_page_number %}" class="btn btn-sm btn-ghost">Previous</a>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+        <span class="btn btn-sm btn-primary">{{ num }}</span>
+      {% else %}
+        <a href="{% querystring page=num %}" class="btn btn-sm btn-ghost">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <a href="{% querystring page=page_obj.next_page_number %}" class="btn btn-sm btn-ghost">Next</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
