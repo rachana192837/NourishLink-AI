@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Forecasts - NourishLink{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Demand Forecasts</h1>
+  <p>7-day demand totals per product — neural model vs rolling-28-day baseline
+     on a 12-week trailing holdout.</p>
+</div>
+
+{% if report %}
+<div class="card" style="margin-bottom:24px;">
+  <div class="detail-grid">
+    <div class="field-label">Run</div>
+    <div class="field-value">
+      {{ report.tool_version }} · generated
+      {{ report.generated_at }}
+    </div>
+    <div class="field-label">Data window</div>
+    <div class="field-value">{{ report.data_start }} → {{ report.data_end }}
+      ({{ report.n_products }} products)</div>
+    <div class="field-label">Holdout</div>
+    <div class="field-value">{{ report.test_weeks }} weekly windows
+      ({{ report.test_rows }} samples), next window starts after
+      {{ report.data_end }}</div>
+    <div class="field-label">Model</div>
+    <div class="field-value">{{ report.model_name }} · seeds
+      {{ report.ensemble_seeds|join:", " }} · {{ report.epochs }} epochs ·
+      residuals over {{ report.baseline_name }}</div>
+    <div class="field-label">Overall</div>
+    <div class="field-value">
+      {% if overall.model_mae < overall.baseline_mae %}
+        <span class="badge badge-approved">NN wins</span>
+      {% else %}
+        <span class="badge badge-cancelled">NN loses</span>
+      {% endif %}
+      weekly MAE <strong>{{ overall.model_mae }}</strong> vs baseline
+      <strong>{{ overall.baseline_mae }}</strong> · WAPE
+      {{ overall.model_wape }} vs {{ overall.baseline_wape }} ·
+      {{ report.model_wins_overall }}/{{ report.n_products }} products
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:24px;">
+  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">
+    Per-product holdout quality</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>NN MAE</th>
+          <th>Baseline MAE</th>
+          <th>NN WAPE</th>
+          <th>Baseline WAPE</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for name, m in per_product %}
+        <tr>
+          <td>{{ name }}</td>
+          <td>{{ m.model_mae }}</td>
+          <td>{{ m.baseline_mae }}</td>
+          <td>{{ m.model_wape }}</td>
+          <td>{{ m.baseline_wape }}</td>
+          <td>
+            {% if m.model_wins %}
+              <span class="badge badge-approved">win</span>
+            {% else %}
+              <span class="badge badge-cancelled">loss</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card" style="margin-bottom:24px;">
+  <div class="empty-state">
+    <p>No forecast report found. Run
+      <code>python manage.py forecast</code> to train the model and generate
+      data/forecast/report.json.</p>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">
+    Next 7 days vs available stock
+    <span style="font-weight:400;">(predicted_quantity is the 7-day total;
+      gap = free stock − forecast; sorted by urgency)</span>
+  </h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Stock (all)</th>
+          <th>Stock (free)</th>
+          <th>NN forecast (7d)</th>
+          <th>Baseline (7d)</th>
+          <th>Gap</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.product.name }}</td>
+          <td>{{ row.stock_all }}</td>
+          <td>{{ row.stock_free }}</td>
+          <td>
+            {% if row.forecast is None %}
+              <span class="chip chip-muted">no data</span>
+            {% else %}
+              {{ row.forecast|floatformat:1 }}
+            {% endif %}
+          </td>
+          <td>
+            {% if row.baseline is None %}
+              <span class="chip chip-muted">no data</span>
+            {% else %}
+              {{ row.baseline|floatformat:1 }}
+            {% endif %}
+          </td>
+          <td>
+            {% if row.gap is not None %}
+              {% if row.gap < 0 %}
+                <span style="color:#c0392b;font-weight:600;">{{ row.gap|floatformat:1 }}</span>
+              {% else %}
+                {{ row.gap|floatformat:1 }}
+              {% endif %}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="empty-state" style="padding:24px;">
+            No forecast rows saved yet (<code>python manage.py forecast</code>).
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

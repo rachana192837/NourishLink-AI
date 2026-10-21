@@ -1,0 +1,146 @@
+{
+  "generated_at": "2026-10-21T13:44:42",
+  "tool_version": "2.0",
+  "seed": 44,
+  "epochs": 800,
+  "test_weeks": 12,
+  "ensemble_seeds": [
+    42,
+    43,
+    44
+  ],
+  "horizon": 7,
+  "data_start": "2025-10-22",
+  "data_end": "2026-10-21",
+  "n_products": 12,
+  "train_rows": 2964,
+  "test_rows": 144,
+  "model_name": "torch-mlp-v2-residual",
+  "baseline_name": "baseline-rolling28-weekly",
+  "train_loss_normalised": 0.0266,
+  "val_loss_normalised": null,
+  "best_epoch": 0,
+  "per_product": {
+    "Beans": {
+      "model_mae": 7.925,
+      "baseline_mae": 5.688,
+      "model_wape": 0.136,
+      "baseline_wape": 0.098,
+      "model_wins": false
+    },
+    "Biscuits": {
+      "model_mae": 3.941,
+      "baseline_mae": 5.312,
+      "model_wape": 0.069,
+      "baseline_wape": 0.093,
+      "model_wins": true
+    },
+    "Canned Beans": {
+      "model_mae": 13.749,
+      "baseline_mae": 18.396,
+      "model_wape": 0.186,
+      "baseline_wape": 0.249,
+      "model_wins": true
+    },
+    "Canned Tomatoes": {
+      "model_mae": 7.678,
+      "baseline_mae": 8.958,
+      "model_wape": 0.073,
+      "baseline_wape": 0.085,
+      "model_wins": true
+    },
+    "Cooking Oil": {
+      "model_mae": 5.895,
+      "baseline_mae": 5.917,
+      "model_wape": 0.179,
+      "baseline_wape": 0.179,
+      "model_wins": true
+    },
+    "Lentils": {
+      "model_mae": 8.585,
+      "baseline_mae": 9.083,
+      "model_wape": 0.145,
+      "baseline_wape": 0.154,
+      "model_wins": true
+    },
+    "Oats": {
+      "model_mae": 6.842,
+      "baseline_mae": 6.208,
+      "model_wape": 0.125,
+      "baseline_wape": 0.113,
+      "model_wins": false
+    },
+    "Pasta": {
+      "model_mae": 7.716,
+      "baseline_mae": 10.104,
+      "model_wape": 0.094,
+      "baseline_wape": 0.124,
+      "model_wins": true
+    },
+    "Powdered Milk": {
+      "model_mae": 8.006,
+      "baseline_mae": 6.375,
+      "model_wape": 0.165,
+      "baseline_wape": 0.131,
+      "model_wins": false
+    },
+    "Rice": {
+      "model_mae": 9.287,
+      "baseline_mae": 6.958,
+      "model_wape": 0.078,
+      "baseline_wape": 0.058,
+      "model_wins": false
+    },
+    "Sugar": {
+      "model_mae": 6.635,
+      "baseline_mae": 6.188,
+      "model_wape": 0.107,
+      "baseline_wape": 0.1,
+      "model_wins": false
+    },
+    "Tea": {
+      "model_mae": 5.667,
+      "baseline_mae": 6.333,
+      "model_wape": 0.205,
+      "baseline_wape": 0.229,
+      "model_wins": true
+    }
+  },
+  "overall": {
+    "model_mae": 7.66,
+    "baseline_mae": 7.96,
+    "model_wape": 0.118,
+    "baseline_wape": 0.122
+  },
+  "model_wins_overall": 7,
+  "model_losses_overall": 5,
+  "model_draws_overall": 0,
+  "future_model": {
+    "Beans": 59.198494981160906,
+    "Biscuits": 60.935272755213056,
+    "Canned Beans": 68.3074767203925,
+    "Canned Tomatoes": 98.39540414571934,
+    "Cooking Oil": 29.98592594427609,
+    "Lentils": 56.879510741808566,
+    "Oats": 50.50793327140176,
+    "Pasta": 84.04276380854974,
+    "Powdered Milk": 48.597809892265126,
+    "Rice": 111.14724183758447,
+    "Sugar": 55.552937770145,
+    "Tea": 29.667607959229617
+  },
+  "future_baseline": {
+    "Beans": 53.5,
+    "Biscuits": 58.5,
+    "Canned Beans": 81.75,
+    "Canned Tomatoes": 108.75,
+    "Cooking Oil": 28.0,
+    "Lentils": 63.5,
+    "Oats": 58.0,
+    "Pasta": 88.0,
+    "Powdered Milk": 46.75,
+    "Rice": 118.5,
+    "Sugar": 59.5,
+    "Tea": 23.0
+  }
+}
