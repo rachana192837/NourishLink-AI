@@ -9,7 +9,7 @@ into distribution plans faster and waste food less.
 
 | Config | Policy | Where it lives |
 |--------|--------|----------------|
-| **A** | FEFO engine only — earliest-distribution-cutoff batches first, requests ordered by required-by date | `core/allocation.py` |
+| **A** | Rule-based FEFO only — earliest-distribution-cutoff batches first, requests ordered by required-by date | `core/allocation.py` |
 | **B** | FEFO + forecast-informed ordering — requests containing a product whose 7-day demand forecast exceeds free stock are prioritised by worst gap | `core/allocation.py` (`forecast_boost=True`) |
 | **C** | FEFO + AI agents — an Inventory Analyst (reads stock/forecasts/requests) and a Distribution Planner (drafts a plan through tool calls). The LLM (OpenRouter) is optional; a deterministic fallback agent chain produces equivalent drafts when the API is unavailable | `core/agent_tools.py`, `core/agents.py` |
 
@@ -17,6 +17,24 @@ Safety principle: the LLM never mutates stock or gets free-form DB
 access. Its only write-capable tool creates a **draft** allocation
 through the same audited engine used by Config A, and no stock state
 changes until a human coordinator approves the plan.
+
+## Presentation layer (why the app is self-explanatory)
+
+- Dashboard, Forecasts and Reports pages explain *what each number means
+  and why it matters* in plain words, and include offline-capable
+  Chart.js visualisations (4-week demand outlook, product gap bars,
+  requested-vs-distributed bars).
+- **Evaluation page** (`/reports/evaluation/`, sidebar → Evaluation):
+  renders the A/B/C comparison and forecast quality as a one-page,
+  plain-English summary with a "Save as PDF" button — the thesis artifact.
+- **Dispatch board** (plan detail → "Open dispatch board"):
+  fulfilment-control-plane view of one plan — Leaflet map (OpenStreetMap
+  tiles online, automatic offline SVG schematic fallback) showing the
+  warehouse → charity truck routes (nearest-neighbour grouping, indicative
+  only), per-truck manifests with stop numbers and case counts, KPI chips
+  (stops / cases / delivered / remaining) and the plan's execution record
+  (activity log + AI agent runs) as a timeline. Read-only; trucks/stops
+  routes are computed per view and change nothing.
 
 ## Quick start
 
