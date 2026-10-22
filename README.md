@@ -75,6 +75,7 @@ Demo credentials (from `seed_data`): `admin / admin123`,
 | `python manage.py forecast` | Train PyTorch MLP forecaster (with synthetic-lag ablation) and the rolling-28 baseline; writes `data/forecast/report.json` |
 | `python manage.py agent_proposal` | Run the analyst+planner cycle from the CLI (draft plan only) |
 | `python manage.py evaluate` | Run the A/B/C comparison over the current scenario; writes `data/evaluation/results.json` |
+| `python manage.py paperfigures` | Export the two publication figures (`data/paper/fig1_abc_comparison.png`, `fig2_forecast_quality.png`) from `results.json` at 300 dpi |
 
 ## Optional: enabling the LLM (Config C "live" mode)
 
@@ -82,12 +83,12 @@ The agents work fully without any API key (deterministic fallback,
 marked `FALLBACK` in the run records). To use the real OpenRouter API:
 
 1. Create a (free) account at openrouter.ai.
-2. Set the environment variable before `runserver`:
+2. Set the environment variable permanently (preferred):
 
 ```powershell
-$env:OPENROUTER_API_KEY = "sk-or-..."
-# optional, default is the free auto-router:
-$env:OPENROUTER_MODEL = "openrouter/free"
+setx OPENROUTER_API_KEY "sk-or-..."
+# then open a NEW terminal; optionally override the auto-router:
+#   setx OPENROUTER_MODEL "openrouter/free"
 ```
 
 Approved LLM usage (per project plan): the LLM only *narrates and

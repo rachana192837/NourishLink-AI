@@ -42,7 +42,17 @@ def run_tool_loop(messages, specs, tools, client, max_calls=MAX_TOOL_CALLS,
     """
     trace, ptoks, ctoks, model = [], 0, 0, ''
     for _ in range(max_calls):
-        response = client.chat(messages, tools=specs)
+        try:
+            response = client.chat(messages, tools=specs)
+        except llm.LLMUnavailable as exc:
+            # Free auto-router models are mostly reasoning models: some
+            # burn the entire token budget on hidden reasoning and return
+            # nothing. One bounded retry with double the budget usually
+            # gets a usable reply from a different sampled provider;
+            # anything else still falls back deterministically.
+            if 'Empty completion' not in str(exc):
+                raise
+            response = client.chat(messages, tools=specs, max_tokens=2400)
         model = response['model'] or model
         ptoks += response['prompt_tokens']
         ctoks += response['completion_tokens']
