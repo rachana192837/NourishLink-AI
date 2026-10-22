@@ -2,41 +2,52 @@
 {% block title %}Log In — NourishLink{% endblock %}
 
 {% block content %}
-<div class="center-wrap">
-  <div class="center-card">
-    <h2>Welcome Back</h2>
-    <p class="subtitle">Sign in to NourishLink</p>
+<div class="login-split">
+  <div class="login-visual">
+    <div class="kicker">Community food bank · Bengaluru</div>
+    <h2>No good food should ever<br>go to waste.</h2>
+    <p>
+      NourishLink matches donated food with the partner charities that need it
+      most — using demand forecasts and FEFO allocation picked up and checked
+      by an AI planner.
+    </p>
+  </div>
+  <div class="login-form-pane">
+    <div class="center-card">
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Sign in to NourishLink</p>
 
-    {% if form.errors %}
-    <div class="form-errors">
-      <ul>
-        {% for field in form %}
-          {% for error in field.errors %}
+      {% if form.errors %}
+      <div class="form-errors">
+        <ul>
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
             <li>{{ error }}</li>
           {% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}
-          <li>{{ error }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
+        </ul>
+      </div>
+      {% endif %}
 
-    <form method="post">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="id_username">Username</label>
-        <input type="text" name="username" id="id_username" autofocus required
-               placeholder="Enter your username"
-               value="{{ form.username.value|default:'' }}">
-      </div>
-      <div class="form-group">
-        <label for="id_password">Password</label>
-        <input type="password" name="password" id="id_password" required
-               placeholder="Enter your password">
-      </div>
-      <button type="submit" class="btn-submit">Sign In</button>
-    </form>
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="id_username">Username</label>
+          <input type="text" name="username" id="id_username" autofocus required
+                 placeholder="Enter your username"
+                 value="{{ form.username.value|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label for="id_password">Password</label>
+          <input type="password" name="password" id="id_password" required
+                 placeholder="Enter your password">
+        </div>
+        <button type="submit" class="btn-submit">Sign In</button>
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}

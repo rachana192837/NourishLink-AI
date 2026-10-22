@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Coordinator Dashboard — NourishLink{% endblock %}
 
 {% block content %}
@@ -9,6 +10,22 @@
     Meeting the challenge of hunger with data. Donated stock, demand forecasts
     and FEFO allocation — one place, no food wasted on guesswork.
   </p>
+</section>
+
+<section class="mission-band">
+  <img src="{% static 'img/mission-volunteer.jpg' %}"
+       alt="Volunteer sorting donated food at a food bank warehouse" loading="lazy">
+  <div class="m-text">
+    <div class="hero-kicker" style="position:static;">Our vision</div>
+    <div class="m-title">Eradicate hunger, malnutrition and prevent food wastage.</div>
+    <p>
+      Left to habit, the soonest-expiring donations do not reach the kitchen
+      that needs them first. NourishLink AI logs every donated batch, predicts
+      what partner charities will ask for, and lets an AI planner assign the
+      right stock to the right NGO — with you approving every decision. One
+      screen for the whole mission.
+    </p>
+  </div>
 </section>
 
 <div class="card-title" style="margin-bottom:12px;">Impact so far</div>
