@@ -2,11 +2,44 @@
 {% block title %}Coordinator Dashboard — NourishLink{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1>Dashboard</h1>
-  <p>Welcome back, {{ user.get_full_name|default:user.username }}. Here's your overview.</p>
+<section class="hero">
+  <div class="hero-kicker">Community food bank · Bengaluru</div>
+  <h1>NourishLink <span class="accent">AI</span></h1>
+  <p class="hero-sub">
+    Meeting the challenge of hunger with data. Donated stock, demand forecasts
+    and FEFO allocation — one place, no food wasted on guesswork.
+  </p>
+</section>
+
+<div class="card-title" style="margin-bottom:12px;">Impact so far</div>
+<div class="impact-grid">
+  <div class="impact-tile">
+    <div class="impact-num"><span data-count="{{ impact_units }}">0</span></div>
+    <div class="impact-label">Units distributed</div>
+    <div class="impact-caption">Picked up by charities from completed plans — all time.</div>
+  </div>
+  <div class="impact-tile">
+    <div class="impact-num"><span data-count="{{ impact_rescued }}">0</span></div>
+    <div class="impact-label">Batches rescued</div>
+    <div class="impact-caption">Fully distributed before their expiry cutoff — none wasted.</div>
+  </div>
+  <div class="impact-tile">
+    <div class="impact-num"><span data-count="{{ impact_partners }}">0</span></div>
+    <div class="impact-label">Partners supported</div>
+    <div class="impact-caption">Shelters, kitchens and NGOs served by completed plans.</div>
+  </div>
+  <div class="impact-tile">
+    {% if impact_rescue_pct is not None %}
+      <div class="impact-num"><span data-count="{{ impact_rescue_pct }}">0</span><span style="font-size:1.4rem;">%</span></div>
+    {% else %}
+      <div class="impact-num" style="color:var(--text-muted);">—</div>
+    {% endif %}
+    <div class="impact-label">Food saved from waste</div>
+    <div class="impact-caption">Of all past-cutoff batches, share distributed vs expired.</div>
+  </div>
 </div>
 
+<div class="card-title" style="margin-bottom:12px;">Today at a glance</div>
 <div class="stats-grid">
   <div class="stat-card success">
     <div class="stat-value">{{ total_batches }}</div>
@@ -41,7 +74,7 @@
 {% if demand_rows %}
 <div class="card" style="margin-bottom:20px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-    <h3 style="font-size:1rem;color:var(--text-muted);">Next 4 weeks — predicted demand (riskiest products)</h3>
+    <h3 class="card-title">Next 4 weeks — predicted demand (riskiest products)</h3>
   </div>
   <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;">
     Each bar = how many units the AI model expects charities to request over the
@@ -57,8 +90,8 @@
 
 <div class="card" style="margin-bottom:20px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-    <h3 style="font-size:1rem;color:var(--text-muted);">AI Demand Highlights</h3>
-    <a href="{% url 'forecast_list' %}" style="font-size:.8rem;color:var(--primary);text-decoration:none;">All forecasts →</a>
+    <h3 class="card-title">AI Demand Highlights</h3>
+    <a href="{% url 'forecast_list' %}" style="font-size:.8rem;color:var(--primary);text-decoration:none;font-weight:700;">All forecasts →</a>
   </div>
   {% if forecast_generated %}
     <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:10px;">
@@ -95,8 +128,8 @@
   {% endif %}
 </div>
 
-<div class="card">
-  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Quick Actions</h3>
+<div class="card" style="margin-bottom:20px;">
+  <h3 class="card-title" style="margin-bottom:14px;">Quick actions</h3>
   <div style="display:flex;gap:12px;flex-wrap:wrap;">
     <a href="{% url 'donation_create' %}" class="btn btn-primary">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -113,8 +146,55 @@
   </div>
 </div>
 
+<div class="card-title" style="margin-bottom:12px;">How NourishLink works</div>
+<div class="process-grid" style="margin-bottom:12px;">
+  <div class="process-card">
+    <div class="p-num">01</div>
+    <h4>Log donations</h4>
+    <p>Every donation enters as a batch with its own expiry clock.</p>
+    <a href="{% url 'donation_create' %}">Add a batch →</a>
+  </div>
+  <div class="process-card">
+    <div class="p-num">02</div>
+    <h4>Forecast demand</h4>
+    <p>A neural model predicts what partner charities will need next.</p>
+    <a href="{% url 'forecast_list' %}">See forecasts →</a>
+  </div>
+  <div class="process-card">
+    <div class="p-num">03</div>
+    <h4>Allocate by FEFO</h4>
+    <p>The engine assigns soonest-expiring stock first; the AI agent builds and checks the plan.</p>
+    <a href="{% url 'ai_list' %}">View AI proposals →</a>
+  </div>
+  <div class="process-card">
+    <div class="p-num">04</div>
+    <h4>Pack &amp; deliver</h4>
+    <p>Approve the plan, print the checklist, route the trucks.</p>
+    <a href="{% url 'pickups' %}">Open pickups →</a>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  /* BFB-style impact counters — count from 0 up, Indian digit grouping. */
+  function fmt(v) { return v.toLocaleString('en-IN'); }
+  function animate(el) {
+    var target = parseInt(el.dataset.count, 10) || 0;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.textContent = fmt(target); return;
+    }
+    var dur = 1200, start = null;
+    function step(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(Math.round(target * eased));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('[data-count]').forEach(animate);
+
   var el = document.getElementById('demandChart');
   if (!el || typeof Chart === 'undefined') return;
   var dataEl = document.getElementById('demand-chart-data');
@@ -138,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
       plugins: { legend: { display: false } },
       scales: {
         x: { title: { display: true, text: 'Predicted units (next 4 weeks)' } },
-        y: { ticks: { color: '#2c3e50', font: { weight: '600' } } },
+        y: { ticks: { color: '#1c1a1b', font: { weight: '600' } } },
       }
     }
   });

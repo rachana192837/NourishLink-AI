@@ -64,6 +64,22 @@ def dashboard(request):
                 'shortfall': (row['stock_free'] - sum(q for _, q in points)
                               < 0),
             })
+        # Impact counters — all-time honest numbers (definitions shared with Reports).
+        completed_plans = AllocationPlan.objects.filter(status='COMPLETED')
+        impact_units = (AllocationItem.objects.filter(plan__in=completed_plans)
+                        .aggregate(total=Sum('quantity_allocated'))['total'] or 0)
+        rescued_batches = FoodBatch.objects.filter(status='DEPLETED').count()
+        expired_batches = FoodBatch.objects.filter(status='EXPIRED').count()
+        if rescued_batches + expired_batches:
+            rescue_pct = round(
+                100 * rescued_batches / (rescued_batches + expired_batches))
+        else:
+            rescue_pct = None
+        impact_partners = (AllocationItem.objects
+                           .filter(plan__in=completed_plans)
+                           .values('request_item__request__organization')
+                           .distinct().count())
+
         context = {
             'total_batches': FoodBatch.objects.filter(status='AVAILABLE').count(),
             'expiring_soon': FoodBatch.objects.filter(
@@ -73,6 +89,10 @@ def dashboard(request):
             ).count(),
             'pending_requests': Request.objects.filter(status='PENDING').count(),
             'draft_plans': AllocationPlan.objects.filter(status='DRAFT').count(),
+            'impact_units': impact_units,
+            'impact_rescued': rescued_batches,
+            'impact_partners': impact_partners,
+            'impact_rescue_pct': rescue_pct,
             'forecast_top_gaps': _forecast_product_rows()[:5],
             'forecast_generated': DemandForecast.objects.filter(
                 model_version=MLP_VERSION
