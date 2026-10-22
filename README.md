@@ -43,6 +43,9 @@ changes until a human coordinator approves the plan.
   CDN needed at runtime; dashboard shows a mission hero, four animated
   count-up impact counters (all-time, honest zeros allowed) and a
   01–04 "how it works" strip; the dark dispatch board is navy-themed).
+  Photo layer: dashboard hero photo, mission band and login visual use
+  public-domain food-bank photographs vendored offline in `static/img/`
+  (Wikimedia Commons; credited in the footer).
 
 ## Quick start
 
