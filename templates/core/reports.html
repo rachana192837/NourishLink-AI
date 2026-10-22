@@ -4,27 +4,59 @@
 {% block content %}
 <div class="page-header">
   <h1>Reports</h1>
-  <p>Operational summary — distributions, waste, backlog and recent activity.</p>
+  <p>What the food bank has achieved so far — food saved from waste, fed to
+     charities, and what still needs attention.</p>
 </div>
 
 <div class="stats-grid">
   <div class="stat-card success">
     <div class="stat-value">{{ distributed_units }}</div>
     <div class="stat-label">Units distributed ({{ distributed_plans }} completed plans)</div>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">
+      Food that actually reached charities — the system's real output so far.
+    </p>
   </div>
   <div class="stat-card danger">
     <div class="stat-value">{{ wasted_units }}</div>
     <div class="stat-label">Units wasted ({{ wasted_count }} past-cutoff batches)</div>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">
+      Donated food that passed its cutoff unused — this number is what the
+      allocation engine is designed to shrink.
+    </p>
   </div>
   <div class="stat-card warning">
     <div class="stat-value">{{ at_risk_units }}</div>
     <div class="stat-label">Units at risk now (≤ 7 days)</div>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">
+      Still saveable — allocate these batches this week or they join the
+      waste column.
+    </p>
   </div>
   <div class="stat-card info">
     <div class="stat-value">{{ backlog_unmet }}</div>
     <div class="stat-label">Unmet units in backlog ({{ open_backlog_requests }} open requests)</div>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">
+      What charities asked for but haven't received yet — the queue the
+      plan generator works through.
+    </p>
   </div>
 </div>
+
+{% if demand_rows %}
+<div class="card" style="margin-bottom:20px;">
+  <h3 style="font-size:1rem;color:var(--text-muted);margin-bottom:6px;">
+    What you asked for vs what you received</h3>
+  <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;">
+    Per product: grey bars = units charities requested; green bars = units
+    actually distributed. The gap between them is unmet need — backlog or
+    stock shortage.
+  </p>
+  <div style="position:relative;height:300px;">
+    <canvas id="demandChart"></canvas>
+  </div>
+  {{ demand_rows|json_script:"reports-demand-data" }}
+</div>
+{% endif %}
 
 <div class="card" style="margin-bottom:20px;">
   <h3 style="font-size:1rem;color:var(--text-muted);margin-bottom:12px;">At-risk stock right now (distribution cutoff within 7 days)</h3>
@@ -151,4 +183,30 @@
   {% endif %}
 </div>
 {% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var el = document.getElementById('demandChart');
+  if (!el || typeof Chart === 'undefined') return;
+  var rows = JSON.parse(document.getElementById('reports-demand-data').textContent);
+  new Chart(el.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: rows.map(function (r) { return r.product; }),
+      datasets: [
+        {label: 'Units requested', data: rows.map(function (r) { return r.requested; }),
+         backgroundColor: 'rgba(108,122,137,.55)', borderRadius: 4},
+        {label: 'Units distributed', data: rows.map(function (r) { return r.distributed; }),
+         backgroundColor: 'rgba(39,174,96,.75)', borderRadius: 4},
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      scales: { x: { title: { display: true, text: 'Units' } } }
+    }
+  });
+});
+</script>
 {% endblock %}

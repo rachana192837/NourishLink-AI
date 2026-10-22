@@ -1195,3 +1195,21 @@ class ForecastBoostTests(BaseTestData):
         plan_boost = allocation.generate_plan(
             self.coordinator, name='B-nofc', forecast_boost=True)
         self.assertEqual(sig(plan_plain), sig(plan_boost))
+
+
+class EvaluationReportTests(BaseTestData):
+    """Phase 7 presentation layer: plain-language evaluation page."""
+
+    def test_coordinator_sees_page_and_sections(self):
+        self.client.force_login(self.coordinator)
+        response = self.client.get(reverse('evaluation_report'))
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode()
+        self.assertIn('Evaluation summary', body)
+        self.assertIn('What this project tests', body)
+        self.assertIn('Allocation comparison', body)
+
+    def test_partner_is_redirected(self):
+        self.client.force_login(self.partner)
+        response = self.client.get(reverse('evaluation_report'))
+        self.assertEqual(response.status_code, 302)

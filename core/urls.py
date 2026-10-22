@@ -37,6 +37,8 @@ urlpatterns = [
 
     # Reports
     path('reports/', views.reports, name='reports'),
+    path('reports/evaluation/', views.evaluation_report,
+         name='evaluation_report'),
 
     # AI agents (Config C)
     path('ai/', views.ai_list, name='ai_list'),

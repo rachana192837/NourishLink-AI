@@ -11,20 +11,49 @@
   <div class="stat-card success">
     <div class="stat-value">{{ total_batches }}</div>
     <div class="stat-label">Available Batches</div>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">
+      Batches of donated food currently usable — this is your whole stock.
+    </p>
   </div>
   <div class="stat-card warning">
     <div class="stat-value">{{ expiring_soon }}</div>
     <div class="stat-label">Expiring Soon (≤ 7 days)</div>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">
+      These get thrown away if not allocated this week — handle first.
+    </p>
   </div>
   <div class="stat-card info">
     <div class="stat-value">{{ pending_requests }}</div>
     <div class="stat-label">Pending Requests</div>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">
+      Partner charities waiting for approval — food they are asking for.
+    </p>
   </div>
   <div class="stat-card">
     <div class="stat-value">{{ draft_plans }}</div>
     <div class="stat-label">Draft Allocation Plans</div>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">
+      Plans drawn up by you or the AI, not yet approved — nothing reserved.
+    </p>
   </div>
 </div>
+
+{% if demand_rows %}
+<div class="card" style="margin-bottom:20px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+    <h3 style="font-size:1rem;color:var(--text-muted);">Next 4 weeks — predicted demand (riskiest products)</h3>
+  </div>
+  <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;">
+    Each bar = how many units the AI model expects charities to request over the
+    next 4 weeks. <strong style="color:var(--danger);">Red bar = our stock can't cover
+    it</strong> — plan for that product now; green = we have enough.
+  </p>
+  <div style="position:relative;height:260px;">
+    <canvas id="demandChart"></canvas>
+    {{ demand_rows|json_script:"demand-chart-data" }}
+  </div>
+</div>
+{% endif %}
 
 <div class="card" style="margin-bottom:20px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
@@ -58,7 +87,8 @@
       </table>
     </div>
     <p style="font-size:.78rem;color:var(--text-muted);margin-top:10px;">
-      Negative gap = predicted week demand exceeds free stock — order or realloc before the cutoff.
+      Gap = free stock minus predicted 7-day demand. <strong>Negative (red) = this
+      product will run out</strong> — order or re-allocate before the cutoff.
     </p>
   {% else %}
     <div class="empty-state"><p>No forecasts yet — run <code>python manage.py forecast</code>.</p></div>
@@ -82,4 +112,36 @@
     </a>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var el = document.getElementById('demandChart');
+  if (!el || typeof Chart === 'undefined') return;
+  var dataEl = document.getElementById('demand-chart-data');
+  var rows = JSON.parse(dataEl.textContent);
+  new Chart(el.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: rows.map(function (r) { return r.product; }),
+      datasets: [{
+        label: 'Predicted units requested (4 weeks)',
+        data: rows.map(function (r) { return r.four_week_total; }),
+        backgroundColor: rows.map(function (r) {
+          return r.shortfall ? 'rgba(192,57,43,.75)' : 'rgba(39,174,96,.7)';
+        }),
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { title: { display: true, text: 'Predicted units (next 4 weeks)' } },
+        y: { ticks: { color: '#2c3e50', font: { weight: '600' } } },
+      }
+    }
+  });
+});
+</script>
 {% endblock %}

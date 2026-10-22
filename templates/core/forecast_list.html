@@ -5,8 +5,23 @@
 {% block content %}
 <div class="page-header">
   <h1>Demand Forecasts</h1>
-  <p>7-day demand totals per product — neural model vs rolling-28-day baseline
-     on a 12-week trailing holdout.</p>
+  <p>How much of each product charities are expected to request soon —
+     predicted by our AI model, checked against real history.</p>
+</div>
+
+<div class="card" style="margin-bottom:24px;background:#f0faf7;">
+  <p style="font-size:.88rem;color:var(--text);">
+    <strong>How to read this page.</strong> For every product we compare our
+    neural-network prediction against a simple "average of the last 4 weeks"
+    rule. <strong>MAE is the average miss in units — lower is better.</strong>
+    {% if overall %}Ours is <strong>{{ overall.model_mae }}, the simple rule's
+    is {{ overall.baseline_mae }}</strong>
+    ({{ overall.model_wins_overall }}/{{ report.n_products }} products
+    won).{% endif %} The stock table below then turns predictions into
+    action: the <strong>Gap</strong> column is what you would be short of
+    next week — negative red numbers need ordering or re-allocation
+    <em>before</em> food batches pass their distribution cutoff.
+  </p>
 </div>
 
 {% if report %}
@@ -89,6 +104,20 @@
 </div>
 {% endif %}
 
+<div class="card" style="margin-bottom:24px;">
+  <h3 style="margin-bottom:6px;font-size:1rem;color:var(--text-muted);">
+    Stock vs predicted demand — who runs out?</h3>
+  <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;">
+    Red bars (pointing left) = predicted demand is <strong>more</strong> than
+    free stock — buy or re-allocate. Green bars (to the right) = we hold more
+    than a week's predicted need.
+  </p>
+  <div style="position:relative;height:{{ gap_rows|length|add:4 }}0px;min-height:180px;">
+    <canvas id="gapChart"></canvas>
+  </div>
+  {{ gap_rows|json_script:"gap-chart-data" }}
+</div>
+
 <div class="card">
   <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">
     Next 7 days vs available stock
@@ -150,4 +179,40 @@
     </table>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var el = document.getElementById('gapChart');
+  if (!el || typeof Chart === 'undefined') return;
+  var rows = JSON.parse(document.getElementById('gap-chart-data').textContent);
+  if (!rows.length) return;
+  new Chart(el.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: rows.map(function (r) { return r.name; }),
+      datasets: [{
+        label: 'Free stock − predicted 7-day demand',
+        data: rows.map(function (r) { return r.gap; }),
+        backgroundColor: rows.map(function (r) {
+          return r.gap < 0 ? 'rgba(192,57,43,.75)' : 'rgba(39,174,96,.7)';
+        }),
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          title: { display: true, text: 'Units short (< 0) / spare (> 0)' },
+          grid: { color: function (ctx) {
+            return ctx.tick.value === 0 ? '#2c3e50' : 'rgba(213,223,227,.6)';
+          } },
+        },
+      }
+    }
+  });
+});
+</script>
 {% endblock %}

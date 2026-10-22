@@ -8,6 +8,12 @@
     <p>Inventory Analyst and Distribution Planner agents. They can only read
        state and create <strong>draft</strong> plans &mdash; nothing is reserved
        until a coordinator approves.</p>
+    <p style="font-size:.8rem;color:var(--text-muted);margin-top:6px;">
+      Columns decoded: <strong>Tool calls</strong> = database reads/writes the
+      agent performed &middot; <strong>Tokens</strong> = prompt + completion
+      text billed by the LLM (0 in fallback mode) &middot;
+      <strong>Latency</strong> = wall time of the run.
+    </p>
   </div>
   <form method="post" action="{% url 'ai_list' %}">
     {% csrf_token %}
@@ -25,9 +31,10 @@
 {% else %}
   <div class="card" style="border-left:3px solid #b58900;">
     <p style="margin:0;">
-      <strong>Deterministic fallback mode</strong> &mdash; no OPENROUTER_API_KEY
-      is set, so the agents produce the same reports and FEFO drafts from the
-      same tools without an LLM. Runs are labelled FALLBACK below.
+      <strong>Fallback mode (this is normal, not an error).</strong> No
+      OPENROUTER_API_KEY is set, so the agents answer from built-in rule-based
+      logic using the exact same tools — identical reports and drafts, zero
+      API cost, and it works offline. Runs are labelled FALLBACK below.
     </p>
   </div>
 {% endif %}

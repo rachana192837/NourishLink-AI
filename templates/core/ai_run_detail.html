@@ -13,13 +13,17 @@
     {% endif %}
     <span class="chip">{{ run.prompt_tokens }} prompt + {{ run.completion_tokens }} completion tokens</span>
     <span class="chip">{{ run.latency_ms }} ms</span>
-    {% if run.created_by %}<span class="chip">by {{ run.user.username }}</span>{% endif %}
+    {% if run.user %}<span class="chip">by {{ run.user.username }}</span>{% endif %}
   </p>
 </div>
 
 <div class="detail-grid">
   <div class="card">
     <h2>Agent output</h2>
+    <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px;">
+      What the AI "thought" and decided. Fallback = the same reasoning produced
+      by built-in rules when the LLM API is unavailable — never an error.
+    </p>
     <div style="white-space:pre-wrap;font-size:.92rem;line-height:1.55;">{{ run.output.report|default:"(no report)" }}</div>
     {% if run.plan %}
       <p style="margin-top:12px;">
@@ -42,6 +46,11 @@
 
   <div class="card">
     <h2>Tool trace ({{ run.tool_calls|length }})</h2>
+    <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px;">
+      Step-by-step record of what the agent did: every database read or write
+      went through one of these audited tool calls — the AI has no other
+      access to your data.
+    </p>
     {% if run.tool_calls == 0 %}
       <p style="color:var(--text-muted);font-size:.85rem;">Fallback run &mdash; computes directly from the tools.</p>
     {% else %}

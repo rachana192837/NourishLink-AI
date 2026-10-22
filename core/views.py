@@ -41,6 +41,28 @@ def dashboard(request):
     today = timezone.now().date()
 
     if profile.is_coordinator:
+        # Chart data: next-4-weeks predicted demand for the 5 products with
+        # the most negative forecast gap (predicted demand > free stock).
+        today = timezone.localdate()
+        demand_rows = []
+        for row in _forecast_product_rows()[:5]:
+            points = list(
+                DemandForecast.objects
+                .filter(product=row['product'], model_version=MLP_VERSION,
+                        forecast_date__gte=today)
+                .order_by('forecast_date')
+                .values_list('forecast_date', 'predicted_quantity')[:4])
+            if not points:
+                continue
+            demand_rows.append({
+                'product': row['product'].name,
+                'stock_free': row['stock_free'],
+                'horizon_dates': [str(d) for d, _ in points],
+                'weekly': [round(q, 1) for _, q in points],
+                'four_week_total': round(sum(q for _, q in points), 1),
+                'shortfall': (row['stock_free'] - sum(q for _, q in points)
+                              < 0),
+            })
         context = {
             'total_batches': FoodBatch.objects.filter(status='AVAILABLE').count(),
             'expiring_soon': FoodBatch.objects.filter(
@@ -54,6 +76,7 @@ def dashboard(request):
             'forecast_generated': DemandForecast.objects.filter(
                 model_version=MLP_VERSION
             ).order_by('-forecast_date').first(),
+            'demand_rows': demand_rows,
         }
         return render(request, 'core/dashboard_coordinator.html', context)
     else:
@@ -555,12 +578,15 @@ def forecast_list(request):
     product_rows = _forecast_product_rows()
 
     ov = report['overall'] if report else None
+    gap_rows = [{'name': r['product'].name, 'gap': r['gap']}
+                for r in product_rows if r['gap'] is not None]
     return render(request, 'core/forecast_list.html', {
         'report': report,
         'overall': ov,
         'per_product': (report['per_product'].items()
                         if report else []),
         'rows': product_rows,
+        'gap_rows': gap_rows,
         'model_version': MLP_VERSION,
         'baseline_name': BASELINE_VERSION,
     })
@@ -599,6 +625,27 @@ def reports(request):
               .order_by('distribution_cutoff'))
     wasted_units = sum(b.quantity_available for b in wasted)
 
+    # Requested vs distributed per product (top products by units).
+    requested_rows = (RequestItem.objects
+                      .exclude(request__status='CANCELLED')
+                      .values('product__name')
+                      .annotate(requested=Sum('quantity_requested'),
+                                n=Count('pk')))
+    distributed_map = {r['request_item__product__name']:
+                       (r['units'], r['n'])
+                       for r in distributed_by_product}
+    demand_rows = []
+    for row in requested_rows:
+        name = row['product__name']
+        distributed, _ = distributed_map.get(name, (0, 0))
+        demand_rows.append({
+            'product': name,
+            'requested': row['requested'] or 0,
+            'distributed': distributed,
+        })
+    demand_rows.sort(key=lambda r: -(r['requested'] + r['distributed']))
+    demand_rows = demand_rows[:8]
+
     # At-risk stock — cut-off within the next 7 days, units still free.
     at_risk = (FoodBatch.objects
                .filter(status='AVAILABLE',
@@ -630,13 +677,92 @@ def reports(request):
         'wasted_rows': wasted[:10],
         'at_risk_count': at_risk.count(),
         'at_risk_units': at_risk_units,
+        'at_risk_rows': at_risk_rows,
         'open_backlog_requests': backlog_items.values('request')
                                                 .distinct().count(),
         'backlog_unmet': backlog_unmet,
         'page_obj': page,
         'forecast_highlights': _forecast_product_rows()[:5],
+        'demand_rows': demand_rows,
     }
     return render(request, 'core/reports.html', context)
+
+
+# ---------------------------------------------------------------------------
+# Plain-English evaluation summary (A/B/C + forecast quality)
+# ---------------------------------------------------------------------------
+
+EVALUATION_PATH = BASE_DIR / 'data' / 'evaluation' / 'results.json'
+
+
+@coordinator_required
+def evaluation_report(request):
+    """Render the A/B/C + forecast results as a thesis-ready page.
+
+    Reads the artefacts produced by `manage.py evaluate` and
+    `manage.py forecast`; friendsly empty state when not yet generated.
+    """
+    import json
+
+    results = None
+    if EVALUATION_PATH.exists():
+        try:
+            results = json.loads(
+                EVALUATION_PATH.read_text(encoding='utf-8'))
+        except (json.JSONDecodeError, OSError):
+            results = None
+
+    config_keys = (
+        ('config_a', 'A — FEFO engine only', 'Rule-based baseline.'),
+        ('config_b', 'B — FEFO + forecast ordering',
+         'Requests re-prioritised by predicted shortage.'),
+        ('config_c', 'C — AI agents + FEFO',
+         'The LLM/fallback agents draft the plan through the same engine.'),
+    )
+    configs = [
+        {'key': key, 'label': label, 'note': note,
+         'data': (results.get(key) if results else None) or {}}
+        for key, label, note in config_keys
+    ]
+
+    forecast = (results or {}).get('forecast') or {}
+    scenario = (results or {}).get('scenario') or {}
+    agent_cost = ((results.get('config_c') or {}) if results
+                  else {}).get('agent_cost') or {}
+    agent_audit = ((results.get('config_c') or {}) if results
+                   else {}).get('agent_audit') or {}
+
+    forecast_report = forecasting.load_report(REPORT_PATH)
+
+    # Derived, presentable artefacts (avoids template-side arithmetic).
+    from datetime import datetime as _dt
+    generated_dt = None
+    if (results or {}).get('generated_at'):
+        try:
+            generated_dt = _dt.fromisoformat(results['generated_at'])
+        except ValueError:
+            generated_dt = None
+    improvement_pct = None
+    if forecast:
+        try:
+            improvement_pct = round(
+                (1 - forecast['model_mae'] / forecast['baseline_mae']) * 100,
+                1)
+        except (KeyError, TypeError, ZeroDivisionError):
+            improvement_pct = None
+
+    return render(request, 'core/evaluation_report.html', {
+        'results': results,
+        'configs': configs,
+        'forecast': forecast,
+        'forecast_report': forecast_report,
+        'scenario': scenario,
+        'agent_cost': agent_cost,
+        'agent_audit': agent_audit,
+        'runtime_seconds': (results or {}).get('runtime_seconds'),
+        'generated_at': generated_dt,
+        'improvement_pct': improvement_pct,
+    })
 
 
 # ---------------------------------------------------------------------------
