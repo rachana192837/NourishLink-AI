@@ -36,6 +36,14 @@ changes until a human coordinator approves the plan.
   (activity log + AI agent runs) as a timeline. Read-only; trucks/stops
   routes are computed per view and change nothing.
 
+- **Design system** (Bangalore Food Bank inspired, `templates/base.html`):
+  orange `#eb5310` action palette + deep navy `#082454` sidebar/hero, warm
+  gray background, pill buttons, Mulish display + Quicksand body type
+  (variable woff2 files vendored under `static/vendor/fonts/` — no Google
+  CDN needed at runtime; dashboard shows a mission hero, four animated
+  count-up impact counters (all-time, honest zeros allowed) and a
+  01–04 "how it works" strip; the dark dispatch board is navy-themed).
+
 ## Quick start
 
 ```bash
