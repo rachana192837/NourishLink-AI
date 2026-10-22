@@ -18,6 +18,12 @@ class Organization(models.Model):
     contact_email = models.EmailField(blank=True)
     phone = models.CharField(max_length=20, blank=True)
     address = models.TextField(blank=True)
+    latitude = models.FloatField(
+        null=True, blank=True,
+        help_text='Map latitude (dispatch board)')
+    longitude = models.FloatField(
+        null=True, blank=True,
+        help_text='Map longitude (dispatch board)')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

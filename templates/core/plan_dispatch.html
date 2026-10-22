@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dispatch board — {{ plan.name }} — NourishLink{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'vendor/leaflet.css' %}" />
+<style>
+  .dispatch-wrap {
+    background: #0b3d31;
+    border-radius: var(--radius);
+    padding: 14px;
+    color: #c8e6df;
+  }
+  .dispatch-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .dispatch-topbar .brand {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    letter-spacing: .04em;
+  }
+  .dispatch-topbar .brand small {
+    display: block;
+    font-size: .62rem;
+    font-weight: 600;
+    color: rgba(255,255,255,.55);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .kpi-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+  .kpi {
+    background: #0e4c3e;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 8px;
+    padding: 8px 14px;
+    min-width: 92px;
+    text-align: center;
+  }
+  .kpi .v { font-size: 1.25rem; font-weight: 700; color: #fff; }
+  .kpi .l { font-size: .62rem; font-weight: 700; letter-spacing: .12em;
+            text-transform: uppercase; color: rgba(255,255,255,.55); }
+  .dispatch-grid {
+    display: grid;
+    grid-template-columns: minmax(340px, 1.4fr) minmax(280px, 1fr) minmax(240px, .8fr);
+    gap: 14px;
+  }
+  @media (max-width: 1100px) { .dispatch-grid { grid-template-columns: 1fr; } }
+  .panel { background: #08362c; border-radius: 10px; padding: 14px; }
+  .panel h3 {
+    font-size: .92rem; color: #fff; margin-bottom: 4px;
+  }
+  .panel .hint { font-size: .68rem; color: rgba(255,255,255,.5); margin-bottom: 10px; }
+  #dispatchMap { height: 480px; border-radius: 8px; background: #0a4136; }
+  #schematicMap { height: 480px; border-radius: 8px; display: none;
+                  background: #0a4136; position: relative; }
+  .manifest .truck-head {
+    display: flex; align-items: center; gap: 8px;
+    margin: 12px 0 6px;
+  }
+  .manifest .truck-head .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .manifest .truck-head .lbl { font-weight: 700; color: #fff; font-size: .9rem; }
+  .manifest .truck-head .meta { font-size: .68rem; color: rgba(255,255,255,.55); margin-left: auto; }
+  .manifest .stop {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: #0e4c3e; border-radius: 8px;
+    padding: 8px 10px; margin-bottom: 6px;
+  }
+  .manifest .stop .num {
+    font-weight: 700; color: #fff; font-size: .85rem;
+    background: rgba(255,255,255,.15); border-radius: 6px;
+    padding: 2px 8px;
+  }
+  .manifest .stop .org { color: #fff; font-size: .82rem; font-weight: 600; }
+  .manifest .stop .items { color: rgba(255,255,255,.7); font-size: .72rem; margin-top: 2px; }
+  .manifest .stop .cases { color: #fff; font-weight: 700; font-size: .8rem; margin-left: auto; }
+  .record .event {
+    border-left: 2px solid #27ae60;
+    padding: 2px 0 10px 12px;
+    margin-bottom: 4px;
+    position: relative;
+  }
+  .record .event::before {
+    content: '';
+    position: absolute; left: -5px; top: 6px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #27ae60;
+  }
+  .record .event.info { border-left-color: rgba(255,255,255,.35); }
+  .record .event.info::before { background: rgba(255,255,255,.5); }
+  .record .when { font-size: .68rem; color: rgba(255,255,255,.5); }
+  .record .txt { color: #fff; font-size: .8rem; margin-top: 2px; white-space: pre-line; }
+  .record .actor { font-size: .7rem; color: rgba(255,255,255,.6); }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px;
+            font-size: .72rem; color: rgba(255,255,255,.75); }
+  .legend .dot { display: inline-block; width: 9px; height: 9px;
+                 border-radius: 50%; margin-right: 5px; }
+  .stopnum-badge {
+    display:inline-flex; align-items:center; justify-content:center;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #fff; color:#123; font-size: .7rem; font-weight:700;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'plan_detail' plan.pk %}" class="back-link">&larr; Back to plan</a>
+<div class="page-header">
+  <h1>Dispatch board</h1>
+  <p>{{ plan.name }} — status {{ plan.get_status_display }}.
+     Routes are computed per view (nearest-neighbour, indicative — not GPS
+     road plans). Nothing here changes data.</p>
+</div>
+
+<div class="dispatch-wrap">
+  <div class="dispatch-topbar">
+    <div class="brand">
+      NOURISHLINK
+      <small>fulfilment control plane</small>
+    </div>
+    <div class="kpi-strip">
+      {% for k in kpis %}
+      <div class="kpi" title="{{ k.hint }}">
+        <div class="v">{{ k.value }}</div>
+        <div class="l">{{ k.label }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <div>
+      <span style="font-size:.68rem;color:rgba(255,255,255,.55);margin-right:6px;">TRUCKS</span>
+      <a class="btn btn-ghost btn-sm {% if n_trucks == 2 %}active{% endif %}"
+         href="?trucks=2">2</a>
+      <a class="btn btn-ghost btn-sm {% if n_trucks == 3 %}active{% endif %}"
+         href="?trucks=3">3</a>
+      <a class="btn btn-ghost btn-sm {% if n_trucks == 4 %}active{% endif %}"
+         href="?trucks=4">4</a>
+    </div>
+  </div>
+
+  <div class="dispatch-grid">
+    <div class="panel">
+      <h3>Planned dispatch</h3>
+      <div class="hint">Warehouse (depot) → partner organisations. Colours = trucks.</div>
+      <div id="dispatchMap"></div>
+      <div id="schematicMap">
+        <canvas id="schematicCanvas" width="1200" height="900"
+                style="width:100%;height:100%;"></canvas>
+        <div style="position:absolute;top:8px;left:12px;font-size:.68rem;color:rgba(255,255,255,.6);">
+          offline schematic (no map tiles available)
+        </div>
+      </div>
+      <div class="legend" id="truckLegend"></div>
+    </div>
+
+    <div class="panel manifest">
+      <h3>Truck manifests</h3>
+      <div class="hint">Stops in visiting order; cases = allocated units.</div>
+      <div id="manifests">
+        {% for truck in route_data.trucks %}
+        <div class="truck-block" data-truck="{{ forloop.counter0 }}">
+          <div class="truck-head">
+            <span class="dot" data-truckcolor="{{ truck.color }}"
+                  style="background: {{ truck.color }};"></span>
+            <span class="lbl">{{ truck.label }}</span>
+            <span class="meta">{{ truck.stops|length }} stops · {{ truck.total_units }} units · {{ truck.distance_km }} km</span>
+          </div>
+          {% for stop in truck.stops %}
+          <div class="stop">
+            <span class="num">{{ stop.seq }}</span>
+            <div style="flex:1;">
+              <div class="org">{{ stop.org_name }}</div>
+              <div class="items">
+                {% for it in stop.items %}{{ it.product }} ×{{ it.qty }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              </div>
+            </div>
+            <span class="cases">{{ stop.units }}</span>
+          </div>
+          {% empty %}
+          <div class="stop"><div class="items">No stops on this route.</div></div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      {% if route_data.unmapped %}
+      <div class="hint" style="margin-top:8px;">
+        ! No coordinates for: {{ route_data.unmapped|join:", " }} — excluded from routes.
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="panel record">
+      <h3>Execution record</h3>
+      <div class="hint">Everything that happened to this plan, newest first.</div>
+      {% for e in events %}
+      <div class="event {% if e.kind == 'AGENT_ANALYST' or e.kind == 'AGENT_PLANNER' %}info{% endif %}">
+        <div class="when">{{ e.when|date:"M d, H:i" }} · {{ e.kind|lower }}</div>
+        <div class="txt">{{ e.text }}</div>
+        <div class="actor">by {{ e.actor }}</div>
+      </div>
+      {% empty %}
+      <div class="event info">
+        <div class="txt">No events yet — this plan still has no activity recorded.</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{{ route_data|json_script:"route-data" }}
+
+<script src="{% static 'vendor/leaflet.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var data = JSON.parse(document.getElementById('route-data').textContent);
+
+  function drawSchematic() {
+    var wrap = document.getElementById('schematicMap');
+    var map  = document.getElementById('dispatchMap');
+    if (map) map.style.display = 'none';
+    wrap.style.display = 'block';
+    var canvas = document.getElementById('schematicCanvas');
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0a4136'; ctx.fillRect(0, 0, W, H);
+
+    var points = [];
+    var trucks = data.trucks.filter(function (t) { return t.stops.length; });
+    trucks.forEach(function (t) {
+      t.point.order.forEach(function (p) { points.push(p); });
+    });
+    points.push(data.depot);
+    if (!points.length) { buildLegend(); return; }
+    var minX = Math.min.apply(null, points.map(function (p) { return p[1]; }));
+    var maxX = Math.max.apply(null, points.map(function (p) { return p[1]; }));
+    var minY = Math.min.apply(null, points.map(function (p) { return p[0]; }));
+    var maxY = Math.max.apply(null, points.map(function (p) { return p[0]; }));
+    if (maxX - minX < 1e-9) { maxX = minX + 0.001; }
+    if (maxY - minY < 1e-9) { maxY = minY + 0.001; }
+    function px(p) { return [H * 0.88 - (p[0] - minY) / (maxY - minY) * H * 0.76,
+                             W * 0.1 + (p[1] - minX) / (maxX - minX) * W * 0.8]; }
+
+    // depot
+    var dp = px(data.depot);
+    ctx.beginPath(); ctx.arc(dp[1], dp[0], 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.fillStyle = '#123'; ctx.font = 'bold 10px sans-serif';
+    ctx.fillText('D', dp[1] - 3, dp[0] + 4);
+    ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.font = '11px sans-serif';
+    ctx.fillText('Warehouse', dp[1] + 14, dp[0] + 4);
+
+    trucks.forEach(function (t) {
+      ctx.strokeStyle = t.color; ctx.lineWidth = 4; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      var prev = px(data.depot);
+      ctx.moveTo(prev[1], prev[0]);
+      t.point.order.forEach(function (p) {
+        var q = px(p);
+        ctx.lineTo(q[1], q[0]);
+      });
+      ctx.stroke();
+      t.point.order.forEach(function (p, idx) {
+        var q = px(p);
+        ctx.fillStyle = '#fff'; ctx.beginPath();
+        ctx.arc(q[1], q[0], 9, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#123'; ctx.font = 'bold 9px sans-serif';
+        ctx.fillText(t.stops[idx].seq, q[1] - 3, q[0] + 3);
+        ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '10px sans-serif';
+        ctx.fillText(t.stops[idx].org_name.slice(0, 26), q[1] + 12, q[0] + 3);
+      });
+    });
+    buildLegend();
+  }
+
+  function drawLeaflet() {
+    var map = L.map('dispatchMap', { scrollWheelZoom: true });
+    var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; OpenStreetMap contributors',
+    }).addTo(map);
+
+    var errorCount = 0;
+    tiles.on('tileerror', function () {
+      errorCount += 1;
+      if (errorCount >= 3) { map.remove(); drawSchematic(); }
+    });
+
+    var bounds = [];
+    var depot = data.depot;
+    L.marker(depot, { title: 'Warehouse (depot)' }).addTo(map)
+      .bindPopup('<strong>Warehouse</strong><br>Dispatch depot');
+    bounds.push(depot);
+    data.trucks.forEach(function (truck) {
+      if (!truck.stops.length) return;
+      var pts = [depot].concat(truck.stops.map(function (s) { return [s.lat, s.lng]; }));
+      L.polyline(pts, { color: truck.color, weight: 4, opacity: .85 })
+        .addTo(map)
+        .bindPopup(truck.label + ' — ' + truck.stops.length + ' stops');
+      truck.stops.forEach(function (s) {
+        L.marker([s.lat, s.lng], {
+          title: s.org_name,
+        }).addTo(map).bindPopup(
+          '<strong>' + s.seq + '. ' + s.org_name + '</strong><br>' +
+          s.units + ' units');
+        bounds.push([s.lat, s.lng]);
+      });
+    });
+    map.fitBounds(bounds, { padding: [28, 28] });
+    setTimeout(function () {
+      if (!map._loaded) drawSchematic();
+    }, 4000);
+    buildLegend();
+  }
+
+  function buildLegend() {
+    var legend = document.getElementById('truckLegend');
+    legend.innerHTML = '';
+    data.trucks.forEach(function (t) {
+      if (!t.stops.length) return;
+      var item = document.createElement('span');
+      var dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.style.background = t.color;
+      item.appendChild(dot);
+      item.appendChild(document.createTextNode(
+        t.label + ' — ' + t.stops.length + ' stops, ' +
+        t.total_units + ' units, ' + t.distance_km + ' km'));
+      legend.appendChild(item);
+    });
+  }
+
+  if (typeof L === 'undefined') {
+    drawSchematic();
+  } else {
+    drawLeaflet();
+  }
+});
+</script>
+{% endblock %}

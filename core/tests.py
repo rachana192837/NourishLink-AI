@@ -16,6 +16,7 @@ from core import agent_tools
 from core import allocation
 from core import agents as agents_module
 from core import llm as llm_module
+from core import routing
 from .models import (
     ActivityLog,
     AgentRun,
@@ -1213,3 +1214,118 @@ class EvaluationReportTests(BaseTestData):
         self.client.force_login(self.partner)
         response = self.client.get(reverse('evaluation_report'))
         self.assertEqual(response.status_code, 302)
+
+
+class RoutingTests(BaseTestData):
+    """Dispatch-board route computation (pure function, presentation only)."""
+
+    def _delivery(self, org_id, name, lat, lng, units):
+        return {'org_id': org_id, 'org_name': name,
+                'lat': lat, 'lng': lng, 'units': units, 'items': []}
+
+    def test_all_stops_assigned_exactly_once(self):
+        plan = AllocationPlan.objects.create(
+            name='Route test', created_by=self.coordinator)
+        deliveries = [
+            self._delivery(1, 'North Charity', 13.03, 77.59, 40),
+            self._delivery(2, 'East Charity', 12.98, 77.71, 30),
+            self._delivery(3, 'South Charity', 12.90, 77.58, 20),
+            self._delivery(4, 'West Charity', 12.97, 77.52, 10),
+        ]
+        result = routing.group_plan_into_trucks(plan, deliveries, 2)
+        assigned = [s['org_id'] for t in result['trucks'] for s in t['stops']]
+        self.assertEqual(sorted(assigned), [1, 2, 3, 4])
+        self.assertEqual(result['unmapped'], [])
+
+    def test_sequenced_and_unit_totals_match(self):
+        plan = AllocationPlan.objects.create(
+            name='Route totals', created_by=self.coordinator)
+        deliveries = [
+            self._delivery(1, 'North', 13.03, 77.59, 40),
+            self._delivery(2, 'East', 12.98, 77.71, 30),
+        ]
+        result = routing.group_plan_into_trucks(plan, deliveries, 2)
+        total = sum(t['total_units'] for t in result['trucks'])
+        self.assertEqual(total, 70)
+        for truck in result['trucks']:
+            self.assertEqual(
+                [s['seq'] for s in truck['stops']],
+                list(range(1, len(truck['stops']) + 1)))
+        self.assertTrue(all(t['distance_km'] > 0 or not t['stops']
+                            for t in result['trucks']))
+
+    def test_unmapped_orgs_reported_not_routed(self):
+        plan = AllocationPlan.objects.create(
+            name='Route unmapped', created_by=self.coordinator)
+        deliveries = [
+            self._delivery(1, 'Located', 12.98, 77.60, 10),
+            self._delivery(2, 'No coords', None, None, 15),
+        ]
+        result = routing.group_plan_into_trucks(plan, deliveries, 2)
+        self.assertEqual(result['unmapped'], ['No coords'])
+        assigned = [s['org_id'] for t in result['trucks'] for s in t['stops']]
+        self.assertEqual(assigned, [1])
+
+    def test_deterministic_output(self):
+        plan = AllocationPlan.objects.create(
+            name='Route deterministic', created_by=self.coordinator)
+        deliveries = [
+            self._delivery(i, f'Org {i}', 12.9 + i * 0.01, 77.5 + i * 0.02,
+                           10 * i)
+            for i in range(1, 6)
+        ]
+        result1 = routing.group_plan_into_trucks(plan, deliveries, 2)
+        result2 = routing.group_plan_into_trucks(plan, deliveries, 2)
+        self.assertEqual(result1, result2)
+
+
+class DispatchBoardTests(BaseTestData):
+    """Dispatch board view: access control + rendered board content."""
+
+    def setUp(self):
+        super().setUp()
+        FoodBatch.objects.all().delete()
+        self.batch = FoodBatch.objects.create(
+            product=self.product, donor=self.donor, batch_code='DB-1',
+            quantity_received=60, quantity_available=60,
+            received_date=date.today() - timedelta(days=5),
+            distribution_cutoff=date.today() + timedelta(days=10))
+        self.batch2 = FoodBatch.objects.create(
+            product=self.other_product, donor=self.donor, batch_code='DB-2',
+            quantity_received=40, quantity_available=40,
+            received_date=date.today() - timedelta(days=5),
+            distribution_cutoff=date.today() + timedelta(days=12))
+        self.req = Request.objects.create(
+            organization=self.org, requested_by=self.partner,
+            required_by_date=date.today() + timedelta(days=3))
+        self.item1 = RequestItem.objects.create(
+            request=self.req, product=self.product, quantity_requested=50)
+        self.item2 = RequestItem.objects.create(
+            request=self.req, product=self.other_product,
+            quantity_requested=40)
+        self.plan = allocation.generate_plan(self.coordinator,
+                                             name='Dispatch test')
+
+    def test_board_renders_trucks_and_kpis(self):
+        self.client.force_login(self.coordinator)
+        response = self.client.get(
+            reverse('plan_dispatch', args=[self.plan.pk]))
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode()
+        self.assertIn('Truck manifests', body)
+        self.assertIn('Execution record', body)
+        self.assertIn('route-data', body)
+        self.assertIn(self.org.name, body)
+
+    def test_board_access_control(self):
+        self.client.force_login(self.partner)
+        response = self.client.get(
+            reverse('plan_dispatch', args=[self.plan.pk]))
+        self.assertEqual(response.status_code, 302)
+
+    def test_truck_count_override(self):
+        self.client.force_login(self.coordinator)
+        response = self.client.get(
+            reverse('plan_dispatch', args=[self.plan.pk]) + '?trucks=3')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['n_trucks'], 3)

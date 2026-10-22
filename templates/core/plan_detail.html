@@ -71,6 +71,10 @@
   </div>
 
   <div class="detail-actions">
+    <a class="btn btn-sm btn-ghost" href="{% url 'plan_dispatch' plan.pk %}">
+      Open dispatch board
+      {% if plan.status == 'DRAFT' %}(preview — draft){% endif %}
+    </a>
     {% if plan.status == 'DRAFT' %}
       <form method="post" action="{% url 'plan_approve' plan.pk %}">
         {% csrf_token %}

@@ -97,6 +97,10 @@ class Command(BaseCommand):
 
     # -- Organizations & Partners ----------------------------------------
 
+    # Bengaluru city centre: dispatch-board depot for partner charities.
+    DEPOT_LAT = 12.9716
+    DEPOT_LNG = 77.5946
+
     def _create_organizations(self):
         org_data = [
             ("Hope Shelter", "SHELTER", "hope@example.com", "+1-555-0101", "123 Main St"),
@@ -107,7 +111,10 @@ class Command(BaseCommand):
             ("Relief Foundation", "NGO", "relief@example.com", "+1-555-0106", "987 Cedar Ln"),
         ]
         orgs = []
-        for name, org_type, email, phone, address in org_data:
+        for idx, (name, org_type, email, phone, address) in enumerate(
+                org_data, start=1):
+            # Stable, believable scatter around the depot (max ~6 km).
+            jitter = ((idx * 37) % 100) / 100 - 0.5
             org = Organization.objects.create(
                 name=name,
                 org_type=org_type,
@@ -115,6 +122,8 @@ class Command(BaseCommand):
                 phone=phone,
                 address=address,
                 is_active=True,
+                latitude=self.DEPOT_LAT + 0.04 * jitter,
+                longitude=self.DEPOT_LNG + 0.05 * ((idx * 53) % 100 / 100 - 0.5),
             )
             orgs.append(org)
         self.stdout.write(f"  Created {len(orgs)} organizations.")

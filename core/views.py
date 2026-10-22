@@ -9,12 +9,13 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from . import allocation, forecast as forecasting
+from . import allocation, forecast as forecasting, routing
 from .activity import log_activity
 from .decorators import coordinator_required, partner_required
 from .forms import BatchForm, ProductForm, RequestForm, RequestItemFormSet
 from .models import (
     ActivityLog,
+    AgentRun,
     AllocationItem,
     AllocationPlan,
     DemandForecast,
@@ -521,6 +522,105 @@ def plan_complete(request, pk):
         for error in errors:
             messages.error(request, error)
     return redirect('plan_detail', pk=pk)
+
+
+# ---------------------------------------------------------------------------
+# Dispatch board (coordinator) — map, truck manifests, execution record
+# ---------------------------------------------------------------------------
+
+@coordinator_required
+def plan_dispatch(request, pk):
+    """Fulfilment-control-plane style board for one allocation plan:
+    map with truck routes, per-truck manifests and the plan's execution
+    timeline (activity log + agent runs). Read-only; computed per request.
+    """
+    from django.contrib.contenttypes.models import ContentType
+
+    try:
+        n_trucks = max(1, min(int(request.GET.get('trucks', 2)), 4))
+    except (TypeError, ValueError):
+        n_trucks = 2
+
+    plan = get_object_or_404(
+        AllocationPlan.objects
+        .prefetch_related('items__request_item__product',
+                          'items__request_item__request__organization',
+                          'items__food_batch'),
+        pk=pk)
+
+    # Group allocated units per destination organisation.
+    deliveries = {}
+    for row in plan.items.all():
+        org = row.request_item.request.organization
+        entry = deliveries.setdefault(
+            org.pk, {'org_id': org.pk, 'org_name': org.name,
+                     'lat': org.latitude, 'lng': org.longitude,
+                     'units': 0, 'items': []})
+        entry['units'] += row.quantity_allocated
+        entry['items'].append({'product': row.request_item.product.name,
+                               'qty': row.quantity_allocated,
+                               'batch_code': row.food_batch.batch_code})
+    route_data = routing.group_plan_into_trucks(
+        plan, list(deliveries.values()), n_trucks=n_trucks)
+
+    total_units = sum(d['units'] for d in deliveries.values())
+    total_cases = plan.items.count()
+    completed = plan.status == 'COMPLETED'
+    cancelled = plan.status == 'CANCELLED'
+    delivered_units = total_units if completed else 0
+
+    # KPI chips as in the reference board.
+    kpis = [
+        {'label': 'Trucks', 'value': n_trucks,
+         'hint': 'route groups computed by nearest-neighbour heuristic'},
+        {'label': 'Stops', 'value': len(deliveries),
+         'hint': 'distinct partner destinations in this plan'},
+        {'label': 'Cases', 'value': total_cases,
+         'hint': 'allocation line items (batch → charity)'},
+        {'label': 'Delivered', 'value': delivered_units,
+         'hint': 'units picked up (completed)'},
+        {'label': 'Remaining', 'value': max(0, total_units - delivered_units),
+         'hint': 'units still to be picked up'},
+    ]
+
+    # Execution record: plan lifecycle events + AI agent runs.
+    events = []
+    for entry in (ActivityLog.objects
+                  .filter(content_type=ContentType.objects.get_for_model(plan),
+                          object_id=plan.pk)
+                  .select_related('user')):
+        events.append({'when': entry.created_at,
+                       'actor': (entry.user.username if entry.user
+                                 else 'system'),
+                       'text': entry.description,
+                       'kind': entry.action_type})
+    for run in AgentRun.objects.filter(plan=plan):
+        kind = 'AGENT_PLANNER' if run.role == AgentRun.Role.PLANNER \
+            else 'AGENT_ANALYST'
+        events.append({'when': run.created_at,
+                       'actor': (run.model_name or 'fallback agent'),
+                       'text': f'{run.get_role_display()} '
+                               f'{run.status.lower()} '
+                               f'({len(run.tool_calls)} tool calls)',
+                       'kind': kind})
+    events.sort(key=lambda e: e['when'])
+
+    for truck in route_data['trucks']:
+        # Feed route geometry to the map as flat JSON-friendly lists.
+        truck['point'] = {
+            'start': list(route_data['depot']),
+            'order': [list(s['pos']) for s in truck['stops']],
+        }
+
+    context = {
+        'plan': plan,
+        'route_data': route_data,
+        'kpis': kpis,
+        'events': events,
+        'n_trucks': n_trucks,
+        'cancelled': cancelled,
+    }
+    return render(request, 'core/plan_dispatch.html', context)
 
 
 # ---------------------------------------------------------------------------

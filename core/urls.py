@@ -27,6 +27,8 @@ urlpatterns = [
     path('plans/', views.plan_list, name='plan_list'),
     path('plans/generate/', views.plan_generate, name='plan_generate'),
     path('plans/<int:pk>/', views.plan_detail, name='plan_detail'),
+    path('plans/<int:pk>/dispatch/', views.plan_dispatch,
+         name='plan_dispatch'),
     path('plans/<int:pk>/approve/', views.plan_approve, name='plan_approve'),
     path('plans/<int:pk>/cancel/', views.plan_cancel, name='plan_cancel'),
     path('plans/<int:pk>/complete/', views.plan_complete, name='plan_complete'),
