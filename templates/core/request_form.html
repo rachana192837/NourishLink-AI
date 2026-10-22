@@ -26,7 +26,7 @@
   {% endif %}
 
   <div class="card">
-    <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">When do you need it?</h3>
+    <h3 style="margin-bottom:12px;font-size:1rem;color:var(--primary);font-weight:800;font-family:var(--font-head);;">When do you need it?</h3>
     <div class="form-group">
       <label for="{{ form.required_by_date.id_for_label }}">Required by date</label>
       {{ form.required_by_date }}
@@ -44,7 +44,7 @@
   </div>
 
   <div class="card" style="margin-top:20px;">
-    <h3 style="margin-bottom:4px;font-size:1rem;color:var(--text-muted);">Items</h3>
+    <h3 style="margin-bottom:4px;font-size:1rem;color:var(--primary);font-weight:800;font-family:var(--font-head);;">Items</h3>
     <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:12px;">List each product and quantity. Duplicates are not allowed.</p>
     {{ formset.management_form }}
     <div class="table-wrap">

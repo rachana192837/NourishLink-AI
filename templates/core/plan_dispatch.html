@@ -6,10 +6,10 @@
 <link rel="stylesheet" href="{% static 'vendor/leaflet.css' %}" />
 <style>
   .dispatch-wrap {
-    background: #0b3d31;
+    background: #082454;
     border-radius: var(--radius);
     padding: 14px;
-    color: #c8e6df;
+    color: #b8c8e8;
   }
   .dispatch-topbar {
     display: flex;
@@ -35,7 +35,7 @@
   }
   .kpi-strip { display: flex; gap: 10px; flex-wrap: wrap; }
   .kpi {
-    background: #0e4c3e;
+    background: #0e2d63;
     border: 1px solid rgba(255,255,255,.08);
     border-radius: 8px;
     padding: 8px 14px;
@@ -51,14 +51,14 @@
     gap: 14px;
   }
   @media (max-width: 1100px) { .dispatch-grid { grid-template-columns: 1fr; } }
-  .panel { background: #08362c; border-radius: 10px; padding: 14px; }
+  .panel { background: #061a3d; border-radius: 10px; padding: 14px; }
   .panel h3 {
     font-size: .92rem; color: #fff; margin-bottom: 4px;
   }
   .panel .hint { font-size: .68rem; color: rgba(255,255,255,.5); margin-bottom: 10px; }
-  #dispatchMap { height: 480px; border-radius: 8px; background: #0a4136; }
+  #dispatchMap { height: 480px; border-radius: 8px; background: #0a2050; }
   #schematicMap { height: 480px; border-radius: 8px; display: none;
-                  background: #0a4136; position: relative; }
+                  background: #0a2050; position: relative; }
   .manifest .truck-head {
     display: flex; align-items: center; gap: 8px;
     margin: 12px 0 6px;
@@ -70,7 +70,7 @@
   .manifest .truck-head .meta { font-size: .68rem; color: rgba(255,255,255,.55); margin-left: auto; }
   .manifest .stop {
     display: flex; gap: 10px; align-items: flex-start;
-    background: #0e4c3e; border-radius: 8px;
+    background: #0e2d63; border-radius: 8px;
     padding: 8px 10px; margin-bottom: 6px;
   }
   .manifest .stop .num {
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var ctx = canvas.getContext('2d');
     var W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#0a4136'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#0a2050'; ctx.fillRect(0, 0, W, H);
 
     var points = [];
     var trucks = data.trucks.filter(function (t) { return t.stops.length; });

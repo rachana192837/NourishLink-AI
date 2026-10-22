@@ -11,7 +11,7 @@
 
 {% if plan.status == 'DRAFT' and validation %}
 <div class="card" style="margin-bottom:20px;">
-  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Pre-approval check</h3>
+  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--primary);font-weight:800;font-family:var(--font-head);;">Pre-approval check</h3>
   {% if validation.valid %}
     <p style="color:#155724;font-weight:600;">All checks passed — stock can be reserved on approval.</p>
   {% else %}
@@ -98,7 +98,7 @@
 </div>
 
 <div class="card" style="margin-top:20px;">
-  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--text-muted);">Allocation Items</h3>
+  <h3 style="margin-bottom:12px;font-size:1rem;color:var(--primary);font-weight:800;font-family:var(--font-head);;">Allocation Items</h3>
   {% if items %}
   <div class="table-wrap">
     <table>
