@@ -157,8 +157,8 @@
     <div class="panel">
       <h3>Planned dispatch</h3>
       <div class="hint">Warehouse (depot) → partner organisations. Colours = trucks.
-        Tiles load from a free public basemap (CARTO, then OSM); if no tiles
-        load, an automatic offline schematic is drawn instead.</div>
+        Tiles load from a free public basemap (OpenStreetMap, then Esri); if no
+        tiles load, an automatic offline schematic is drawn instead.</div>
       <div id="dispatchMap"></div>
       <a id="mapRetry" href="javascript:location.reload()"
          class="btn btn-primary btn-sm no-print"
@@ -304,15 +304,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function drawLeaflet() {
-    // Free public basemaps: CARTO first (permissive, verified reliable),
-    // OSM last (rate-limits/blocks some traffic). A provider is only
-    // abandoned when it loads ZERO tiles (3+ errors); the schematic is
-    // the last resort and always offers a manual retry.
+    // Keyless public basemaps: OSM first, Esri world tiles second.
+    // (CARTO dropped keyless access — serves "API KEY REQUIRED"
+    // watermark tiles; Wikimedia 403s external usage.) A provider is
+    // only abandoned when it loads ZERO tiles (3+ errors); the
+    // schematic is the last resort and always offers a manual retry.
     var PROVIDERS = [
-      { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-        attribution: '&copy; OpenStreetMap contributors &copy; CARTO' },
       { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         attribution: '&copy; OpenStreetMap contributors' },
+      { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+        attribution: 'Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics' },
     ];
 
     var map = L.map('dispatchMap', { scrollWheelZoom: true });
