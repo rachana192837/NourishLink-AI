@@ -176,6 +176,10 @@ class AllocationPlan(models.Model):
     name = models.CharField(max_length=200)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='plans_created')
     status = models.CharField(max_length=15, choices=Status.choices, default=Status.DRAFT)
+    routes = models.JSONField(
+        null=True, blank=True,
+        help_text=('Persisted truck routes per truck count, keyed "1".."4" '
+                   '(dispatch board record; computed once, then stable).'))
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     approved_at = models.DateTimeField(null=True, blank=True)

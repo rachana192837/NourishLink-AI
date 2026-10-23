@@ -81,6 +81,15 @@
   .manifest .stop .org { color: #fff; font-size: .82rem; font-weight: 600; }
   .manifest .stop .items { color: rgba(255,255,255,.7); font-size: .72rem; margin-top: 2px; }
   .manifest .stop .cases { color: #fff; font-weight: 700; font-size: .8rem; margin-left: auto; }
+  .manifest .stop .chip {
+    display: inline-block; margin-left: 6px; padding: 1px 8px;
+    border-radius: 50px; font-size: .6rem; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: #b8c8e8; background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+  }
+  .manifest .stop .chip.ok { color: #7fe0a7; border-color: rgba(127,224,167,.45); }
+  .manifest .stop .chip.bad { color: #ff9d85; border-color: rgba(255,157,133,.45); }
   .record .event {
     border-left: 2px solid #27ae60;
     padding: 2px 0 10px 12px;
@@ -115,8 +124,8 @@
 <div class="page-header">
   <h1>Dispatch board</h1>
   <p>{{ plan.name }} — status {{ plan.get_status_display }}.
-     Routes are computed per view (nearest-neighbour, indicative — not GPS
-     road plans). Nothing here changes data.</p>
+     Routes are a stored record of this plan (computed once per truck
+     count; stop order via nearest-neighbour). Nothing here changes data.</p>
 </div>
 
 <div class="dispatch-wrap">
@@ -177,7 +186,12 @@
           <div class="stop">
             <span class="num">{{ stop.seq }}</span>
             <div style="flex:1;">
-              <div class="org">{{ stop.org_name }}</div>
+              <div class="org">{{ stop.org_name }}
+                {% if plan.status == 'COMPLETED' %}<span class="chip ok">delivered</span>
+                {% elif plan.status == 'APPROVED' %}<span class="chip">scheduled</span>
+                {% elif plan.status == 'CANCELLED' %}<span class="chip bad">cancelled</span>
+                {% else %}<span class="chip">planned</span>{% endif %}
+              </div>
               <div class="items">
                 {% for it in stop.items %}{{ it.product }} ×{{ it.qty }}{% if not forloop.last %}, {% endif %}{% endfor %}
               </div>

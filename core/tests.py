@@ -1329,3 +1329,60 @@ class DispatchBoardTests(BaseTestData):
             reverse('plan_dispatch', args=[self.plan.pk]) + '?trucks=3')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['n_trucks'], 3)
+
+    def test_routes_persisted_on_plan(self):
+        self.client.force_login(self.coordinator)
+        self.assertIsNone(self.plan.routes)
+        self.client.get(reverse('plan_dispatch', args=[self.plan.pk]))
+        self.plan.refresh_from_db()
+        self.assertIn('2', self.plan.routes)
+
+    def test_stored_routes_reused_between_visits(self):
+        Organization.objects.filter(pk=self.org.pk).update(
+            latitude=12.95, longitude=77.62)
+        self.client.force_login(self.coordinator)
+        self.client.get(reverse('plan_dispatch', args=[self.plan.pk]))
+        self.plan.refresh_from_db()
+        # Seed a marker into the stored record; a plain revisit must ship
+        # the stored record untouched (no per-request recomputation).
+        self.plan.routes['2']['marker'] = 'kept'
+        AllocationPlan.objects.filter(pk=self.plan.pk).update(
+            routes=self.plan.routes)
+        response = self.client.get(
+            reverse('plan_dispatch', args=[self.plan.pk]))
+        self.assertEqual(response.context['route_data'].get('marker'),
+                         'kept')
+
+    def test_refresh_and_second_count_recompute(self):
+        Organization.objects.filter(pk=self.org.pk).update(
+            latitude=12.95, longitude=77.62)
+        self.client.force_login(self.coordinator)
+        self.client.get(reverse('plan_dispatch', args=[self.plan.pk]))
+        self.plan.refresh_from_db()
+        self.plan.routes['2']['marker'] = 'kept'
+        AllocationPlan.objects.filter(pk=self.plan.pk).update(
+            routes=self.plan.routes)
+        # ?refresh=1 replaces the stored record (marker wiped)...
+        self.client.get(reverse('plan_dispatch',
+                                args=[self.plan.pk]) + '?refresh=1')
+        self.plan.refresh_from_db()
+        self.assertNotIn('marker', self.plan.routes['2'])
+        # ...and another truck count adds its own cached entry.
+        self.client.get(reverse('plan_dispatch',
+                                args=[self.plan.pk]) + '?trucks=3')
+        self.plan.refresh_from_db()
+        self.assertIn('2', self.plan.routes)
+        self.assertIn('3', self.plan.routes)
+
+    def test_stop_status_chips_follow_plan_state(self):
+        Organization.objects.filter(pk=self.org.pk).update(
+            latitude=12.95, longitude=77.62)
+        self.client.force_login(self.coordinator)
+        response = self.client.get(
+            reverse('plan_dispatch', args=[self.plan.pk]))
+        self.assertIn('planned', response.content.decode())
+        self.plan.status = 'COMPLETED'
+        self.plan.save(update_fields=['status'])
+        response = self.client.get(
+            reverse('plan_dispatch', args=[self.plan.pk]))
+        self.assertIn('delivered', response.content.decode())

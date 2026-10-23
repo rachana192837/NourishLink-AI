@@ -552,7 +552,8 @@ def plan_complete(request, pk):
 def plan_dispatch(request, pk):
     """Fulfilment-control-plane style board for one allocation plan:
     map with truck routes, per-truck manifests and the plan's execution
-    timeline (activity log + agent runs). Read-only; computed per request.
+    timeline (activity log + agent runs). Route groups are persisted on
+    the plan (computed once per truck count, then a stable record).
     """
     from django.contrib.contenttypes.models import ContentType
 
@@ -580,8 +581,19 @@ def plan_dispatch(request, pk):
         entry['items'].append({'product': row.request_item.product.name,
                                'qty': row.quantity_allocated,
                                'batch_code': row.food_batch.batch_code})
-    route_data = routing.group_plan_into_trucks(
-        plan, list(deliveries.values()), n_trucks=n_trucks)
+
+    # Persisted route record: compute per truck count once, then reuse.
+    # ?refresh=1 forces recomputation (e.g. after a data correction).
+    route_cache = plan.routes if isinstance(plan.routes, dict) else {}
+    cache_key = str(n_trucks)
+    if request.GET.get('refresh') == '1' or cache_key not in route_cache:
+        route_data = routing.group_plan_into_trucks(
+            plan, list(deliveries.values()), n_trucks=n_trucks)
+        route_cache[cache_key] = route_data
+        plan.routes = route_cache
+        plan.save(update_fields=['routes'])
+    else:
+        route_data = route_cache[cache_key]
 
     total_units = sum(d['units'] for d in deliveries.values())
     total_cases = plan.items.count()
