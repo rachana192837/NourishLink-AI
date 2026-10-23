@@ -904,13 +904,17 @@ def plan_dispatch(request, pk):
                        'text': entry.description,
                        'kind': entry.action_type})
     for run in AgentRun.objects.filter(plan=plan):
-        kind = 'AGENT_PLANNER' if run.role == AgentRun.Role.PLANNER \
-            else 'AGENT_ANALYST'
+        if run.role == AgentRun.Role.PLANNER:
+            text = ('AI planner drafted the dispatch plan'
+                    + (' (offline mode)' if run.status != 'OK' else ''))
+            kind = 'AGENT_PLANNER'
+        else:
+            text = ('AI analyst reviewed stock and forecasts'
+                    + (' (offline mode)' if run.status != 'OK' else ''))
+            kind = 'AGENT_ANALYST'
         events.append({'when': run.created_at,
-                       'actor': (run.model_name or 'fallback agent'),
-                       'text': f'{run.get_role_display()} '
-                               f'{run.status.lower()} '
-                               f'({len(run.tool_calls)} tool calls)',
+                       'actor': 'AI assistant',
+                       'text': text,
                        'kind': kind})
     events.sort(key=lambda e: e['when'])
 
@@ -1338,12 +1342,17 @@ def ai_list(request):
 
     if request.method == 'POST':
         analyst_run, planner_run = agent_runner.run_proposal_cycle(request.user)
+        if planner_run.plan:
+            messages.success(
+                request,
+                'AI proposal ready — review the draft plan below, then '
+                'approve it to reserve stock.')
+            return redirect('plan_detail', pk=planner_run.plan.pk)
         messages.success(
             request,
-            f'Proposal cycle complete: analyst run #{analyst_run.pk} '
-            f'({analyst_run.status}), planner run #{planner_run.pk} '
-            f'({planner_run.status}).')
-        return redirect('ai_detail', pk=planner_run.pk)
+            'AI proposal ready — nothing to allocate right now, all '
+            'pending requests are already covered.')
+        return redirect('ai_list')
 
     has_key = bool(os.environ.get('OPENROUTER_API_KEY', '').strip())
     runs = (AgentRun.objects

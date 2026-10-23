@@ -39,16 +39,16 @@
   <div class="src-brief">
     <strong>Coordinator brief:</strong> {{ brief }}
     {% if brief_is_llm %}
-      <span class="badge badge-approved">AI narrative · {{ brief_model|truncatechars:28 }}</span>
+      <span class="badge badge-approved">AI brief</span>
     {% else %}
-      <span class="badge badge-draft">deterministic brief</span>
+      <span class="badge badge-draft">standard brief</span>
     {% endif %}
   </div>
   <form method="post" action="{% url 'sourcing_explain' %}" style="margin-top:14px;">
     {% csrf_token %}
     <button type="submit" class="btn btn-primary btn-sm">Explain with AI</button>
     <span style="font-size:.78rem;color:var(--text-muted);margin-left:8px;">
-      Regenerates the narrative above from the current numbers (LLM optional — always falls back).</span>
+      Regenerates the narrative above from the current numbers.</span>
   </form>
 </div>
 

@@ -5,15 +5,9 @@
 <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
   <div>
     <h1>AI Proposals</h1>
-    <p>Inventory Analyst and Distribution Planner agents. They can only read
-       state and create <strong>draft</strong> plans &mdash; nothing is reserved
-       until a coordinator approves.</p>
-    <p style="font-size:.8rem;color:var(--text-muted);margin-top:6px;">
-      Columns decoded: <strong>Tool calls</strong> = database reads/writes the
-      agent performed &middot; <strong>Tokens</strong> = prompt + completion
-      text billed by the LLM (0 in fallback mode) &middot;
-      <strong>Latency</strong> = wall time of the run.
-    </p>
+    <p>The AI assistant reviews your stock, forecasts and pending requests,
+       then drafts a dispatch proposal. <strong>Nothing changes until a
+       coordinator approves the draft</strong> — the AI can only propose.</p>
   </div>
   <form method="post" action="{% url 'ai_list' %}">
     {% csrf_token %}
@@ -21,27 +15,17 @@
   </form>
 </div>
 
-{% if has_key %}
-  <div class="card" style="border-left:3px solid var(--primary);">
-    <p style="margin:0;">
-      LLM: <strong>{{ model_name }}</strong> (OpenRouter free tier).
-      A run typically takes 20&ndash;90 seconds &mdash; one placeholder click.
-    </p>
-  </div>
-{% else %}
-  <div class="card" style="border-left:3px solid #b58900;">
-    <p style="margin:0;">
-      <strong>Fallback mode (this is normal, not an error).</strong> No
-      OPENROUTER_API_KEY is set, so the agents answer from built-in rule-based
-      logic using the exact same tools — identical reports and drafts, zero
-      API cost, and it works offline. Runs are labelled FALLBACK below.
-    </p>
-  </div>
-{% endif %}
+<div class="card" style="border-left:3px solid var(--primary);">
+  <p style="margin:0;">
+    A run takes up to a minute. When the AI service is unreachable, the
+    assistant answers from built-in rules instead — same result, labelled
+    <span class="badge badge-draft">Offline mode</span> below.
+  </p>
+</div>
 
 {% if total == 0 %}
 <div class="empty-state">
-  <p>No agent runs yet. Use "Run AI proposal" above.</p>
+  <p>No proposals yet. Use "Run AI proposal" above.</p>
 </div>
 {% else %}
 <div class="card">
@@ -49,40 +33,34 @@
     <table>
       <thead>
         <tr>
-          <th>ID</th>
           <th>Agent</th>
           <th>Mode</th>
-          <th>Model</th>
-          <th>Tool calls</th>
-          <th>Tokens</th>
-          <th>Latency</th>
-          <th>Plan</th>
-          <th>Created</th>
+          <th>Outcome</th>
+          <th>When</th>
+          <th>By</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         {% for run in page_obj %}
         <tr>
-          <td>#{{ run.pk }}</td>
-          <td>{{ run.get_role_display }}</td>
+          <td>
+            {% if run.role == 'PLANNER' %}Dispatch planner{% else %}Inventory analyst{% endif %}
+          </td>
           <td>
             {% if run.status == 'OK' %}
-              <span class="badge badge-approved">LLM</span>
+              <span class="badge badge-approved">AI</span>
             {% else %}
-              <span class="badge badge-cancelled">Fallback</span>
+              <span class="badge badge-draft">Offline mode</span>
             {% endif %}
           </td>
-          <td>{{ run.model_name|default:"&mdash;" }}</td>
-          <td>{{ run.tool_calls|length }}</td>
-          <td>{{ run.prompt_tokens }}+{{ run.completion_tokens }}</td>
-          <td>{{ run.latency_ms }} ms</td>
           <td>
             {% if run.plan %}
-              <a href="{% url 'plan_detail' run.plan.pk %}">#{{ run.plan.pk }}</a>
+              <a href="{% url 'plan_detail' run.plan.pk %}">Draft plan #{{ run.plan.pk }}</a>
             {% else %}&mdash;{% endif %}
           </td>
           <td>{{ run.created_at|date:"M d, Y H:i" }}</td>
+          <td>{{ run.user.username|default:"—" }}</td>
           <td><a href="{% url 'ai_detail' run.pk %}" class="btn btn-sm btn-ghost">View</a></td>
         </tr>
         {% endfor %}

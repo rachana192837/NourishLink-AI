@@ -1585,7 +1585,9 @@ class SourcingTests(BaseTestData):
     def test_explain_falls_back_without_llm(self):
         self._forecast([80, 50])
         self.client.force_login(self.coordinator)
-        with mock.patch.object(views_module, 'MLP_VERSION', 'vTEST'):
+        with mock.patch.object(views_module, 'MLP_VERSION', 'vTEST'), \
+             mock.patch.object(sourcing_module, 'llm_chat',
+                               side_effect=OSError('offline')):
             response = self.client.post(reverse('sourcing_explain'),
                                         follow=True)
         self.assertEqual(response.status_code, 200)
@@ -1593,7 +1595,7 @@ class SourcingTests(BaseTestData):
         run = AgentRun.objects.get()
         self.assertEqual(run.status, 'FALLBACK')
         self.assertEqual(run.role, 'ANALYST')
-        self.assertIn('deterministic brief', response.content.decode())
+        self.assertIn('standard brief', response.content.decode())
 
     def test_explain_records_llm_brief(self):
         self._forecast([80, 50])
@@ -1611,7 +1613,7 @@ class SourcingTests(BaseTestData):
         with mock.patch.object(views_module, 'MLP_VERSION', 'vTEST'):
             response = self.client.get(reverse('sourcing'))
         self.assertIn('Buy rice before Tuesday.', response.content.decode())
-        self.assertIn('AI narrative', response.content.decode())
+        self.assertIn('AI brief', response.content.decode())
 
     def test_donation_form_prefills_product(self):
         self.client.force_login(self.coordinator)
@@ -1619,6 +1621,28 @@ class SourcingTests(BaseTestData):
             reverse('donation_create') + f'?product={self.product.pk}')
         self.assertEqual(response.context['form'].initial['product'],
                          self.product)
+
+    def test_clean_narrative_strips_reasoning_leak(self):
+        # Regression: reasoning models used to leak their planning text
+        # ("The user wants... Let's craft... Count words...") into the
+        # coordinator brief. Tagged output must win; meta noise must go.
+        leaked = (
+            'The user wants a short urgent paragraph (max 90 words) based '
+            "on the JSON facts. Need to include what to source. Let's "
+            'craft ~70 words. Count words: We(1) need(2)...\n'
+            '<FINAL>We need to source 49 units of beans by 23 October '
+            '2026; otherwise Hope Shelter will run out of staples.'
+            '</FINAL>')
+        result = sourcing_module.clean_narrative(leaked, 'FALLBACK TEXT')
+        self.assertTrue(result.startswith('We need to source 49 units'))
+        self.assertNotIn('Let', result)
+        self.assertNotIn('JSON', result)
+        # Untagged meta-blob → nothing usable survives → fallback brief.
+        blob = ("The user wants a short paragraph. Need to include what "
+                "to source. Let's craft ~70 words.")
+        self.assertEqual(
+            sourcing_module.clean_narrative(blob, 'FALLBACK TEXT'),
+            'FALLBACK TEXT')
 
 
 class ScanImportTests(BaseTestData):

@@ -1,59 +1,53 @@
 {% extends "base.html" %}
-{% block title %}Agent run #{{ run.pk }} — NourishLink{% endblock %}
+{% block title %}AI proposal — NourishLink{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <a href="{% url 'ai_list' %}" class="back-link">&larr; All AI runs</a>
-  <h1>{{ run.get_role_display }} run #{{ run.pk }}</h1>
+  <a href="{% url 'ai_list' %}" class="back-link">&larr; All AI proposals</a>
+  <h1>{% if run.role == 'PLANNER' %}Dispatch planner{% else %}Inventory analyst{% endif %} proposal</h1>
   <p>
     {% if run.status == 'OK' %}
-      <span class="badge badge-approved">LLM: {{ run.model_name }}</span>
+      <span class="badge badge-approved">AI proposal</span>
     {% else %}
-      <span class="badge badge-cancelled">Deterministic fallback</span>
+      <span class="badge badge-draft">Offline mode</span>
     {% endif %}
-    <span class="chip">{{ run.prompt_tokens }} prompt + {{ run.completion_tokens }} completion tokens</span>
-    <span class="chip">{{ run.latency_ms }} ms</span>
     {% if run.user %}<span class="chip">by {{ run.user.username }}</span>{% endif %}
+    <span class="chip">{{ run.created_at|date:"M d, Y H:i" }}</span>
   </p>
 </div>
 
-<div class="detail-grid">
-  <div class="card">
-    <h2>Agent output</h2>
-    <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px;">
-      What the AI "thought" and decided. Fallback = the same reasoning produced
-      by built-in rules when the LLM API is unavailable — never an error.
+<div class="card">
+  <h2>What the AI recommends</h2>
+  <div style="white-space:pre-wrap;font-size:.95rem;line-height:1.6;">{{ run.output.report|default:"(no report)" }}</div>
+  {% if run.plan %}
+    <p style="margin-top:16px;">
+      <a class="btn btn-sm btn-primary" href="{% url 'plan_detail' run.plan.pk %}">
+        Review the proposed plan ({{ run.plan.get_status_display }})
+      </a>
     </p>
-    <div style="white-space:pre-wrap;font-size:.92rem;line-height:1.55;">{{ run.output.report|default:"(no report)" }}</div>
-    {% if run.plan %}
-      <p style="margin-top:12px;">
-        <a class="btn btn-sm btn-primary" href="{% url 'plan_detail' run.plan.pk %}">
-          Open the proposed plan ({{ run.plan.get_status_display }})
-        </a>
-      </p>
-      {% if validation %}
-        {% if validation.valid %}
-          <p style="color:var(--success);margin-top:8px;">Static validation: passed.</p>
-        {% else %}
-          <p style="color:#b23b3b;margin-top:8px;font-weight:600;">Static validation errors:</p>
-          <ul style="color:#b23b3b;margin-top:4px;">
-            {% for error in validation.errors %}<li>{{ error }}</li>{% endfor %}
-          </ul>
-        {% endif %}
+    {% if validation %}
+      {% if validation.valid %}
+        <p style="color:var(--success);margin-top:8px;">All safety checks on this draft: passed.</p>
+      {% else %}
+        <p style="color:#b23b3b;margin-top:8px;font-weight:600;">Safety checks found issues:</p>
+        <ul style="color:#b23b3b;margin-top:4px;">
+          {% for error in validation.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
       {% endif %}
     {% endif %}
-  </div>
+  {% endif %}
+</div>
 
-  <div class="card">
-    <h2>Tool trace ({{ run.tool_calls|length }})</h2>
+<details style="margin-top:16px;">
+  <summary style="cursor:pointer;font-size:.85rem;color:var(--text-muted);font-weight:600;">
+    Technical audit trail (for examiners and review boards)
+  </summary>
+  <div class="card" style="margin-top:10px;">
     <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px;">
-      Step-by-step record of what the agent did: every database read or write
-      went through one of these audited tool calls — the AI has no other
-      access to your data.
-    </p>
-    {% if run.tool_calls == 0 %}
-      <p style="color:var(--text-muted);font-size:.85rem;">Fallback run &mdash; computes directly from the tools.</p>
-    {% else %}
+      Step-by-step record of every database read the agent performed — the AI
+      has no other access to data. Kept for the consistency audit in the
+      evaluation.</p>
+    {% if run.tool_calls %}
     <div class="table-wrap">
       <table>
         <thead><tr><th>#</th><th>Tool</th><th>Arguments</th><th>Result head</th></tr></thead>
@@ -71,12 +65,17 @@
         </tbody>
       </table>
     </div>
+    {% else %}
+      <p style="color:var(--text-muted);font-size:.85rem;">Offline run — computed directly from built-in rules.</p>
     {% endif %}
+    <p style="font-size:.75rem;color:var(--text-muted);margin-top:10px;">
+      Mode: {{ run.status|lower }}
+      {% if run.model_name %} · engine: {{ run.model_name }}{% endif %}
+      · {{ run.prompt_tokens }}+{{ run.completion_tokens }} tokens · {{ run.latency_ms }} ms
+    </p>
     {% if run.error_message %}
-      <p style="margin-top:10px;color:#b58900;font-size:.85rem;">
-        LLM path failed: {{ run.error_message }}
-      </p>
+      <p style="color:#b58900;font-size:.8rem;">Engine note: {{ run.error_message|truncatechars:200 }}</p>
     {% endif %}
   </div>
-</div>
+</details>
 {% endblock %}

@@ -13,6 +13,7 @@ the deterministic brief and is recorded as a FALLBACK AgentRun.
 import hashlib
 import json
 import math
+import re
 from datetime import timedelta
 from pathlib import Path
 
@@ -126,6 +127,45 @@ def _fmt_date(day):
     return day.strftime('%b') + f' {day.day}'
 
 
+# Lines that are the model's visible reasoning/meta-commentary, never the
+# answer a coordinator should read (reasoning models leak these into the
+# content when not tagged cleanly).
+_META_LINE = re.compile(
+    r"^(the user|user wants|need to include|need to write|let's|lets|okay|"
+    r"ok\b|i'll|i will|word count|count words|words:|count:|paragraph:|"
+    r"json|prompt|max \d+ words|step \d|analysis:|thinking|note:|"
+    r"output:|format:)\b",
+    re.IGNORECASE)
+
+
+def clean_narrative(text, fallback):
+    """Return only the coordinator-facing paragraph from an LLM answer.
+
+    1. Drop <think>…</think> reasoning blocks (reasoning models).
+    2. Prefer the explicit <FINAL>…</FINAL> block the prompt asks for.
+    3. Otherwise strip meta-commentary lines; if too little plausible
+       narrative survives, return the deterministic fallback.
+    """
+    text = (text or '').strip()
+    text = re.sub(r'<think>.*?</think>', '', text,
+                  flags=re.DOTALL | re.IGNORECASE).strip()
+    tagged = re.search(r'<FINAL>\s*(.*?)\s*</FINAL>', text,
+                       flags=re.DOTALL | re.IGNORECASE)
+    if tagged:
+        text = tagged.group(1).strip()
+    else:
+        kept = [line for line in text.splitlines()
+                if line.strip() and not _META_LINE.match(line.strip())]
+        text = ' '.join(line.strip() for line in kept).strip()
+        # Collapse "Let's count..." style tails glued inside one line.
+        text = re.sub(
+            r"(Count words?:.*|Word count.*|Let's craft.*|Let's count.*)$",
+            '', text, flags=re.IGNORECASE).strip()
+    if len(text) < 16 or _META_LINE.match(text) or 'JSON' in text[:80]:
+        return fallback
+    return text
+
+
 def deterministic_brief(rows):
     """Plain-English brief without any API — always available."""
     if not rows:
@@ -184,7 +224,10 @@ def phase_brief_with_llm(rows, user):
              'coordinator in Bengaluru. Using ONLY the JSON facts given, '
              'write one short urgent paragraph (max 90 words): what to '
              'source, how many units, by when, and who is exposed. '
-             'Plain, warm, direct. No bullet lists, no invented numbers.')},
+             'Plain, warm, direct. No bullet lists, no invented numbers. '
+             'Think silently if you must, then reply with ONLY the final '
+             'paragraph wrapped exactly in <FINAL> and </FINAL> tags — '
+             'no planning text, no word counts, nothing outside the tags.')},
         {'role': 'user',
          'content': json.dumps(payload, indent=1)},
     ]
@@ -193,11 +236,12 @@ def phase_brief_with_llm(rows, user):
     model_name = None
     text = None
     try:
-        response = llm_chat(messages, temperature=0.3, max_tokens=350)
-        text = (response.get('content') or '').strip()
+        response = llm_chat(messages, temperature=0.3, max_tokens=800)
+        raw = (response.get('content') or '').strip()
         model_name = response.get('model')
-        if not text:
+        if not raw:
             raise ValueError('empty completion')
+        text = clean_narrative(raw, deterministic_brief(rows))
     except Exception:
         status = AgentRun.Status.FALLBACK
         model_name = ''

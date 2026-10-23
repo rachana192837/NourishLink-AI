@@ -58,6 +58,15 @@
   }
   .panel .hint { font-size: .68rem; color: rgba(255,255,255,.5); margin-bottom: 10px; }
   #dispatchMap { height: 480px; border-radius: 8px; background: #0a2050; }
+  .map-pin {
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .45);
+  }
+  .map-pin.depot { background: #082454; }
+  .map-pin.stop { background: #eb5310; }
+  .map-pin svg { width: 14px; height: 14px; }
   #schematicMap { height: 480px; border-radius: 8px; display: none;
                   background: #0a2050; position: relative; }
   .manifest .truck-head {
@@ -370,7 +379,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var bounds = [];
     var depot = data.depot;
-    L.marker(depot, { title: 'Warehouse (depot)' }).addTo(map)
+
+    // Branded pins: navy warehouse (depot), orange shelter (stops).
+    function pinIcon(kind, svg) {
+      return L.divIcon({ className: '', iconSize: [26, 26],
+                         iconAnchor: [13, 13], popupAnchor: [0, -14],
+                         html: '<div class="map-pin ' + kind + '">' +
+                               svg + '</div>' });
+    }
+    var DEPOT_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" ' +
+      'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M3 21V9l9-6 9 6v12"/><path d="M7 21v-8h10v8"/></svg>';
+    var STOP_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" ' +
+      'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M3 11l9-7 9 7"/><path d="M5 10v11h14V10"/>' +
+      '<path d="M9 21v-6h6v6"/></svg>';
+
+    L.marker(depot, { title: 'Warehouse (depot)',
+                      icon: pinIcon('depot', DEPOT_SVG) }).addTo(map)
       .bindPopup('<strong>Warehouse</strong><br>Dispatch depot');
     bounds.push(depot);
     data.trucks.forEach(function (truck) {
@@ -391,6 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
       truck.stops.forEach(function (s) {
         L.marker([s.lat, s.lng], {
           title: s.org_name,
+          icon: pinIcon('stop', STOP_SVG),
         }).addTo(map).bindPopup(
           '<strong>' + s.seq + '. ' + s.org_name + '</strong><br>' +
           s.units + ' units' +
