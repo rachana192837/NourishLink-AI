@@ -11,7 +11,6 @@ agents that can only *propose*; a human coordinator always approves.
 > waste, manual matching, no records) and fixes each one — then **measures**
 > the result instead of just claiming "we added AI".
 
-Final-year AIML project · Bengaluru community food bank scenario · all data synthetic
 
 ---
 
