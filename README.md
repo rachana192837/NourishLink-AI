@@ -28,13 +28,23 @@ changes until a human coordinator approves the plan.
   renders the A/B/C comparison and forecast quality as a one-page,
   plain-English summary with a "Save as PDF" button — the thesis artifact.
 - **Dispatch board** (plan detail → "Open dispatch board"):
-  fulfilment-control-plane view of one plan — Leaflet map (OpenStreetMap
-  tiles online, automatic offline SVG schematic fallback) showing the
-  warehouse → charity truck routes (nearest-neighbour grouping, indicative
-  only), per-truck manifests with stop numbers and case counts, KPI chips
-  (stops / cases / delivered / remaining) and the plan's execution record
-  (activity log + AI agent runs) as a timeline. Read-only; trucks/stops
-  routes are computed per view and change nothing.
+  fulfilment-control-plane view of one plan — Leaflet map (resilient
+  tile chain: Wikimedia → CARTO → OSM; automatic offline SVG schematic
+  fallback) showing the warehouse → charity truck routes. Routes are a
+  **stored record**: computed once per truck count and persisted on the
+  plan (`?refresh=1` recomputes), drawn as **real driving roads with
+  per-stop ETAs** via the public OSRM router (straight-line fallback
+  when offline). Per-truck manifests carry stop status chips
+  (planned/scheduled/delivered/cancelled); KPI chips, and the plan's
+  execution record (activity log + AI agent runs) as a timeline.
+  Read-only; nothing here changes data.
+- **Weekly Ledger** (`/reports/ledger/`, sidebar → Weekly Ledger):
+  government-style accountability record for any week — donations
+  received per donor (batches, units, top products + bar chart), stock
+  distributed per partner organisation (requests served, allocation
+  lines, units + chart), and a net-flow footer (received in /
+  distributed out / expired unrescued). Week navigation, Print/Save-as-
+  PDF and CSV export (same week). 
 
 - **Design system** (Bangalore Food Bank inspired, `templates/base.html`):
   orange `#eb5310` action palette + deep navy `#082454` sidebar/hero, warm
@@ -103,9 +113,10 @@ deterministic fallback.
 python manage.py test core
 ```
 
-75 tests cover the simulator, FEFO engine, approval workflow,
+75+ tests cover the simulator, FEFO engine, approval workflow,
 forecast orchestration, agent tool layer, agent loops (scripted
-fake-LLM), agent security, and the forecast-boost ordering.
+fake-LLM), agent security, the forecast-boost ordering, dispatch-board
+route persistence/OSRM fallback, and the weekly ledger.
 
 ## Ethical notes baked into the design
 
