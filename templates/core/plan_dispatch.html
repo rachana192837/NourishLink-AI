@@ -160,6 +160,10 @@
         Tiles load from free public basemaps (Wikimedia → CARTO → OSM); if no tiles
         load, an automatic offline schematic is drawn instead.</div>
       <div id="dispatchMap"></div>
+      <div id="routeBadge"
+           style="display:none;margin-top:8px;padding:6px 12px;border-radius:8px;background:#0e2d63;border:1px dashed rgba(255,255,255,.35);font-size:.68rem;color:rgba(255,255,255,.75);">
+        straight-line routes shown — road data (OSRM) unavailable
+      </div>
       <div id="schematicMap">
         <canvas id="schematicCanvas" width="1200" height="900"
                 style="width:100%;height:100%;"></canvas>
@@ -196,7 +200,7 @@
                 {% for it in stop.items %}{{ it.product }} ×{{ it.qty }}{% if not forloop.last %}, {% endif %}{% endfor %}
               </div>
             </div>
-            <span class="cases">{{ stop.units }}</span>
+            <span class="cases">{{ stop.units }}{% if stop.eta_min %} · ~{{ stop.eta_min }} min{% endif %}</span>
           </div>
           {% empty %}
           <div class="stop"><div class="items">No stops on this route.</div></div>
@@ -235,6 +239,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   var data = JSON.parse(document.getElementById('route-data').textContent);
+  var roadRoute = data.road_route === true;
 
   function drawSchematic() {
     var wrap = document.getElementById('schematicMap');
@@ -360,19 +365,31 @@ document.addEventListener('DOMContentLoaded', function () {
     bounds.push(depot);
     data.trucks.forEach(function (truck) {
       if (!truck.stops.length) return;
-      var pts = [depot].concat(truck.stops.map(function (s) { return [s.lat, s.lng]; }));
-      L.polyline(pts, { color: truck.color, weight: 4, opacity: .85 })
-        .addTo(map)
-        .bindPopup(truck.label + ' — ' + truck.stops.length + ' stops');
+      if (truck.polyline && truck.polyline.length > 1) {
+        // Real driving geometry from OSRM (routing engine).
+        L.polyline(truck.polyline,
+                   { color: truck.color, weight: 4, opacity: .85 })
+          .addTo(map)
+          .bindPopup(truck.label + ' — ' + truck.stops.length + ' stops');
+      } else {
+        var pts = [depot].concat(truck.stops.map(function (s) { return [s.lat, s.lng]; }));
+        L.polyline(pts, { color: truck.color, weight: 3, opacity: .7, dashArray: '6 6' })
+          .addTo(map)
+          .bindPopup(truck.label + ' — ' + truck.stops.length +
+                     ' stops (indicative)');
+      }
       truck.stops.forEach(function (s) {
         L.marker([s.lat, s.lng], {
           title: s.org_name,
         }).addTo(map).bindPopup(
           '<strong>' + s.seq + '. ' + s.org_name + '</strong><br>' +
-          s.units + ' units');
+          s.units + ' units' +
+          (s.eta_min ? ' · ~' + s.eta_min + ' min from depot' : ''));
         bounds.push([s.lat, s.lng]);
       });
     });
+    var badge = document.getElementById('routeBadge');
+    if (badge && !roadRoute) badge.style.display = 'block';
     map.fitBounds(bounds, { padding: [28, 28] });
     buildLegend();
   }

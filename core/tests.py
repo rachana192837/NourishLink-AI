@@ -11,6 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from unittest import mock
 
 from core import agent_tools
 from core import allocation
@@ -1279,12 +1280,73 @@ class RoutingTests(BaseTestData):
         self.assertEqual(result1, result2)
 
 
+class RoutingRoadsTests(RoutingTests):
+    """OSRM road-geometry upgrade + graceful offline fallback."""
+
+    def setUp(self):
+        super().setUp()
+        routing.reset_osrm_state()
+        self.addCleanup(routing.reset_osrm_state)
+        self.plan = AllocationPlan.objects.create(
+            name='Road routes', created_by=self.coordinator)
+
+    def _fake_route(self, points, timeout_s=routing.OSRM_TIMEOUT_S):
+        return {
+            'polyline': [(p[0] + 0.001, p[1] - 0.001) for p in points],
+            'distance_km': 42.0,
+            'duration_min': 60.0,
+            'leg_minutes': [30.0] + [30.0 / max(1, len(points) - 1)
+                                     for _ in points[1:]],
+        }
+
+    def _deliveries(self, n=2):
+        return [self._delivery(
+            i, f'Org {i}', 12.95 + i * 0.01, 77.60 + i * 0.01, 10 * i)
+            for i in range(1, n + 1)]
+
+    def test_osrm_upgrades_routes_with_manual_etas(self):
+        with mock.patch.object(routing, '_osrm_route',
+                               side_effect=self._fake_route):
+            result = routing.group_plan_into_trucks(
+                self.plan, self._deliveries(), 1)
+        self.assertTrue(result['road_route'])
+        truck = result['trucks'][0]
+        self.assertTrue(truck['road_route'])
+        self.assertEqual(len(truck['polyline'][0]), 2)
+        self.assertAlmostEqual(truck['polyline'][0][0], 13.0294, places=4)
+        self.assertAlmostEqual(truck['polyline'][0][1], 77.5189, places=4)
+        self.assertGreater(
+            sum(t['distance_km'] for t in result['trucks']), 0)
+        self.assertEqual(
+            [s['eta_min'] for s in truck['stops']],
+            [30, 45])
+
+    def test_osrm_failure_falls_back_to_straight_lines(self):
+        with mock.patch.object(routing, '_osrm_route',
+                               side_effect=OSError('network down')):
+            result = routing.group_plan_into_trucks(
+                self.plan, self._deliveries(), 1)
+        self.assertFalse(result['road_route'])
+        for truck in result['trucks']:
+            self.assertFalse(truck['road_route'])
+            self.assertNotIn('polyline', truck)
+            self.assertNotIn('eta_min', truck['stops'][0])
+
+
 class DispatchBoardTests(BaseTestData):
     """Dispatch board view: access control + rendered board content."""
 
     def setUp(self):
         super().setUp()
         FoodBatch.objects.all().delete()
+        # Deterministic, network-free board tests: pretend the OSRM
+        # router is unreachable; routes stay indicative straight lines.
+        routing.reset_osrm_state()
+        self.addCleanup(routing.reset_osrm_state)
+        osrm_offline = mock.patch.object(
+            routing, '_osrm_route', side_effect=OSError('offline in tests'))
+        osrm_offline.start()
+        self.addCleanup(osrm_offline.stop)
         self.batch = FoodBatch.objects.create(
             product=self.product, donor=self.donor, batch_code='DB-1',
             quantity_received=60, quantity_available=60,
