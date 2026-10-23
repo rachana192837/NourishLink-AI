@@ -1,3 +1,4 @@
+import csv
 from datetime import timedelta
 from pathlib import Path
 
@@ -6,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, Q, Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -900,6 +902,151 @@ def evaluation_report(request):
 # ---------------------------------------------------------------------------
 # AI agents (coordinator) — Config C
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Weekly ledger (coordinator) — donations received vs stock distributed
+# ---------------------------------------------------------------------------
+
+def _ledger_data(monday, sunday):
+    """Aggregations for one ISO week (monday..sunday, dates).
+
+    Definitions (kept honest on the page itself):
+    - Received: batches RECEIVED in the week, grouped by donor.
+    - Distributed: allocation items from plans APPROVED in the week that
+      are still APPROVED/COMPLETED (later cancellations drop out), which
+      mirrors what actually left the warehouse, grouped by partner org.
+    - Waste: batches that expired (cutoff passed) in the week with the
+      units still on the shelf.
+    """
+    received = {}
+    for batch in (FoodBatch.objects
+                  .filter(received_date__range=(monday, sunday))
+                  .select_related('donor', 'product')):
+        donor = batch.donor.name if batch.donor else 'Unattributed'
+        row = received.setdefault(donor, {'name': donor, 'batches': 0,
+                                          'units': 0, 'products': {}})
+        row['batches'] += 1
+        row['units'] += batch.quantity_received
+        row['products'][batch.product.name] = (
+            row['products'].get(batch.product.name, 0)
+            + batch.quantity_received)
+
+    distributed = {}
+    for allocation_row in (AllocationItem.objects
+                           .filter(plan__approved_at__date__range=(monday, sunday),
+                                   plan__status__in=['APPROVED', 'COMPLETED'])
+                           .select_related('request_item__product',
+                                           'request_item__request__organization')):
+        org = allocation_row.request_item.request.organization
+        row = distributed.setdefault(org.name, {'name': org.name, 'requests': set(),
+                                                'batches': 0, 'units': 0,
+                                                'products': {}})
+        row['requests'].add(allocation_row.request_item.request_id)
+        row['batches'] += 1
+        row['units'] += allocation_row.quantity_allocated
+        product_name = allocation_row.request_item.product.name
+        row['products'][product_name] = (
+            row['products'].get(product_name, 0)
+            + allocation_row.quantity_allocated)
+
+    waste_batches = (FoodBatch.objects
+                     .filter(status='EXPIRED',
+                             distribution_cutoff__range=(monday, sunday)))
+
+    def _product_label(products):
+        if not products:
+            return '—'
+        top = sorted(products.items(), key=lambda kv: -kv[1])[:3]
+        return ', '.join(f'{name} ×{qty}' for name, qty in top)
+
+    received_rows = sorted(received.values(), key=lambda r: -r['units'])
+    for row in received_rows:
+        row['top_products'] = _product_label(row['products'])
+    distributed_rows = sorted(distributed.values(), key=lambda r: -r['units'])
+    for row in distributed_rows:
+        row['top_products'] = _product_label(row['products'])
+
+    return {
+        'received': received_rows,
+        'received_units': sum(r['units'] for r in received_rows),
+        'received_batches': sum(r['batches'] for r in received_rows),
+        'distributed': [dict(row, requests=len(row['requests']))
+                        for row in distributed_rows],
+        'distributed_units': sum(r['units'] for r in distributed_rows),
+        'served_requests': len({rq for row in distributed.values()
+                                for rq in row['requests']}),
+        'waste_units': sum(b.quantity_available for b in waste_batches),
+        'waste_batches': waste_batches.count(),
+    }
+
+
+def _ledger_week(request):
+    """Parse ?w=<week offset> into (monday, sunday, offset)."""
+    try:
+        week_offset = max(-520, min(int(request.GET.get('w', '0')), 520))
+    except (TypeError, ValueError):
+        week_offset = 0
+    today = timezone.now().date()
+    monday = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
+    return monday, monday + timedelta(days=6), week_offset
+
+
+@coordinator_required
+def weekly_ledger(request):
+    """One-week accountability ledger: who provided, who received."""
+    monday, sunday, week_offset = _ledger_week(request)
+    data = _ledger_data(monday, sunday)
+    context = {
+        'data': data,
+        'monday': monday,
+        'sunday': sunday,
+        'week_offset': week_offset,
+        'week_prev': week_offset - 1,
+        'week_next': week_offset + 1,
+        'week_is_current': week_offset == 0,
+        'received_chart_data': {
+            'labels': [row['name'] for row in data['received']],
+            'units': [row['units'] for row in data['received']],
+            'color': '#eb5310',
+        },
+        'distributed_chart_data': {
+            'labels': [row['name'] for row in data['distributed']],
+            'units': [row['units'] for row in data['distributed']],
+            'color': '#082454',
+        },
+    }
+    return render(request, 'core/weekly_ledger.html', context)
+
+
+@coordinator_required
+def weekly_ledger_csv(request):
+    """CSV export of the weekly ledger (one section per flow)."""
+    monday, sunday, _week = _ledger_week(request)
+    data = _ledger_data(monday, sunday)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = (
+        f'attachment; filename=nourishlink-ledger-{monday}.csv')
+    writer = csv.writer(response)
+    writer.writerow([f'NourishLink weekly ledger {monday} to {sunday}'])
+    writer.writerow([])
+    writer.writerow(['Received from donors'])
+    writer.writerow(['Donor', 'Batches', 'Units received', 'Top products'])
+    for row in data['received']:
+        writer.writerow([row['name'], row['batches'], row['units'],
+                         row['top_products']])
+    writer.writerow([])
+    writer.writerow(['Distributed to partners'])
+    writer.writerow(['Organisation', 'Requests served', 'Allocation lines',
+                     'Units distributed', 'Top products'])
+    for row in data['distributed']:
+        writer.writerow([row['name'], row['requests'], row['batches'],
+                         row['units'], row['top_products']])
+    writer.writerow([])
+    writer.writerow(['Week totals', data['received_units'],
+                     data['distributed_units'], data['waste_units']])
+    return response
+
 
 @coordinator_required
 def ai_list(request):

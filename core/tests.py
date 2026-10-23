@@ -1333,6 +1333,76 @@ class RoutingRoadsTests(RoutingTests):
             self.assertNotIn('eta_min', truck['stops'][0])
 
 
+class WeeklyLedgerTests(BaseTestData):
+    """Weekly ledger: donations received per donor, distribution per org."""
+
+    def _approve_small_plan(self):
+        request = Request.objects.create(
+            organization=self.org, requested_by=self.partner,
+            required_by_date=date.today() + timedelta(days=3),
+        )
+        RequestItem.objects.create(
+            request=request, product=self.product, quantity_requested=90)
+        # generate_plan covers all pending requests; only self.org has one.
+        plan = allocation.generate_plan(self.coordinator, name='Ledger plan')
+        ok, errors = allocation.approve_plan(plan, self.coordinator)
+        self.assertTrue(ok, errors)
+        return plan
+
+    def test_received_and_distributed_rows(self):
+        monday = date.today() - timedelta(days=date.today().weekday())
+        FoodBatch.objects.create(
+            product=self.product, donor=self.donor, batch_code='L-1',
+            quantity_received=60, quantity_available=60,
+            received_date=monday,
+            distribution_cutoff=monday + timedelta(days=14))
+        FoodBatch.objects.create(
+            product=self.other_product, batch_code='L-2',
+            quantity_received=20, quantity_available=20,
+            received_date=monday,
+            distribution_cutoff=monday + timedelta(days=14))
+        self._approve_small_plan()
+
+        self.client.force_login(self.coordinator)
+        response = self.client.get(reverse('weekly_ledger'))
+        self.assertEqual(response.status_code, 200)
+        data = response.context['data']
+        received = {row['name']: row for row in data['received']}
+        self.assertEqual(received['City Grocers']['units'], 60)
+        self.assertEqual(received['Unattributed']['units'], 20)
+        distributed = {row['name']: row for row in data['distributed']}
+        self.assertEqual(distributed[self.org.name]['units'], 90)
+        self.assertEqual(data['served_requests'], 1)
+        self.assertEqual(data['received_units'], 80)
+
+    def test_csv_export(self):
+        self._approve_small_plan()
+        self.client.force_login(self.coordinator)
+        response = self.client.get(reverse('weekly_ledger_csv'))
+        self.assertEqual(response['Content-Type'], 'text/csv')
+        content = response.content.decode('utf-8')
+        self.assertIn('Received from donors', content)
+        self.assertIn(self.org.name, content)
+        self.assertIn('Distributed to partners', content)
+
+    def test_empty_week_renders(self):
+        self.client.force_login(self.coordinator)
+        # Far beyond any base-fixture batches (received 10/30 days ago).
+        response = self.client.get(reverse('weekly_ledger') + '?w=-20')
+        self.assertEqual(response.status_code, 200)
+        data = response.context['data']
+        self.assertEqual(data['received'], [])
+        self.assertEqual(data['distributed'], [])
+
+    def test_partner_blocked_and_bad_week_param(self):
+        self.client.force_login(self.partner)
+        self.assertEqual(
+            self.client.get(reverse('weekly_ledger')).status_code, 302)
+        self.client.force_login(self.coordinator)
+        response = self.client.get(reverse('weekly_ledger') + '?w=oops')
+        self.assertEqual(response.context['week_offset'], 0)
+
+
 class DispatchBoardTests(BaseTestData):
     """Dispatch board view: access control + rendered board content."""
 

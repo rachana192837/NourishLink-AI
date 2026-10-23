@@ -41,6 +41,9 @@ urlpatterns = [
     path('reports/', views.reports, name='reports'),
     path('reports/evaluation/', views.evaluation_report,
          name='evaluation_report'),
+    path('reports/ledger/', views.weekly_ledger, name='weekly_ledger'),
+    path('reports/ledger/csv/', views.weekly_ledger_csv,
+         name='weekly_ledger_csv'),
 
     # AI agents (Config C)
     path('ai/', views.ai_list, name='ai_list'),

@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Weekly Ledger — NourishLink{% endblock %}
+
+{% block extra_head %}
+<style>
+  .ledger-nav {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .ledger-tables {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  @media (max-width: 1000px) { .ledger-tables { grid-template-columns: 1fr; } }
+  .ledger-card { min-width: 0; }
+  .ledger-card table { font-size: .85rem; }
+  .ledger-card thead th { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; }
+  .ledger-chart-wrap { height: 220px; margin-top: 14px; }
+  .ledger-net { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .ledger-net .n { font-size: 1.7rem; font-weight: 800; color: var(--navy); line-height: 1; }
+  .ledger-net .n.accent { color: var(--primary); }
+  .ledger-net .n.bad { color: var(--danger); }
+  .ledger-net .t { font-size: .78rem; font-weight: 700; color: var(--text-muted); margin-top: 5px; }
+  @media print {
+    .sidebar, .navbar, .app-footer, .no-print { display: none !important; }
+    .main-content { padding: 0; max-width: none; }
+    body { background: #fff; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'reports' %}" class="back-link no-print">&larr; Back to reports</a>
+
+<div class="page-header">
+  <h1>Weekly Ledger</h1>
+  <p>Accountability record for the week of
+     <strong>{{ monday|date:"M d" }} – {{ sunday|date:"M d, Y" }}</strong>:
+     donations received from donors and stock distributed to partner
+     organisations.</p>
+</div>
+
+<div class="filter-bar no-print">
+  <div class="ledger-nav">
+    <a class="btn btn-ghost btn-sm"
+       href="{% url 'weekly_ledger' %}?w={{ week_prev }}">&larr; Previous week</a>
+    <a class="btn btn-ghost btn-sm"
+       href="{% url 'weekly_ledger' %}?w={{ week_next }}">Next week &rarr;</a>
+    {% if not week_is_current %}
+    <a class="btn btn-primary btn-sm" href="{% url 'weekly_ledger' %}">This week</a>
+    {% endif %}
+    <span style="flex:1;"></span>
+    <a class="btn btn-primary btn-sm" href="javascript:window.print()">Save as PDF</a>
+    <a class="btn btn-outline btn-sm"
+       style="color:var(--navy);border-color:var(--navy);"
+       href="{% url 'weekly_ledger_csv' %}?w={{ week_offset }}">Download CSV</a>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-value">{{ data.received_units }}</div>
+    <div class="stat-label">Units received</div>
+    <div class="stat-label" style="color:var(--text-muted);font-weight:600;">
+      {{ data.received_batches }} donation batches · {{ data.received|length }} donors</div>
+  </div>
+  <div class="stat-card success">
+    <div class="stat-value">{{ data.distributed_units }}</div>
+    <div class="stat-label">Units distributed</div>
+    <div class="stat-label" style="color:var(--text-muted);font-weight:600;">
+      {{ data.served_requests }} partner requests served</div>
+  </div>
+  <div class="stat-card danger">
+    <div class="stat-value">{{ data.waste_units }}</div>
+    <div class="stat-label">Units expired on shelf</div>
+    <div class="stat-label" style="color:var(--text-muted);font-weight:600;">
+      {{ data.waste_batches }} batches past cutoff this week</div>
+  </div>
+</div>
+
+<div class="ledger-tables">
+  <div class="card ledger-card">
+    <h2 class="card-title">Received from donors</h2>
+    {% if data.received %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Donor</th><th>Batches</th><th>Units</th><th>Top products</th></tr>
+        </thead>
+        <tbody>
+          {% for row in data.received %}
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.batches }}</td>
+            <td><strong>{{ row.units }}</strong></td>
+            <td style="color:var(--text-muted);">{{ row.top_products }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="ledger-chart-wrap"><canvas id="receiveChart"></canvas></div>
+    {% else %}
+    <div class="empty-state">
+      <p>No donations were recorded in this week.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card ledger-card">
+    <h2 class="card-title">Distributed to partners</h2>
+    {% if data.distributed %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Organisation</th><th>Requests</th><th>Lines</th><th>Units</th><th>Top products</th></tr>
+        </thead>
+        <tbody>
+          {% for row in data.distributed %}
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.requests }}</td>
+            <td>{{ row.batches }}</td>
+            <td><strong>{{ row.units }}</strong></td>
+            <td style="color:var(--text-muted);">{{ row.top_products }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="ledger-chart-wrap"><canvas id="distributedChart"></canvas></div>
+    {% else %}
+    <div class="empty-state">
+      <p>No plans were approved in this week — nothing left the warehouse.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h2 class="card-title">Week net flow</h2>
+  <div class="ledger-net">
+    <div>
+      <div class="n">{{ data.received_units }}</div>
+      <div class="t">RECEIVED IN</div>
+    </div>
+    <div>
+      <div class="n accent">{{ data.distributed_units }}</div>
+      <div class="t">DISTRIBUTED OUT</div>
+    </div>
+    <div>
+      <div class="n bad">{{ data.waste_units }}</div>
+      <div class="t">EXPIRED UNRESCUED</div>
+    </div>
+  </div>
+</div>
+
+{{ received_chart_data|json_script:"ledger-receive-data" }}
+{{ distributed_chart_data|json_script:"ledger-distributed-data" }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var receiveData = JSON.parse(
+    document.getElementById('ledger-receive-data').textContent);
+  var distributedData = JSON.parse(
+    document.getElementById('ledger-distributed-data').textContent);
+  var chartFont = "'Quicksand', 'Segoe UI', sans-serif";
+
+  function hbar(canvasId, payload) {
+    var el = document.getElementById(canvasId);
+    if (!el || !payload.labels.length) return;
+    new Chart(el.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: payload.labels,
+        datasets: [{
+          label: 'units',
+          data: payload.units,
+          backgroundColor: payload.color,
+          borderRadius: 4,
+          maxBarThickness: 18,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { bodyFont: { family: chartFont } },
+        },
+        scales: {
+          x: { grid: { color: '#eee7df' }, ticks: { font: { family: chartFont, size: 11 } } },
+          y: { grid: { display: false }, ticks: { font: { family: chartFont, size: 12 } } },
+        }
+      }
+    });
+  }
+
+  hbar('receiveChart', receiveData);
+  hbar('distributedChart', distributedData);
+});
+</script>
+{% endblock %}
