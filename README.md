@@ -38,6 +38,15 @@ changes until a human coordinator approves the plan.
   (planned/scheduled/delivered/cancelled); KPI chips, and the plan's
   execution record (activity log + AI agent runs) as a timeline.
   Read-only; nothing here changes data.
+- **Scan-to-import** (`/inventory/scan/`, linked from the donation and
+  product forms): photograph or upload a donation list — the vision LLM
+  (free OpenRouter VL model with a verified fallback chain) reads the
+  product lines as a **draft**; the coordinator reviews an editable
+  table (fix misreads, set quantities and distribution cutoffs), ticks
+  rows, and approves. Only then are Products (matched/created) and
+  batches (`SCAN-<date>-<n>`) created, with the photo kept as the audit
+  source. LLM down → clean manual-entry fallback: the demo never
+  dead-ends.
 - **Sourcing recommendations** (`/sourcing/`, sidebar → Sourcing):
   the visible "you will run out" loop — products whose forecast demand
   outruns free stock in the next 14 days, each with units to source,

@@ -1,5 +1,6 @@
 import csv
-from datetime import timedelta
+import json
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from django.contrib import messages
@@ -7,12 +8,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, Q, Sum
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from . import allocation, forecast as forecasting, routing
 from . import sourcing as sourcing_engine
+from . import llm as llm_module
 from .activity import log_activity
 from .decorators import coordinator_required, partner_required
 from .forms import BatchForm, ProductForm, RequestForm, RequestItemFormSet
@@ -22,6 +24,7 @@ from .models import (
     AllocationItem,
     AllocationPlan,
     DemandForecast,
+    Donor,
     FoodBatch,
     Organization,
     Product,
@@ -252,6 +255,229 @@ def product_create(request):
         'form': form,
         'next': next_url,
     })
+
+
+# ---------------------------------------------------------------------------
+# Scan-to-import (coordinator): photo of a donation list -> AI draft
+# -> coordinator review -> approved products + batches. The AI output is
+# a draft only: nothing touches stock until the explicit approval POST.
+# ---------------------------------------------------------------------------
+
+SCAN_UPLOAD_DIR = BASE_DIR / 'data' / 'uploads'
+SCAN_MAX_BYTES = 5 * 1024 * 1024
+SCAN_ALLOWED_MIMES = {
+    'image/png': '.png', 'image/jpeg': '.jpg', 'image/webp': '.webp',
+}
+SCAN_PROMPT = (
+    'This photo shows a food donation list (may be printed or handwritten; '
+    'may include product names, pack sizes and quantities). Read every '
+    'product line. Reply ONLY with JSON, no markdown fences, in exactly '
+    'this shape: {"items": [{"name": <product name>, "quantity": <int '
+    'units>, "unit": <pack size or "">}]}. If nothing is readable, reply '
+    '{"items": []}.'
+)
+
+
+def _extract_json_object(text):
+    """Parse the first JSON object out of an LLM answer (fence-tolerant)."""
+    text = (text or '').strip()
+    if text.startswith('```'):
+        text = text.strip('`')
+        text = text[text.find('{'):] if '{' in text else text
+    start, end = text.find('{'), text.rfind('}')
+    if start < 0 or end <= start:
+        raise ValueError('no JSON object in vision answer')
+    return json.loads(text[start:end + 1])
+
+
+def _save_scan_image(request):
+    """Validate + store the uploaded photo. Returns stored filename."""
+    upload = request.FILES.get('photo')
+    if upload is None:
+        raise ValueError('No photo was uploaded.')
+    if upload.size > SCAN_MAX_BYTES:
+        raise ValueError('Photo is larger than 5 MB.')
+    mime = (upload.content_type or '').lower().split(';')[0]
+    if mime not in SCAN_ALLOWED_MIMES:
+        raise ValueError('Please upload a PNG, JPG or WebP photo.')
+    SCAN_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = timezone.now().strftime('%Y%m%d-%H%M%S')
+    stored = f'scan-{stamp}{SCAN_ALLOWED_MIMES[mime]}'
+    with open(SCAN_UPLOAD_DIR / stored, 'wb') as handle:
+        for chunk in upload.chunks():
+            handle.write(chunk)
+    return stored
+
+
+@coordinator_required
+def scan_import(request):
+    """Step 1 (GET): upload/snap form. Step 2 (POST): AI parse -> review
+    table. Parsed rows live in the session until approved or discarded.
+    """
+    if request.method == 'POST':
+        if request.POST.get('action') == 'discard':
+            request.session.pop('scan_draft', None)
+            messages.info(request, 'Scan discarded — nothing imported.')
+            return redirect('scan_import')
+        try:
+            stored = _save_scan_image(request)
+        except (ValueError, OSError) as exc:
+            messages.error(request, str(exc))
+            return redirect('scan_import')
+
+        image_bytes = (SCAN_UPLOAD_DIR / stored).read_bytes()
+        mime = request.FILES['photo'].content_type.split(';')[0]
+        try:
+            response = llm_module.chat_vision(
+                SCAN_PROMPT, image_bytes, mime=mime, max_tokens=600)
+            items = _extract_json_object(
+                response['content']).get('items') or []
+        except (llm_module.LLMUnavailable, ValueError, KeyError,
+                TypeError, json.JSONDecodeError) as exc:
+            items = []
+            messages.info(request,
+                          'Could not read the photo automatically '
+                          f'({str(exc)[:120]}). Enter the rows manually '
+                          'below and approve — nothing is lost.')
+        rows = []
+        for item in items:
+            try:
+                name = str(item.get('name', '')).strip()
+                qty = max(1, int(item.get('quantity') or 1))
+            except (TypeError, ValueError):
+                continue
+            if name:
+                rows.append({'name': name[:200], 'qty': qty,
+                             'unit': str(item.get('unit') or '')[:50],
+                             'category': 'OTHER'})
+        request.session['scan_draft'] = {
+            'image': stored, 'rows': rows,
+            'donor_id': request.POST.get('donor') or '',
+            'created': timezone.now().isoformat(),
+        }
+        return redirect('scan_import')
+
+    draft = request.session.get('scan_draft')
+    context = {
+        'draft': draft,
+        'draft_rows': draft['rows'] if draft else [],
+        'image_url': (f'/inventory/scan/img/{draft["image"]}/'
+                      if draft else None),
+        'donors': Donor.objects.order_by('name'),
+        'categories': Product.Category.choices,
+        'cutoff_default': timezone.now().date() + timedelta(days=7),
+    }
+    return render(request, 'core/scan_import.html', context)
+
+
+@coordinator_required
+def scan_approve(request):
+    """Approval step: create products + batches for the ticked rows only."""
+    if request.method != 'POST':
+        return redirect('scan_import')
+    draft = request.session.get('scan_draft')
+    if not draft:
+        messages.info(request, 'No scan in progress — upload a photo first.')
+        return redirect('scan_import')
+
+    cutoff_default = timezone.now().date() + timedelta(days=7)
+    donor = None
+    try:
+        donor = Donor.objects.get(pk=int(draft.get('donor_id') or 0))
+    except (ValueError, Donor.DoesNotExist):
+        donor = None
+
+    created_products = []
+    created_batches = []
+    day_stamp = timezone.now().strftime('%Y%m%d')
+    seq = 1
+    include_names = request.POST.getlist('include')
+    if not include_names:
+        messages.warning(request,
+                         'No rows were ticked — nothing imported. '
+                         'The scan is kept for another try.')
+        return redirect('scan_import')
+
+    with transaction.atomic():
+        for idx in include_names:
+            try:
+                i = int(idx)
+                name = request.POST.get(f'name-{i}', '').strip()
+                qty = max(1, int(request.POST.get(f'qty-{i}', '1')))
+                unit = request.POST.get(f'unit-{i}', '').strip() or '1 pack'
+                category = request.POST.get(f'category-{i}', 'OTHER')
+                cutoff_raw = request.POST.get(f'cutoff-{i}', '')
+            except (TypeError, ValueError):
+                continue
+            if not name:
+                continue
+            if category not in [c[0] for c in Product.Category.choices]:
+                category = Product.Category.OTHER
+            product = (Product.objects
+                       .filter(name__iexact=name).first())
+            if product is None:
+                product = Product.objects.create(
+                    name=name, unit=unit, category=category)
+                created_products.append(name)
+                log_activity(request.user, 'PRODUCT_CREATED',
+                             f'Product "{product.name}" created from scan.',
+                             product)
+            else:
+                if unit and product.unit != unit:
+                    product.unit = unit
+                    product.save(update_fields=['unit'])
+
+            cutoff = timezone.now().date()
+            for candidate in (cutoff_raw, str(cutoff_default)):
+                try:
+                    parsed = datetime.strptime(
+                        candidate, '%Y-%m-%d').date()
+                    if parsed >= cutoff:
+                        cutoff = parsed
+                        break
+                except ValueError:
+                    continue
+
+            batch_code = f'SCAN-{day_stamp}-{seq}'
+            while FoodBatch.objects.filter(batch_code=batch_code).exists():
+                seq += 1
+                batch_code = f'SCAN-{day_stamp}-{seq}'
+            seq += 1
+            batch = FoodBatch.objects.create(
+                product=product, donor=donor, batch_code=batch_code,
+                quantity_received=qty, quantity_available=qty,
+                quantity_reserved=0, received_date=timezone.now().date(),
+                distribution_cutoff=cutoff, status='AVAILABLE',
+                notes=f'Imported from scanned photo {draft["image"]}')
+            created_batches.append(batch)
+            log_activity(request.user, 'DONATION_RECORDED',
+                         f'Batch {batch.batch_code} scanned in: '
+                         f'{qty} x {product.name}.', batch)
+
+    request.session.pop('scan_draft', None)
+    log_activity(request.user, 'SCAN_IMPORT',
+                 f'Scan approved: {len(created_batches)} batches '
+                 f'({len(created_products)} new products) from '
+                 f'{draft["image"]}.')
+    messages.success(request,
+                     f'Import finished: {len(created_batches)} donation '
+                     f'batches ({len(created_products)} new products).')
+    return redirect('inventory')
+
+
+@coordinator_required
+def scan_image(request, name):
+    """Serve one uploaded scan photo (dev server has no media serving)."""
+    import re
+    if not re.fullmatch(r'scan-[0-9\-]+\.(png|jpg|webp)', name):
+        raise Http404('Unknown scan file')
+    path = SCAN_UPLOAD_DIR / name
+    if not path.exists():
+        raise Http404('Scan photo no longer stored')
+    mime = ('image/png' if name.endswith('.png')
+            else 'image/jpg' if name.endswith('.jpg')
+            else 'image/webp')
+    return HttpResponse(path.read_bytes(), content_type=mime)
 
 
 # ---------------------------------------------------------------------------

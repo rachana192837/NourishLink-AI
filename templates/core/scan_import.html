@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Scan donation list — NourishLink{% endblock %}
+
+{% block extra_head %}
+<style>
+  .scan-grid { display: grid; grid-template-columns: minmax(260px, 380px) 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .scan-grid { grid-template-columns: 1fr; } }
+  .scan-photo { width: 100%; border-radius: 10px; border: 1px solid var(--border); display: block; }
+  .scan-row td { vertical-align: top; }
+  .scan-row input[type="text"], .scan-row input[type="number"], .scan-row input[type="date"], .scan-row select {
+    width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px;
+    font-family: var(--font-body); font-size: .85rem; background: #fff;
+  }
+  .scan-row .rowcheck { transform: scale(1.3); }
+  .scan-hint { font-size: .78rem; color: var(--text-muted); margin-top: 6px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'inventory' %}" class="back-link">&larr; Inventory</a>
+
+<div class="page-header">
+  <h1>Scan a donation list</h1>
+  <p>Photograph or upload a donation list (paper list, receipt, WhatsApp
+     screenshot). The AI reads the product lines as a <strong>draft</strong> —
+     you review and approve before anything enters stock.</p>
+</div>
+
+{% if not draft %}
+<div class="card" style="max-width:640px;">
+  <h3 class="card-title" style="margin-bottom:12px;">Upload or take a photo</h3>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="photo">Photo of the list</label>
+      <input type="file" id="photo" name="photo" accept="image/png,image/jpeg,image/webp,image/*" capture="environment"
+             style="font-size:.9rem;">
+      <div class="scan-hint">PNG / JPG / WebP, up to 5 MB. On a phone this opens the camera.</div>
+    </div>
+    <div class="form-group">
+      <label for="donor">Donor (optional)</label>
+      <select id="donor" name="donor" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-body);background:#fff;">
+        <option value="">— unattributed —</option>
+        {% for donor in donors %}
+        <option value="{{ donor.pk }}">{{ donor.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn-submit">Read with AI</button>
+  </form>
+</div>
+
+{% else %}
+<div class="scan-grid">
+  <div class="card">
+    <h3 class="card-title" style="margin-bottom:10px;">Scanned photo</h3>
+    {% if image_url %}
+    <a href="{{ image_url }}" target="_blank"><img class="scan-photo" src="{{ image_url }}" alt="Scanned donation list"></a>
+    {% endif %}
+    <p class="scan-hint">The photo is kept only as the audit source for this import.</p>
+    <form method="post" action="{% url 'scan_import' %}" style="margin-top:12px;">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="discard">
+      <button type="submit" class="btn btn-ghost btn-sm no-print">Discard &amp; scan again</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title" style="margin-bottom:8px;">Review rows before approving</h3>
+    <p class="scan-hint" style="margin-bottom:12px;">
+      Tick the rows to import, fix any misread text. Nothing is saved until you approve.</p>
+    <form method="post" action="{% url 'scan_approve' %}">
+      {% csrf_token %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Import</th>
+              <th>Product</th>
+              <th>Units</th>
+              <th>Unit label</th>
+              <th>Distribution cutoff</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in draft_rows %}
+            <tr class="scan-row">
+              <td><input type="checkbox" class="rowcheck" name="include" value="{{ forloop.counter0 }}" checked></td>
+              <td>
+                <input type="text" name="name-{{ forloop.counter0 }}" value="{{ row.name }}" required>
+                <select name="category-{{ forloop.counter0 }}" style="margin-top:4px;">
+                  {% for value, label in categories %}
+                  <option value="{{ value }}" {% if value == row.category %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td><input type="number" name="qty-{{ forloop.counter0 }}" value="{{ row.qty }}" min="1" style="width:90px;"></td>
+              <td><input type="text" name="unit-{{ forloop.counter0 }}" value="{{ row.unit }}" placeholder="1kg pack"></td>
+              <td><input type="date" name="cutoff-{{ forloop.counter0 }}" value="{{ cutoff_default|date:'Y-m-d' }}"></td>
+            </tr>
+            {% empty %}
+            <tr class="scan-row">
+              <td colspan="5" style="color:var(--text-muted);">
+                Nothing was read from the photo. Type the rows here and
+                tick them to import — the AI draft is only a head start.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if draft_rows %}
+      <button type="submit" class="btn-submit" style="margin-top:16px;">Approve &amp; import</button>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

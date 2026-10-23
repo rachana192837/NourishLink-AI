@@ -1619,3 +1619,122 @@ class SourcingTests(BaseTestData):
             reverse('donation_create') + f'?product={self.product.pk}')
         self.assertEqual(response.context['form'].initial['product'],
                          self.product)
+
+
+class ScanImportTests(BaseTestData):
+    """Photo -> AI draft -> coordinator approval -> products + batches."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.coordinator)
+
+    def _upload(self, rows_json='{"items": [{"name": "Milk 500ml", "quantity": 25, "unit": "500ml"}]}',
+                llm_ok=True):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        photo = SimpleUploadedFile('list.png', b'fakepngbytes',
+                                   content_type='image/png')
+        if llm_ok:
+            patcher = mock.patch.object(
+                llm_module, 'chat_vision',
+                return_value={'content': rows_json, 'model': 'test/vision',
+                              'prompt_tokens': 0, 'completion_tokens': 0})
+        else:
+            patcher = mock.patch.object(
+                llm_module, 'chat_vision',
+                side_effect=llm_module.LLMUnavailable('no vision'))
+        with patcher:
+            response = self.client.post(reverse('scan_import'),
+                                        {'photo': photo, 'donor': ''})
+        return response
+
+    def test_upload_parses_rows_into_review_session(self):
+        response = self._upload()
+        self.assertEqual(response.status_code, 302)
+        draft = self.client.session['scan_draft']
+        self.assertEqual(draft['rows'][0]['name'], 'Milk 500ml')
+        self.assertEqual(draft['rows'][0]['qty'], 25)
+        self.assertTrue(draft['image'].startswith('scan-'))
+
+    def test_unreadable_photo_falls_back_to_manual_entry(self):
+        response = self._upload(rows_json='', llm_ok=False)
+        self.assertEqual(response.status_code, 302)
+        draft = self.client.session['scan_draft']
+        self.assertEqual(draft['rows'], [])
+
+    def test_rejects_non_image(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        fake = SimpleUploadedFile('x.txt', b'hello', content_type='text/plain')
+        response = self.client.post(reverse('scan_import'),
+                                    {'photo': fake})
+        draft = self.client.session.get('scan_draft')
+        self.assertIsNone(draft)
+
+    def test_approve_creates_products_and_batches(self):
+        self._upload()
+        response = self.client.post(reverse('scan_approve'), {
+            'include': ['0'],
+            'name-0': 'Milk 500ml',
+            'qty-0': '30',                      # coordinator corrected 25 -> 30
+            'unit-0': '500ml',
+            'category-0': 'BEVERAGE',
+            'cutoff-0': str(date.today() + timedelta(days=9)),
+        })
+        self.assertEqual(response.status_code, 302)
+        product = Product.objects.get(name__iexact='Milk 500ml')
+        self.assertEqual(product.category, 'BEVERAGE')
+        batch = FoodBatch.objects.get(product=product)
+        self.assertEqual(batch.quantity_received, 30)
+        self.assertEqual(batch.status, 'AVAILABLE')
+        self.assertTrue(batch.batch_code.startswith('SCAN-'))
+        self.assertEqual(batch.distribution_cutoff,
+                         date.today() + timedelta(days=9))
+        self.assertIsNotNone(batch.donor is None)
+        self.assertIn('scanned photo', batch.notes)
+        # Session cleared after a successful import.
+        self.assertNotIn('scan_draft', self.client.session)
+
+    def test_approve_skips_unticked_rows_and_reuses_product(self):
+        self._upload(
+            '{"items": [{"name": "Milk 500ml", "quantity": 25, "unit": ""},'
+            ' {"name": "Rice", "quantity": 40, "unit": ""}]}')
+        response = self.client.post(reverse('scan_approve'), {
+            'include': ['0'],                   # Rice row left unticked
+            'name-0': 'Rice',
+            'qty-0': '40',
+            'unit-0': '1kg pack',
+            'category-0': 'GRAIN',
+            'cutoff-0': '',
+        })
+        self.assertEqual(response.status_code, 302)
+        # 'Rice' already existed (BaseTestData) — reused, not duplicated.
+        self.assertEqual(Product.objects.filter(name__iexact='Rice').count(),
+                         1)
+        self.assertEqual(FoodBatch.objects.count(), 3)  # B-001 + B-EXP + new
+        self.assertFalse(FoodBatch.objects.filter(
+            product__name__iexact='Milk 500ml').exists())
+
+    def test_approval_records_activity(self):
+        self._upload()
+        self.client.post(reverse('scan_approve'), {
+            'include': ['0'], 'name-0': 'Milk 500ml', 'qty-0': '10',
+            'unit-0': '', 'category-0': 'OTHER', 'cutoff-0': ''})
+        self.assertTrue(ActivityLog.objects.filter(
+            action_type='SCAN_IMPORT').exists())
+        self.assertTrue(ActivityLog.objects.filter(
+            action_type='DONATION_RECORDED').exists())
+
+    def test_partner_blocked_and_empty_approve_safe(self):
+        self.client.force_login(self.partner)
+        self.assertEqual(
+            self.client.get(reverse('scan_import')).status_code, 302)
+        self.client.force_login(self.coordinator)
+        response = self.client.post(reverse('scan_approve'), {})
+        self.assertEqual(response.status_code, 302)
+
+    def test_links_present_on_intake_pages(self):
+        donation_body = self.client.get(
+            reverse('donation_create')).content.decode()
+        product_body = self.client.get(
+            reverse('product_create')).content.decode()
+        self.assertIn('Scan a donation list', donation_body)
+        self.assertIn('Scan a donation list', product_body)

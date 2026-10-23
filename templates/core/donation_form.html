@@ -93,6 +93,9 @@
     <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:8px;">
       Missing a product? <a href="{% url 'product_create' %}?next=/inventory/donate/" style="color:var(--primary);font-weight:600;">Create a new product</a> first.
     </p>
+    <p style="font-size:.85rem;color:var(--text-muted);">
+      Have a paper list or receipt? <a href="{% url 'scan_import' %}" style="color:var(--primary);font-weight:600;">Scan a donation list</a> &mdash; the AI reads the photo, you approve the rows.
+    </p>
   </div>
 </div>
 {% endblock %}

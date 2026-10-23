@@ -11,6 +11,9 @@ urlpatterns = [
     path('inventory/<int:pk>/toggle-block/', views.batch_toggle_block,
          name='batch_toggle_block'),
     path('inventory/donate/', views.donation_create, name='donation_create'),
+    path('inventory/scan/', views.scan_import, name='scan_import'),
+    path('inventory/scan/approve/', views.scan_approve, name='scan_approve'),
+    path('inventory/scan/img/<str:name>/', views.scan_image, name='scan_image'),
     path('products/new/', views.product_create, name='product_create'),
 
     # Requests
