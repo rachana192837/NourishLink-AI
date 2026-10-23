@@ -147,7 +147,9 @@
   <div class="dispatch-grid">
     <div class="panel">
       <h3>Planned dispatch</h3>
-      <div class="hint">Warehouse (depot) → partner organisations. Colours = trucks.</div>
+      <div class="hint">Warehouse (depot) → partner organisations. Colours = trucks.
+        Tiles load from free public basemaps (Wikimedia → CARTO → OSM); if no tiles
+        load, an automatic offline schematic is drawn instead.</div>
       <div id="dispatchMap"></div>
       <div id="schematicMap">
         <canvas id="schematicCanvas" width="1200" height="900"
@@ -280,17 +282,62 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function drawLeaflet() {
-    var map = L.map('dispatchMap', { scrollWheelZoom: true });
-    var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; OpenStreetMap contributors',
-    }).addTo(map);
+    // Free public basemaps, first that loads wins; schematic is the
+    // last resort when nothing loads (offline demo safety).
+    var PROVIDERS = [
+      { url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@2x.png',
+        attribution: '&copy; OpenStreetMap contributors &middot; Wikimedia maps' },
+      { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO' },
+      { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        attribution: '&copy; OpenStreetMap contributors' },
+    ];
 
-    var errorCount = 0;
-    tiles.on('tileerror', function () {
-      errorCount += 1;
-      if (errorCount >= 3) { map.remove(); drawSchematic(); }
-    });
+    var map = L.map('dispatchMap', { scrollWheelZoom: true });
+    var schematicActive = false;
+    var fallbackTimer = null;
+    var providerIdx = 0;
+    var tileLayer = null;
+
+    function addProvider(idx) {
+      tileLayer = L.tileLayer(PROVIDERS[idx].url, {
+        maxZoom: 18,
+        attribution: PROVIDERS[idx].attribution,
+      }).addTo(map);
+      var errors = 0;
+      tileLayer.on('tileload', function () { errors = 0; });
+      tileLayer.on('tileerror', function () {
+        errors += 1;
+        if (errors >= 3) {
+          errors = 0;
+          nextProvider(idx + 1);
+        }
+      });
+    }
+
+    function nextProvider(idx) {
+      if (schematicActive) return;
+      if (idx < PROVIDERS.length) {
+        providerIdx = idx;
+        map.removeLayer(tileLayer);
+        addProvider(idx);
+      } else {
+        goSchematic();
+      }
+    }
+
+    function goSchematic() {
+      if (schematicActive) return;
+      schematicActive = true;
+      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+      map.remove();
+      drawSchematic();
+    }
+
+    addProvider(0);
+    fallbackTimer = setTimeout(function () {
+      if (!map._loaded) nextProvider(providerIdx + 1);
+    }, 4000);
 
     var bounds = [];
     var depot = data.depot;
@@ -313,9 +360,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
     map.fitBounds(bounds, { padding: [28, 28] });
-    setTimeout(function () {
-      if (!map._loaded) drawSchematic();
-    }, 4000);
     buildLegend();
   }
 
