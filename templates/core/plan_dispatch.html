@@ -3,6 +3,7 @@
 {% block title %}Dispatch board — {{ plan.name }} — NourishLink{% endblock %}
 
 {% block extra_head %}
+<meta name="referrer" content="no-referrer" />
 <link rel="stylesheet" href="{% static 'vendor/leaflet.css' %}" />
 <style>
   .dispatch-wrap {
@@ -157,7 +158,7 @@
     <div class="panel">
       <h3>Planned dispatch</h3>
       <div class="hint">Warehouse (depot) → partner organisations. Colours = trucks.
-        Tiles load from a free public basemap (OpenStreetMap, then Esri); if no
+        Tiles load from a free public basemap (Esri, then OpenStreetMap); if no
         tiles load, an automatic offline schematic is drawn instead.</div>
       <div id="dispatchMap"></div>
       <a id="mapRetry" href="javascript:location.reload()"
@@ -304,16 +305,17 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function drawLeaflet() {
-    // Keyless public basemaps: OSM first, Esri world tiles second.
-    // (CARTO dropped keyless access — serves "API KEY REQUIRED"
-    // watermark tiles; Wikimedia 403s external usage.) A provider is
-    // only abandoned when it loads ZERO tiles (3+ errors); the
-    // schematic is the last resort and always offers a manual retry.
+    // Keyless public basemaps: Esri first (embed-friendly, never blocks
+    // localhost apps), OSM second. OSM now serves its "Access blocked"
+    // notice AS an image, so it can't be first — and a meta referrer
+    // tag on this page suppresses the localhost Referer it dislikes.
+    // A provider is only abandoned when it loads ZERO tiles (3+ errors);
+    // the schematic is the last resort and always offers a manual retry.
     var PROVIDERS = [
-      { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        attribution: '&copy; OpenStreetMap contributors' },
       { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
         attribution: 'Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics' },
+      { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        attribution: '&copy; OpenStreetMap contributors' },
     ];
 
     var map = L.map('dispatchMap', { scrollWheelZoom: true });
