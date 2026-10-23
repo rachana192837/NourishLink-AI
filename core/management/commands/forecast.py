@@ -100,10 +100,14 @@ class Command(BaseCommand):
 
     def _persist_forecasts(self, report):
         names = {p.name: p for p in Product.objects.all()}
-        # the prediction window starts the day after the data ends
+        # Operational rows: the app consumes these directly, so they are
+        # dated at least today even if the training data ended earlier —
+        # a one-day-old "next 7 days" is still the coordinator's next 7 days.
+        # The scientific vintage stays in report.json (data_end).
         from datetime import timedelta
         next_date = (parse_date(report["data_end"]) + timedelta(days=1)
                      if parse_date(report["data_end"]) else timezone.localdate())
+        next_date = max(next_date, timezone.localdate())
         for version, future in (
                 (report["model_name"], report["future_model"]),
                 (report["baseline_name"], report["future_baseline"])):

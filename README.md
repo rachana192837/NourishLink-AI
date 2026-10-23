@@ -38,6 +38,17 @@ changes until a human coordinator approves the plan.
   (planned/scheduled/delivered/cancelled); KPI chips, and the plan's
   execution record (activity log + AI agent runs) as a timeline.
   Read-only; nothing here changes data.
+- **Sourcing recommendations** (`/sourcing/`, sidebar → Sourcing):
+  the visible "you will run out" loop — products whose forecast demand
+  outruns free stock in the next 14 days, each with units to source,
+  the day stock crosses below forecast need (cover-by), exposed partner
+  requests, a plain-English coordinator brief and one-click next steps
+  (log the expected donation with the product pre-filled, or generate a
+  FEFO plan). The brief is deterministic by default; **Explain with AI**
+  rephrases the same numbers through the analyst LLM (deterministic
+  fallback preserved). Also surfaced as a dashboard panel. Operational
+  forecast rows are dated at least today, so recommendations never age
+  into invisibility.
 - **Weekly Ledger** (`/reports/ledger/`, sidebar → Weekly Ledger):
   government-style accountability record for any week — donations
   received per donor (batches, units, top products + bar chart), stock

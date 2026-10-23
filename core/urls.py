@@ -26,6 +26,8 @@ urlpatterns = [
     # Allocation plans
     path('plans/', views.plan_list, name='plan_list'),
     path('plans/generate/', views.plan_generate, name='plan_generate'),
+    path('sourcing/', views.sourcing, name='sourcing'),
+    path('sourcing/explain/', views.sourcing_explain, name='sourcing_explain'),
     path('plans/<int:pk>/', views.plan_detail, name='plan_detail'),
     path('plans/<int:pk>/dispatch/', views.plan_dispatch,
          name='plan_dispatch'),

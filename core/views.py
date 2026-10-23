@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from . import allocation, forecast as forecasting, routing
+from . import sourcing as sourcing_engine
 from .activity import log_activity
 from .decorators import coordinator_required, partner_required
 from .forms import BatchForm, ProductForm, RequestForm, RequestItemFormSet
@@ -100,6 +101,8 @@ def dashboard(request):
                 model_version=MLP_VERSION
             ).order_by('-forecast_date').first(),
             'demand_rows': demand_rows,
+            'sourcing_top': sourcing_engine.compute_sourcing_rows(
+                MLP_VERSION)[:3],
         }
         return render(request, 'core/dashboard_coordinator.html', context)
     else:
@@ -219,7 +222,13 @@ def donation_create(request):
                              f'Donation batch {batch.batch_code} recorded.')
             return redirect('inventory')
     else:
-        form = BatchForm(initial={'received_date': timezone.now().date()})
+        initial = {'received_date': timezone.now().date()}
+        try:
+            initial['product'] = Product.objects.get(
+                pk=int(request.GET.get('product', '')))
+        except (ValueError, Product.DoesNotExist):
+            pass
+        form = BatchForm(initial=initial)
     return render(request, 'core/donation_form.html', {
         'form': form,
         'product_form': ProductForm(),
@@ -421,6 +430,46 @@ def request_cancel(request, pk):
 # ---------------------------------------------------------------------------
 # Allocation plans (coordinator)
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Sourcing recommendations (coordinator) — "you will run out, source this"
+# ---------------------------------------------------------------------------
+
+@coordinator_required
+def sourcing(request):
+    """Visible sourcing recommendations: products whose forecast demand
+    outruns free stock, with cover-by dates, exposed partners, an action
+    brief (cached LLM narrative or deterministic), and next-step links.
+    """
+    rows = sourcing_engine.compute_sourcing_rows(MLP_VERSION)
+    cached = sourcing_engine.load_cached_brief(rows)
+    context = {
+        'rows': rows,
+        'brief': (cached or {}).get('brief') or sourcing_engine.deterministic_brief(rows),
+        'brief_status': (cached or {}).get('status', 'FALLBACK'),
+        'brief_model': (cached or {}).get('model', ''),
+        'brief_is_llm': bool(cached and cached.get('status') == 'OK'),
+        'horizon_days': sourcing_engine.HORIZON_DAYS,
+    }
+    return render(request, 'core/sourcing.html', context)
+
+
+@coordinator_required
+def sourcing_explain(request):
+    """Re-run the analyst narrative pass over the current rows."""
+    if request.method != 'POST':
+        return redirect('sourcing')
+    rows = sourcing_engine.compute_sourcing_rows(MLP_VERSION)
+    _text, _model, status = sourcing_engine.phase_brief_with_llm(
+        rows, request.user)
+    if status == 'OK':
+        messages.success(request, 'AI brief generated for the current '
+                                  'recommendations.')
+    else:
+        messages.info(request, 'LLM unavailable — showing the deterministic '
+                               'brief instead.')
+    return redirect('sourcing')
+
 
 @coordinator_required
 def plan_list(request):

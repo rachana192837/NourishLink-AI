@@ -88,6 +88,23 @@
   </div>
 </div>
 
+{% if sourcing_top %}
+<div class="card" style="margin-bottom:20px;border-left:4px solid var(--primary);">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;">
+    <h3 class="card-title">Sourcing needed — next 14 days</h3>
+    <a href="{% url 'sourcing' %}" style="font-size:.8rem;color:var(--primary);text-decoration:none;font-weight:700;">Full recommendations →</a>
+  </div>
+  {% for row in sourcing_top %}
+  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid var(--border);">
+    <strong style="font-family:var(--font-head);color:var(--navy);">{{ row.product_name }}</strong>
+    <span style="color:var(--primary);font-weight:800;">source {{ row.units_needed }} units by {{ row.cover_by|date:"M d" }}</span>
+    <span style="font-size:.78rem;color:var(--text-muted);">
+      {% if row.partners %}— {{ row.partner_count }} partner request(s) exposed{% else %}— partners not yet requested{% endif %}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 {% if demand_rows %}
 <div class="card" style="margin-bottom:20px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">

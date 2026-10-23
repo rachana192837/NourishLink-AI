@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Sourcing recommendations — NourishLink{% endblock %}
+
+{% block extra_head %}
+<style>
+  .src-brief {
+    background: var(--primary-light);
+    border: 1px solid #f5c9b3;
+    border-left: 4px solid var(--primary);
+    border-radius: 10px;
+    padding: 18px 22px;
+    font-size: .95rem;
+    color: var(--text);
+    line-height: 1.55;
+  }
+  .src-brief .badge { margin-left: 10px; vertical-align: middle; }
+  .src-table td { vertical-align: top; }
+  .src-need { font-family: var(--font-head); font-weight: 800; color: var(--navy); font-size: 1.05rem; }
+  .src-coverby { color: var(--danger); font-weight: 700; white-space: nowrap; }
+  .src-partners { color: var(--text-muted); font-size: .78rem; margin-top: 3px; }
+  .src-reason { color: var(--text-muted); font-size: .8rem; margin-top: 4px; }
+  .src-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="/" class="back-link">&larr; Back to dashboard</a>
+
+<div class="page-header">
+  <h1>Sourcing recommendations</h1>
+  <p>What the forecast says you will run short of in the next
+     <strong>{{ horizon_days }} days</strong> — how much to source, by when,
+     and which partners are exposed. Approvals and logged donations reduce
+     these gaps automatically.</p>
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+  <div class="src-brief">
+    <strong>Coordinator brief:</strong> {{ brief }}
+    {% if brief_is_llm %}
+      <span class="badge badge-approved">AI narrative · {{ brief_model|truncatechars:28 }}</span>
+    {% else %}
+      <span class="badge badge-draft">deterministic brief</span>
+    {% endif %}
+  </div>
+  <form method="post" action="{% url 'sourcing_explain' %}" style="margin-top:14px;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary btn-sm">Explain with AI</button>
+    <span style="font-size:.78rem;color:var(--text-muted);margin-left:8px;">
+      Regenerates the narrative above from the current numbers (LLM optional — always falls back).</span>
+  </form>
+</div>
+
+<div class="card">
+  <h3 class="card-title" style="margin-bottom:10px;">Recommended sourcing actions</h3>
+  {% if rows %}
+  <div class="table-wrap">
+    <table class="src-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Source (units)</th>
+          <th>Runs out by</th>
+          <th>Free stock vs 14-day forecast</th>
+          <th>Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>
+            <div class="src-need">{{ row.product_name }}</div>
+            <div class="src-partners">
+              {% if row.partners %}Exposes: {{ row.partners|join:", " }}
+                {% if row.partner_count > row.partners|length %} +{{ row.partner_count }}{% endif %}
+              {% else %}No open partner requests yet{% endif %}
+            </div>
+            <div class="src-actions">
+              <a class="btn btn-ghost btn-sm"
+                 href="{% url 'donation_create' %}?product={{ row.product_id }}">Log expected donation</a>
+              <form method="post" action="{% url 'plan_generate' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline btn-sm"
+                        style="color:var(--navy);border-color:var(--navy);">Generate FEFO plan</button>
+              </form>
+            </div>
+          </td>
+          <td><span class="src-need" style="color:var(--primary);">{{ row.units_needed }}</span></td>
+          <td>
+            {% if row.cover_by %}<span class="src-coverby">{{ row.cover_by|date:"M d" }}</span>
+            {% else %}<span style="color:var(--text-muted);">beyond 2 weeks</span>{% endif %}
+          </td>
+          <td>
+            {{ row.stock_free }} in stock vs {{ row.predicted_14 }} predicted
+            <div class="src-reason">Shortfall = {{ row.units_needed }} units</div>
+          </td>
+          <td style="color:var(--text-muted);font-size:.82rem;">{{ row.reason }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p><strong>Healthy week:</strong> free stock covers forecast demand for the
+       next {{ horizon_days }} days on every product.</p>
+    <p style="font-size:.82rem;">Run <code>python manage.py forecast</code>
+       after new history arrives to refresh these recommendations.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

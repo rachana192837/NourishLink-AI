@@ -18,6 +18,8 @@ from core import allocation
 from core import agents as agents_module
 from core import llm as llm_module
 from core import routing
+from core import sourcing as sourcing_module
+from core import views as views_module
 from .models import (
     ActivityLog,
     AgentRun,
@@ -1518,3 +1520,102 @@ class DispatchBoardTests(BaseTestData):
         response = self.client.get(
             reverse('plan_dispatch', args=[self.plan.pk]))
         self.assertIn('delivered', response.content.decode())
+
+
+class SourcingTests(BaseTestData):
+    """Sourcing recommendations: gap -> visible sourcing instruction."""
+
+    def setUp(self):
+        super().setUp()
+        self._tmp_brief = Path(tempfile.gettempdir()) / 'nl_test_brief.json'
+        sourcing_module.BRIEF_PATH = self._tmp_brief
+        self.addCleanup(
+            lambda: self._tmp_brief.unlink(missing_ok=True))
+
+    def _forecast(self, quantities):
+        for offset, qty in enumerate(quantities):
+            DemandForecast.objects.create(
+                product=self.product,
+                forecast_date=date.today() + timedelta(days=offset),
+                predicted_quantity=qty,
+                model_version='vTEST', period_days=7)
+
+    def _open_request(self):
+        Request.objects.create(
+            organization=self.org, requested_by=self.partner,
+            required_by_date=date.today() + timedelta(days=5))
+        RequestItem.objects.create(
+            request=Request.objects.last(), product=self.product,
+            quantity_requested=40)
+
+    def test_shortfall_row_with_cover_by_and_partner(self):
+        self._forecast([80, 50])     # 130 predicted vs 100 free stock
+        self._open_request()
+        rows = sourcing_module.compute_sourcing_rows('vTEST')
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual(row['product_name'], 'Rice')
+        self.assertEqual(row['units_needed'], 30)
+        self.assertEqual(row['stock_free'], 100)
+        self.assertEqual(row['cover_by'], date.today() + timedelta(days=1))
+        self.assertEqual(row['partners'], ['Hope Shelter'])
+        self.assertEqual(row['partner_count'], 1)
+
+    def test_healthy_stock_yields_no_rows(self):
+        self._forecast([30, 40])     # 70 predicted < 100 free stock
+        rows = sourcing_module.compute_sourcing_rows('vTEST')
+        self.assertEqual(rows, [])
+        self.assertIn('No projected shortfalls',
+                      sourcing_module.deterministic_brief(rows))
+
+    def test_page_access_and_render(self):
+        self._forecast([80, 50])
+        self.client.force_login(self.coordinator)
+        with mock.patch.object(views_module, 'MLP_VERSION', 'vTEST'):
+            response = self.client.get(reverse('sourcing'))
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode()
+        self.assertIn('Sourcing recommendations', body)
+        self.assertIn('Rice', body)
+        self.assertIn('Log expected donation', body)
+        self.client.force_login(self.partner)
+        self.assertEqual(
+            self.client.get(reverse('sourcing')).status_code, 302)
+
+    def test_explain_falls_back_without_llm(self):
+        self._forecast([80, 50])
+        self.client.force_login(self.coordinator)
+        with mock.patch.object(views_module, 'MLP_VERSION', 'vTEST'):
+            response = self.client.post(reverse('sourcing_explain'),
+                                        follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(AgentRun.objects.count(), 1)
+        run = AgentRun.objects.get()
+        self.assertEqual(run.status, 'FALLBACK')
+        self.assertEqual(run.role, 'ANALYST')
+        self.assertIn('deterministic brief', response.content.decode())
+
+    def test_explain_records_llm_brief(self):
+        self._forecast([80, 50])
+        self.client.force_login(self.coordinator)
+        with mock.patch.object(views_module, 'MLP_VERSION', 'vTEST'), \
+             mock.patch.object(
+                 sourcing_module, 'llm_chat',
+                 return_value={'content': 'Buy rice before Tuesday.',
+                               'model': 'test/model', 'prompt_tokens': 0,
+                               'completion_tokens': 0}):
+            self.client.post(reverse('sourcing_explain'))
+        run = AgentRun.objects.get()
+        self.assertEqual(run.status, 'OK')
+        self.assertEqual(run.model_name, 'test/model')
+        with mock.patch.object(views_module, 'MLP_VERSION', 'vTEST'):
+            response = self.client.get(reverse('sourcing'))
+        self.assertIn('Buy rice before Tuesday.', response.content.decode())
+        self.assertIn('AI narrative', response.content.decode())
+
+    def test_donation_form_prefills_product(self):
+        self.client.force_login(self.coordinator)
+        response = self.client.get(
+            reverse('donation_create') + f'?product={self.product.pk}')
+        self.assertEqual(response.context['form'].initial['product'],
+                         self.product)
