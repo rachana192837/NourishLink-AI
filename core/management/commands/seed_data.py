@@ -97,24 +97,35 @@ class Command(BaseCommand):
 
     # -- Organizations & Partners ----------------------------------------
 
-    # Bengaluru city centre: dispatch-board depot for partner charities.
-    DEPOT_LAT = 12.9716
-    DEPOT_LNG = 77.5946
+    # Central warehouse in the Peenya industrial belt (west Bengaluru):
+    # partner charities are named real localities across the city, so the
+    # dispatch board reflects geographically truthful delivery.
+    DEPOT_LAT = 13.0284
+    DEPOT_LNG = 77.5199
 
     def _create_organizations(self):
         org_data = [
-            ("Hope Shelter", "SHELTER", "hope@example.com", "+1-555-0101", "123 Main St"),
-            ("City Kitchen", "COMMUNITY_KITCHEN", "kitchen@example.com", "+1-555-0102", "456 Oak Ave"),
-            ("Care NGO", "NGO", "care@example.com", "+1-555-0103", "789 Pine Rd"),
-            ("Sunrise Shelter", "SHELTER", "sunrise@example.com", "+1-555-0104", "321 Elm St"),
-            ("Community Kitchen", "COMMUNITY_KITCHEN", "community@example.com", "+1-555-0105", "654 Maple Dr"),
-            ("Relief Foundation", "NGO", "relief@example.com", "+1-555-0106", "987 Cedar Ln"),
+            ("Hope Shelter", "SHELTER", "hope@example.com", "+1-555-0101",
+             "12, 3rd Cross, Yelahanka New Town, Bengaluru 560106",
+             13.1007, 77.5963),   # Yelahanka
+            ("City Kitchen", "COMMUNITY_KITCHEN", "kitchen@example.com", "+1-555-0102",
+             "44, 4th Block, Jayanagar, Bengaluru 560011",
+             12.9250, 77.5938),   # Jayanagar
+            ("Care NGO", "NGO", "care@example.com", "+1-555-0103",
+             "7, Industrial Layout, Whitefield, Bengaluru 560066",
+             12.9698, 77.7500),   # Whitefield
+            ("Sunrise Shelter", "SHELTER", "sunrise@example.com", "+1-555-0104",
+             "21, Balina Agrahara Rd, Hebbal, Bengaluru 560024",
+             13.0358, 77.5970),   # Hebbal
+            ("Community Kitchen", "COMMUNITY_KITCHEN", "community@example.com", "+1-555-0105",
+             "312, 100 Feet Rd, Indiranagar, Bengaluru 560038",
+             12.9719, 77.6412),   # Indiranagar
+            ("Relief Foundation", "NGO", "relief@example.com", "+1-555-0106",
+             "18, 7th Main, BTM 2nd Stage, Bengaluru 560076",
+             12.9166, 77.6101),   # BTM Layout
         ]
         orgs = []
-        for idx, (name, org_type, email, phone, address) in enumerate(
-                org_data, start=1):
-            # Stable, believable scatter around the depot (max ~6 km).
-            jitter = ((idx * 37) % 100) / 100 - 0.5
+        for (name, org_type, email, phone, address, lat, lng) in org_data:
             org = Organization.objects.create(
                 name=name,
                 org_type=org_type,
@@ -122,8 +133,8 @@ class Command(BaseCommand):
                 phone=phone,
                 address=address,
                 is_active=True,
-                latitude=self.DEPOT_LAT + 0.04 * jitter,
-                longitude=self.DEPOT_LNG + 0.05 * ((idx * 53) % 100 / 100 - 0.5),
+                latitude=lat,
+                longitude=lng,
             )
             orgs.append(org)
         self.stdout.write(f"  Created {len(orgs)} organizations.")

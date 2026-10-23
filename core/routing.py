@@ -10,8 +10,9 @@ Deterministic: same plan + same truck count → same routes.
 
 import math
 
-# Bengaluru city centre — the synthetic food-bank warehouse ("depot").
-DEPOT = (12.9716, 77.5946)
+# Peenya Industrial Area — the synthetic food-bank warehouse ("depot"),
+# in Bengaluru's warehouse belt, west of the partner localities.
+DEPOT = (13.0284, 77.5199)
 
 TRUCK_COLORS = ['#e74c3c', '#2980b9', '#8e44ad', '#27ae60']
 
