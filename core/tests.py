@@ -1645,6 +1645,113 @@ class SourcingTests(BaseTestData):
             'FALLBACK TEXT')
 
 
+class RefillPatternTests(BaseTestData):
+    """Recurring partner-order pattern detection + one-click approval."""
+
+    def _pair_history(self, dates_and_qty, status='PARTIALLY_FULFILLED'):
+        """Seed one (org, product) pair's request rhythm. created_at is
+        backdated via .update() — auto_now_add resets it on save()."""
+        last_request = None
+        for offset, qty in dates_and_qty:
+            last_request = Request.objects.create(
+                organization=self.org, requested_by=self.partner,
+                required_by_date=date.today() + timedelta(days=3),
+                status=status,
+            )
+            Request.objects.filter(pk=last_request.pk).update(
+                created_at=timezone.now() + timedelta(days=offset))
+            # offset is negative (e.g. -42 = 42 days ago)
+            RequestItem.objects.create(
+                request=last_request, product=self.product,
+                quantity_requested=qty)
+        return last_request
+
+    def test_unmet_recurring_ask_detected(self):
+        self._pair_history([(-42, 20), (-28, 20), (-14, 20)])
+        newest = self._pair_history([(-2, 40)], status='PENDING')
+        rows = sourcing_module.compute_refill_patterns()
+        row = next(r for r in rows if r['request_id'] == newest.pk)
+        self.assertEqual(row['kind'], 'unmet')
+        self.assertEqual(row['cycle_days'], 14)
+        self.assertEqual(row['unmet_qty'], 40)
+        self.assertEqual(row['org_name'], 'Hope Shelter')
+
+    def test_cycle_due_without_open_request_detected(self):
+        self._pair_history([(-42, 20), (-28, 20), (-15, 20)],
+                           status='FULFILLED')
+        rows = sourcing_module.compute_refill_patterns()
+        row = next(r for r in rows
+                   if r['org_name'] == 'Hope Shelter'
+                   and r['kind'] == 'due')
+        self.assertEqual(row['due_in'], -2)     # cycle 13, last 15 days ago
+        self.assertEqual(row['overdue'], 2)
+
+    def test_freshly_served_pair_not_flagged(self):
+        self._pair_history([(-1, 20)], status='FULFILLED')
+        # no pending ask, last activity 1 day ago on an implied 1-unit-cycle
+        rows = [r for r in sourcing_module.compute_refill_patterns()
+                if r['org_name'] == 'Hope Shelter'
+                and r['kind'] == 'due']
+        # One occurrence only (< min_occurrences=3) → nothing flagged.
+        self.assertEqual(rows, [])
+
+    def test_refill_approve_drafts_plan_with_final_gate(self):
+        self._pair_history([(-42, 20), (-28, 20)])
+        newest = self._pair_history([(-2, 40)], status='PENDING')
+        self.client.force_login(self.coordinator)
+        response = self.client.post(reverse('refill_approve'), {
+            'org': self.org.pk, 'product': self.product.pk})
+        plan = AllocationPlan.objects.get(
+            name__startswith='AI proposal')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            [i.request_item.request_id for i in plan.items.all()],
+            [newest.pk])
+        self.assertEqual(plan.status, 'DRAFT')     # final approval pending
+        self.assertTrue(ActivityLog.objects.filter(
+            action_type='REFILL_APPROVED').exists())
+
+    def test_refill_approve_creates_request_for_due_pattern(self):
+        self._pair_history([(-42, 20), (-28, 20), (-15, 20)],
+                           status='FULFILLED')
+        before = Request.objects.count()
+        self.client.force_login(self.coordinator)
+        response = self.client.post(reverse('refill_approve'), {
+            'org': self.org.pk, 'product': self.product.pk})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Request.objects.count(), before + 1)
+        refill_request = Request.objects.order_by('-pk').first()
+        self.assertIn('Recurring refill', refill_request.notes)
+        self.assertEqual(refill_request.items.first().quantity_requested, 20)
+        plan = AllocationPlan.objects.get(name__startswith='AI proposal')
+        self.assertEqual(plan.status, 'DRAFT')
+
+    def test_refill_approve_stale_recommendation_safe(self):
+        self.client.force_login(self.coordinator)
+        response = self.client.post(reverse('refill_approve'), {
+            'org': self.other_org.pk, 'product': self.product.pk})
+        self.assertRedirects(response, reverse('sourcing'))
+
+    def test_demo_prep_drains_to_demo_target(self):
+        from django.core.management import call_command
+        from core import forecast as forecasting
+        DemandForecast.objects.create(
+            product=self.other_product,
+            forecast_date=date.today(),
+            predicted_quantity=80, model_version=forecasting.MODEL_NAME,
+            period_days=7)
+        Foods = FoodBatch.objects.create(
+            product=self.other_product, batch_code='DEMO-1',
+            quantity_received=100, quantity_available=100,
+            quantity_reserved=0,
+            received_date=date.today() - timedelta(days=5),
+            distribution_cutoff=date.today() + timedelta(days=30))
+        call_command('demo_prep', verbosity=0)
+        Foods.refresh_from_db()
+        self.assertEqual(Foods.quantity_available, 48)  # 0.6 * 80
+        self.assertEqual(Foods.quantity_reserved, 0)
+
+
 class ScanImportTests(BaseTestData):
     """Photo -> AI draft -> coordinator approval -> products + batches."""
 

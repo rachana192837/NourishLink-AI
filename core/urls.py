@@ -31,6 +31,8 @@ urlpatterns = [
     path('plans/generate/', views.plan_generate, name='plan_generate'),
     path('sourcing/', views.sourcing, name='sourcing'),
     path('sourcing/explain/', views.sourcing_explain, name='sourcing_explain'),
+    path('sourcing/refill-approve/', views.refill_approve,
+         name='refill_approve'),
     path('plans/<int:pk>/', views.plan_detail, name='plan_detail'),
     path('plans/<int:pk>/dispatch/', views.plan_dispatch,
          name='plan_dispatch'),

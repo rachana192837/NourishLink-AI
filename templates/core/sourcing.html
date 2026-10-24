@@ -29,9 +29,10 @@
 
 <div class="page-header">
   <h1>Sourcing recommendations</h1>
-  <p>What the forecast says you will run short of in the next
-     <strong>{{ horizon_days }} days</strong> — how much to source, by when,
-     and which partners are exposed. Approvals and logged donations reduce
+  <p>Two early-warning signals: what the forecast says you will run short of
+     in the next <strong>{{ horizon_days }} days</strong> (how much to source,
+     by when), and recurring partner order patterns that are
+     <strong>due right now</strong>. Approvals and logged donations reduce
      these gaps automatically.</p>
 </div>
 
@@ -50,6 +51,70 @@
     <span style="font-size:.78rem;color:var(--text-muted);margin-left:8px;">
       Regenerates the narrative above from the current numbers.</span>
   </form>
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+  <h3 class="card-title" style="margin-bottom:10px;">Recurring partner refills</h3>
+  {% if refill_rows %}
+  <p class="scan-hint" style="margin-bottom:12px;">
+    Order rhythms learned from partner request history. Approving one lets the
+    AI draft the allocation — as a <strong>draft plan</strong>; you still
+    approve that plan before stock moves.</p>
+  <div class="table-wrap">
+    <table class="src-table">
+      <thead>
+        <tr>
+          <th>Partner</th>
+          <th>Product</th>
+          <th>Pattern</th>
+          <th>Warehouse stock</th>
+          <th>Signal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in refill_rows %}
+        <tr>
+          <td><span class="src-need">{{ row.org_name }}</span></td>
+          <td><span class="src-need" style="color:var(--primary);">{{ row.product_name }}</span></td>
+          <td style="font-size:.82rem;color:var(--text-muted);">
+            every ~{{ row.cycle_days }} days · usual {{ row.usual_qty }} units
+            <div class="src-reason">last activity {{ row.days_since }} day(s) ago</div>
+          </td>
+          <td style="font-size:.82rem;">
+            {{ row.stock_free }} free
+            <div class="src-reason">≈ {{ row.cycles_covered }} usual order(s) left</div>
+          </td>
+          <td>
+            {% if row.kind == 'unmet' %}
+            <span class="badge badge-pending">their new request is unmet</span>
+            <div class="src-reason">{{ row.unmet_qty }} units requested {{ row.last_ago }} day(s) ago, not yet covered</div>
+            {% elif row.overdue %}
+            <span class="chip chip-danger">overdue by {{ row.overdue }} day(s)</span>
+            {% else %}
+            <span class="chip chip-warn">due now</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="post" action="{% url 'refill_approve' %}">
+              {% csrf_token %}
+              <input type="hidden" name="org" value="{{ row.org_id }}">
+              <input type="hidden" name="product" value="{{ row.product_id }}">
+              <button type="submit" class="btn btn-primary btn-sm">
+                Approve refill — AI drafts</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>No recurring patterns are due right now — every regular partner
+       request is either freshly covered or not yet due by its rhythm.</p>
+  </div>
+  {% endif %}
 </div>
 
 <div class="card">
@@ -92,7 +157,7 @@
             {% else %}<span style="color:var(--text-muted);">beyond 2 weeks</span>{% endif %}
           </td>
           <td>
-            {{ row.stock_free }} in stock vs {{ row.predicted_14 }} predicted
+            {{ row.stock_free }} in stock vs {{ row.predicted_14 }} forecast
             <div class="src-reason">Shortfall = {{ row.units_needed }} units</div>
           </td>
           <td style="color:var(--text-muted);font-size:.82rem;">{{ row.reason }}</td>

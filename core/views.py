@@ -668,9 +668,11 @@ def sourcing(request):
     brief (cached LLM narrative or deterministic), and next-step links.
     """
     rows = sourcing_engine.compute_sourcing_rows(MLP_VERSION)
+    refill_rows = sourcing_engine.compute_refill_patterns()
     cached = sourcing_engine.load_cached_brief(rows)
     context = {
         'rows': rows,
+        'refill_rows': refill_rows,
         'brief': (cached or {}).get('brief') or sourcing_engine.deterministic_brief(rows),
         'brief_status': (cached or {}).get('status', 'FALLBACK'),
         'brief_model': (cached or {}).get('model', ''),
@@ -694,6 +696,89 @@ def sourcing_explain(request):
     else:
         messages.info(request, 'LLM unavailable — showing the deterministic '
                                'brief instead.')
+    return redirect('sourcing')
+
+
+@coordinator_required
+def refill_approve(request):
+    """Approve a recurring-refill recommendation: the agent drafting path
+    runs on the partner's request (existing unmet ask, or a refill
+    request created from the learned pattern) and lands on the DRAFT
+    plan. Stock changes only at the plan's own approval — the human
+    gate stays.
+    """
+    from . import agent_tools
+    if request.method != 'POST':
+        return redirect('sourcing')
+
+    try:
+        org_id = int(request.POST.get('org', ''))
+        product_id = int(request.POST.get('product', ''))
+    except ValueError:
+        messages.error(request, 'Malformed refill recommendation.')
+        return redirect('sourcing')
+
+    match = next(
+        (row for row in sourcing_engine._pattern_rows()
+         if row['org_id'] == org_id and row['product_id'] == product_id),
+        None)
+    if match is None:
+        messages.info(request,
+                      'That recommendation is no longer current — the '
+                      'pattern list was refreshed.')
+        return redirect('sourcing')
+
+    with transaction.atomic():
+        if match['kind'] == 'unmet':
+            refill_request = get_object_or_404(Request,
+                                               pk=match['request_id'])
+            log_activity(
+                request.user, 'REFILL_APPROVED',
+                f'Coordinator approved recurring-refill recommendation: '
+                f'{refill_request.organization.name} — '
+                f'{match["product_name"]} (repeats every ~'
+                f'{match["cycle_days"]} days).',
+                refill_request)
+        else:
+            due = (timezone.now().date()
+                   + timedelta(days=max(2, match['cycle_days'])))
+            refill_request = Request.objects.create(
+                organization_id=org_id,
+                requested_by=request.user,
+                required_by_date=due,
+                status='APPROVED',
+                notes=(f'Recurring refill proposed by the sourcing '
+                       f'recommender (order every ~{match["cycle_days"]} '
+                       f'days, usual {match["usual_qty"]} units) and '
+                       f'approved by coordinator.'))
+            RequestItem.objects.create(
+                request=refill_request, product_id=product_id,
+                quantity_requested=match['usual_qty'])
+            log_activity(
+                request.user, 'REFILL_APPROVED',
+                f'Recurring refill approved for '
+                f'{refill_request.organization.name}: '
+                f'{match["product_name"]} x{match["usual_qty"]}.',
+                refill_request)
+
+        generated = agent_tools.generate_allocation(
+            request.user, request_ids=[refill_request.pk])
+        plan = (AllocationPlan.objects.filter(
+            pk=generated.get('plan_id')).first()
+            if generated.get('plan_id') else None)
+        if plan is not None and not plan.items.exists():
+            plan.delete()
+            plan = None
+
+    if plan is not None:
+        messages.success(request,
+                         f'Refill approved — the AI drafted plan '
+                         f'"{plan.name}". Review it and approve to '
+                         f'reserve stock.')
+        return redirect('plan_detail', pk=plan.pk)
+    messages.info(request,
+                  'Refill request recorded, but free stock cannot cover '
+                  'it right now — it stays an open sourcing need.')
     return redirect('sourcing')
 
 

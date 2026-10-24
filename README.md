@@ -73,10 +73,15 @@ drafts deterministically (`FALLBACK` in run records) — the system never stops.
   a vision LLM reads the product lines as a **draft**; the coordinator fixes
   quantities in an editable table and approves → products and batches enter
   stock, photo kept as audit source. LLM down → clean manual-entry fallback.
-- **Sourcing recommendations** (`/sourcing/`) — the visible "you will run out"
-  loop: units to source, cover-by date, exposed partners, a plain-English
-  coordinator brief (optional **Explain with AI** rewrite) and one-click
-  next steps (pre-filled donation form / generate FEFO plan).
+- **Sourcing recommendations** (`/sourcing/`) — two early-warning signals:
+  *forecast shortfalls* (units to source, cover-by date, exposed partners,
+  plain-English coordinator brief with optional **Explain with AI**
+  rewrite) and *recurring partner refills* — order rhythms learned from
+  each partner's history (e.g. "Care NGO orders Beans every ~3 days,
+  usual 7 units — their latest ask is unmet and stock covers zero
+  cycles"). One click *(Approve refill — AI drafts)* routes the AI
+  drafting path to that partner's request; the draft plan still needs
+  the coordinator's final approval before stock moves.
 - **Allocation plans** — AI-drafted or rule-generated FEFO plans with
   validate-on-approve (rechecks stock, cutoffs, requests inside a
   transaction), human approval reserving stock, and pickup completion
@@ -135,6 +140,7 @@ Weekly Ledger → `/reports/evaluation/`.
 | `python manage.py agent_proposal` | Run the analyst+planner cycle from the CLI (draft plan only) |
 | `python manage.py evaluate` | Run the A/B/C comparison over the current scenario; writes `data/evaluation/results.json` |
 | `python manage.py paperfigures` | Export publication figures at 300 dpi (`data/paper/fig1_abc_comparison.png`, `fig2_forecast_quality.png`) |
+| `python manage.py demo_prep` | Scenario tool (like `simulate`): trims a few products' free stock below forecast so Sourcing shows live recommendations for a demo run — no-op when it already does |
 
 ## Optional: enabling the LLM (Config C "live" mode)
 
